@@ -1,0 +1,245 @@
+{
+  "cpu": 50.4,
+  "ram": 84.9,
+  "disk_space": 87.8,
+  "disk_read": 0.25,
+  "disk_write": 13.31,
+  "status": "WARNING",
+  "issues": [
+    "Elevated RAM usage",
+    "Disk space is getting low",
+    "Persistent high CPU usage in AppHelperCap.exe",
+    "Persistent high CPU usage in brave.exe",
+    "Persistent high CPU usage in Rainmeter.exe"
+  ],
+  "recommendations": [
+    "Consider closing some applications to reduce memory usage.",
+    "Consider freeing up some disk space.",
+    "Consider closing AppHelperCap.exe if it is not needed.",
+    "Consider closing brave.exe if it is not needed.",
+    "Consider closing Rainmeter.exe if it is not needed."
+  ],
+  "causes": [
+    "AppHelperCap.exe may be contributing to high CPU usage.",
+    "brave.exe may be contributing to high CPU usage.",
+    "Rainmeter.exe may be contributing to high CPU usage."
+  ],
+  "processes": [
+    {
+      "pid": 4300,
+      "name": "AppHelperCap.exe",
+      "cpu": 78.3,
+      "memory": 0.15438549712195748
+    },
+    {
+      "pid": 2152,
+      "name": "dwm.exe",
+      "cpu": 57.4,
+      "memory": 1.2757860558191494
+    },
+    {
+      "pid": 23856,
+      "name": "chrome.exe",
+      "cpu": 53.4,
+      "memory": 1.040144169751476
+    },
+    {
+      "pid": 33140,
+      "name": "Code.exe",
+      "cpu": 40.3,
+      "memory": 1.7009003056842695
+    },
+    {
+      "pid": 12892,
+      "name": "brave.exe",
+      "cpu": 39.4,
+      "memory": 0.8910455098169342
+    },
+    {
+      "pid": 24976,
+      "name": "Rainmeter.exe",
+      "cpu": 34.0,
+      "memory": 0.12780354244361555
+    },
+    {
+      "pid": 17640,
+      "name": "RobloxPlayerBeta.exe",
+      "cpu": 18.1,
+      "memory": 5.742851522953904
+    },
+    {
+      "pid": 19852,
+      "name": "Discord.exe",
+      "cpu": 17.6,
+      "memory": 1.527682503425772
+    },
+    {
+      "pid": 23384,
+      "name": "brave.exe",
+      "cpu": 17.3,
+      "memory": 0.9942701849637753
+    },
+    {
+      "pid": 17512,
+      "name": "LightStudio-background.exe",
+      "cpu": 13.9,
+      "memory": 0.17275807728567869
+    },
+    {
+      "pid": 7324,
+      "name": "chrome.exe",
+      "cpu": 13.3,
+      "memory": 4.096986864015652
+    },
+    {
+      "pid": 30300,
+      "name": "Code.exe",
+      "cpu": 12.8,
+      "memory": 1.301662004289234
+    },
+    {
+      "pid": 5500,
+      "name": "audiodg.exe",
+      "cpu": 11.7,
+      "memory": 0.2633403156800039
+    },
+    {
+      "pid": 21444,
+      "name": "AMDRSServ.exe",
+      "cpu": 11.6,
+      "memory": 0.022723548656470187
+    },
+    {
+      "pid": 32464,
+      "name": "HP.Omen.OmenCommandCenter.exe",
+      "cpu": 10.1,
+      "memory": 2.7589901681247064
+    },
+    {
+      "pid": 5412,
+      "name": "brave.exe",
+      "cpu": 10.0,
+      "memory": 0.7866715222380463
+    },
+    {
+      "pid": 5872,
+      "name": "Discord.exe",
+      "cpu": 9.7,
+      "memory": 1.8584546213688706
+    },
+    {
+      "pid": 10640,
+      "name": "explorer.exe",
+      "cpu": 9.3,
+      "memory": 1.4882610870065631
+    },
+    {
+      "pid": 7340,
+      "name": "chrome.exe",
+      "cpu": 7.5,
+      "memory": 0.19085153871590277
+    },
+    {
+      "pid": 27260,
+      "name": "Code.exe",
+      "cpu": 7.4,
+      "memory": 0.7055629020335934
+    },
+    {
+      "pid": 14636,
+      "name": "OmenCommandCenterBackground.exe",
+      "cpu": 6.3,
+      "memory": 1.0332318764101653
+    },
+    {
+      "pid": 2820,
+      "name": "NVDisplay.Container.exe",
+      "cpu": 5.2,
+      "memory": 0.07393362687867432
+    },
+    {
+      "pid": 16968,
+      "name": "iCloudHome.exe",
+      "cpu": 4.5,
+      "memory": 0.07631434548791433
+    },
+    {
+      "pid": 15148,
+      "name": "ctfmon.exe",
+      "cpu": 2.5,
+      "memory": 0.05813879031254403
+    },
+    {
+      "pid": 8596,
+      "name": "brave.exe",
+      "cpu": 2.3,
+      "memory": 0.09558995684824381
+    },
+    {
+      "pid": 9452,
+      "name": "OverlayHelper.exe",
+      "cpu": 2.2,
+      "memory": 0.12085841160424643
+    },
+    {
+      "pid": 22616,
+      "name": "Spotify.exe",
+      "cpu": 2.0,
+      "memory": 0.6817885534392518
+    },
+    {
+      "pid": 27496,
+      "name": "brave.exe",
+      "cpu": 2.0,
+      "memory": 0.7127707328574304
+    },
+    {
+      "pid": 9468,
+      "name": "svchost.exe",
+      "cpu": 1.8,
+      "memory": 0.05465801551834483
+    },
+    {
+      "pid": 13976,
+      "name": "Discord.exe",
+      "cpu": 1.8,
+      "memory": 0.41762730030778583
+    },
+    {
+      "pid": 25056,
+      "name": "TranslucentTB.exe",
+      "cpu": 1.7,
+      "memory": 0.042458884989618424
+    },
+    {
+      "pid": 33576,
+      "name": "Code.exe",
+      "cpu": 1.7,
+      "memory": 1.9558670593593601
+    },
+    {
+      "pid": 4168,
+      "name": "atieclxx.exe",
+      "cpu": 1.5,
+      "memory": 0.01950547384673886
+    },
+    {
+      "pid": 25792,
+      "name": "mpv.exe",
+      "cpu": 1.4,
+      "memory": 0.031655348128377545
+    },
+    {
+      "pid": 5612,
+      "name": "svchost.exe",
+      "cpu": 1.3,
+      "memory": 0.1347979295300724
+    },
+    {
+      "pid": 29668,
+      "name": "brave.exe",
+      "cpu": 1.3,
+      "memory": 0.1814764330202059
+    }
+  ]
+}
