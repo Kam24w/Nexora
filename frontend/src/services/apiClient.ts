@@ -46,3 +46,47 @@ export class ApiError extends Error {
 }
 
 export const isAbortError = (error: unknown): boolean => error instanceof DOMException && error.name === 'AbortError'
+
+interface RequestOptions {
+  method?: 'GET' | 'POST'
+  /** Se serializa como JSON. */
+  json?: unknown
+  headers?: Record<string, string>
+  signal?: AbortSignal
+  timeoutMs: number
+}
+
+/**
+ * Realiza la petición y devuelve el cuerpo JSON. Lanza `ApiError` en errores de red,
+ * timeout o códigos HTTP de error; re-lanza el `AbortError` si la cancela el llamador.
+ */
+export async function apiRequest<T = unknown>(path: string, options: RequestOptions): Promise<T> {
+  const timeout = AbortSignal.timeout(options.timeoutMs)
+  const signal = options.signal ? AbortSignal.any([options.signal, timeout]) : timeout
+  const headers: Record<string, string> = { Accept: 'application/json', ...options.headers }
+  if (options.json !== undefined) headers['Content-Type'] = 'application/json'
+
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      method: options.method ?? 'GET',
+      headers,
+      body: options.json !== undefined ? JSON.stringify(options.json) : undefined,
+      signal,
+    })
+  } catch (error) {
+    if (options.signal?.aborted) throw error
+    if (timeout.aborted) throw new ApiError('timeout', { cause: error })
+    throw new ApiError('offline', { cause: error })
+  }
+
+  let body: unknown = null
+  try {
+    body = await response.json()
+  } catch {
+    /* cuerpo vacío o no JSON */
+  }
+
+  if (!response.ok) throw new ApiError('http', { status: response.status, body })
+  return body as T
+}
