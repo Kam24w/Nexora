@@ -1,75 +1,37 @@
-# React + TypeScript + Vite
+# Nexora · Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Panel de diagnóstico IA para escritorio (React 19 + TypeScript + Vite + Tailwind CSS v4 + Supabase).
 
-Currently, two official plugins are available:
+## Puesta en marcha
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+cp .env.example .env.local   # completa VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY
+npm install
+npm run dev                  # http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+El análisis en vivo necesita el servicio local: `python server.py` (en la raíz del repo).
+Sin Supabase configurado, en desarrollo puedes entrar con "Continuar sin cuenta".
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Arquitectura (`src/`)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Capa | Carpeta | Responsabilidad |
+| --- | --- | --- |
+| Dominio | `types/` | Tipos puros: diagnóstico, auth, preferencias, claves i18n. |
+| Infraestructura | `services/` | Supabase (`authService`), API de diagnóstico, reglas de salud, adaptador de mensajes del backend, `localStorage`. |
+| Aplicación | `context/` | Estado global: tema, idioma, sesión y diagnóstico. Cada contexto expone un hook (`useTheme`, `useI18n`, `useAuth`, `useDiagnosis`). |
+| Presentación | `components/` | `layout/` (shell 3 columnas, sidebar), `dashboard/` (telemetría), `diagnosis/` ("¿Por qué está lento?"), `auth/`, `ui/`. |
+| Traducciones | `i18n/` | `es.json` (idioma fuente) y `en.json`. |
 
-```
+Reglas:
+
+- Los componentes no importan Supabase ni `fetch`: pasan por `context/` → `services/`.
+- No hay textos en los componentes: todo usa `t('clave')`. Las claves están tipadas a partir de `es.json`,
+  así que una clave inexistente o una traducción incompleta en `en.json` es un error de compilación.
+- Los colores son tokens semánticos (`bg-surface`, `text-ink`, `text-crit`…) definidos en `index.css`;
+  el modo oscuro solo cambia las variables bajo la clase `.dark`.
+
+## Añadir un idioma
+
+1. Crea `src/i18n/<código>.json` con las mismas claves que `es.json`.
+2. Añade el código a `LANGUAGES` en `src/types/preferences.ts` y al objeto `dictionaries` en `src/i18n/index.ts`.
