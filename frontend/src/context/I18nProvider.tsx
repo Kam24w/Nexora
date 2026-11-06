@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { DEFAULT_LANGUAGE, translate } from '../i18n'
+import { DEFAULT_LANGUAGE, resolveMessage, translate } from '../i18n'
 import { storage, STORAGE_KEYS } from '../services/storage'
 import type { Message, TranslationKey, TranslationParams } from '../types/i18n'
 import { LANGUAGES, type Language } from '../types/preferences'
@@ -38,7 +38,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       language,
       setLanguage,
       t,
-      tm: (message: Message) => ('raw' in message ? message.raw : t(message.key, message.params)),
+      tm: (message: Message) => resolveMessage(language, message),
       formatNumber: (number, options) =>
         options ? new Intl.NumberFormat(language, options).format(number) : numberFormatter.format(number),
       formatRelativeTime: (date) => {
