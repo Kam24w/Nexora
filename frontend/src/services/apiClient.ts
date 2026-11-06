@@ -90,3 +90,14 @@ export async function apiRequest<T = unknown>(path: string, options: RequestOpti
   if (!response.ok) throw new ApiError('http', { status: response.status, body })
   return body as T
 }
+
+/** Comprueba si el servicio local responde (GET /health). */
+export async function checkServiceHealth(signal?: AbortSignal): Promise<boolean> {
+  try {
+    await apiRequest('/health', { signal, timeoutMs: 3_000 })
+    return true
+  } catch (error) {
+    if (isAbortError(error)) throw error
+    return false
+  }
+}
