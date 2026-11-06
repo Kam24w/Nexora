@@ -1,4 +1,4 @@
-def diagnose_system(cpu_usage, ram_usage, disk_space, disk_read, disk_write, process_data, process_monitor):
+def diagnose_system(cpu_usage, ram_usage, disk_space, disk_read, disk_write, process_data, process_monitor, temperature=None):
     critical_issues = []
     warning_issues = []
     recommendations = []
@@ -54,6 +54,20 @@ def diagnose_system(cpu_usage, ram_usage, disk_space, disk_read, disk_write, pro
     # Check disk activity
     if disk_read >= 100 or disk_write >= 100:
         critical_issues.append("High disk activity")
+
+    # Check system temperature (None when the OS exposes no sensor)
+    if temperature is not None:
+        if temperature >= 90:
+            critical_issues.append("High system temperature")
+            recommendations.append(
+                "Check that the vents are clean and the fans are working."
+            )
+
+        elif temperature >= 80:
+            warning_issues.append("Elevated system temperature")
+            recommendations.append(
+                "Check that the vents are clean and the fans are working."
+            )
 
     # Check persistent high CPU processes
     if process_monitor:
