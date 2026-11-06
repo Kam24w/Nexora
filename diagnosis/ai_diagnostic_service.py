@@ -28,7 +28,9 @@ MODEL = os.environ.get("GROQ_MODEL", "").strip() or DEFAULT_MODEL
 # gpt-oss is a reasoning model: its reasoning tokens count towards this limit.
 MAX_COMPLETION_TOKENS = 8192
 TEMPERATURE = 0.2
-REQUEST_TIMEOUT_S = 60.0
+# Worst case per call: 30 s x (1 + 1 retry) = 60 s, below the frontend's 90 s timeout.
+REQUEST_TIMEOUT_S = 30.0
+SDK_MAX_RETRIES = 1
 VALIDATION_RETRIES = 1
 MAX_PROCESSES = 10
 SUPPORTED_LANGUAGES = {"es": "Spanish (neutral Latin American)", "en": "English"}
@@ -216,7 +218,7 @@ class AIDiagnosticService:
         if self._client is None:
             if not self.is_configured:
                 raise AINotConfiguredError("GROQ_API_KEY is not set")
-            self._client = groq.Groq(timeout=REQUEST_TIMEOUT_S, max_retries=2)
+            self._client = groq.Groq(timeout=REQUEST_TIMEOUT_S, max_retries=SDK_MAX_RETRIES)
         return self._client
 
     def _complete(self, client: groq.Groq, messages: list) -> str:
