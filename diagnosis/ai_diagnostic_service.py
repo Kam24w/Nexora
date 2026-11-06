@@ -235,6 +235,9 @@ class AIDiagnosticService:
         except groq.PermissionDeniedError as error:
             logger.error("Groq denied access to %s: %s", self._model, error)
             raise AINotConfiguredError("model not available for this key") from error
+        except groq.NotFoundError as error:
+            logger.error("Groq model '%s' does not exist or is not available for this key; set GROQ_MODEL in .env", self._model)
+            raise AINotConfiguredError("model not found") from error
         except groq.RateLimitError as error:
             raise AIUnavailableError("rate limited") from error
         except groq.BadRequestError as error:
