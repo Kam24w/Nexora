@@ -9,7 +9,10 @@ import type {
   Telemetry,
 } from '../types/diagnosis'
 import type { Language } from '../types/preferences'
-import { API_BASE_URL } from './telemetryService'
+import { ApiError, apiRequest } from './apiClient'
+
+/** El servidor puede reintentar una vez si la salida del modelo no valida el esquema. */
+const AI_TIMEOUT_MS = 90_000
 
 /**
  * Cliente de AIDiagnosticService (diagnosis/ai_diagnostic_service.py, POST /ai-diagnosis).
@@ -81,28 +84,18 @@ const parseAIDiagnosis = (raw: unknown, language: Language): AIDiagnosis => {
 export const aiDiagnosticService = {
   /** Genera la causa probable y las soluciones en `language` a partir de la telemetría. */
   async generate(telemetry: Telemetry, language: Language, signal?: AbortSignal): Promise<AIResult> {
-    let response: Response
+    let body: unknown
     try {
-      response = await fetch(`${API_BASE_URL}/ai-diagnosis`, {
+      body = await apiRequest('/ai-diagnosis', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ telemetry, language }),
+        json: { telemetry, language },
         signal,
+        timeoutMs: AI_TIMEOUT_MS,
       })
     } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') throw error
-      return { ok: false, reason: 'network' }
-    }
-
-    let body: unknown = null
-    try {
-      body = await response.json()
-    } catch {
-      /* cuerpo vacío o no JSON */
-    }
-
-    if (!response.ok) {
-      const code = isRecord(body) ? body.error : null
+      if (!(error instanceof ApiError)) throw error // AbortError del llamador
+      if (error.kind !== 'http') return { ok: false, reason: error.kind === 'timeout' ? 'ai_unavailable' : 'network' }
+      const code = isRecord(error.body) ? error.body.error : null
       return { ok: false, reason: SERVER_REASONS.find((reason) => reason === code) ?? 'ai_unavailable' }
     }
 
