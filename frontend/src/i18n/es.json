@@ -3,7 +3,8 @@
     "appName": "Nexora",
     "loading": "Cargando…",
     "percent": "{{value}} %",
-    "mbps": "{{value}} MB/s"
+    "mbps": "{{value}} MB/s",
+    "celsius": "{{value}} °C"
   },
   "nav": {
     "primary": "Navegación principal",
@@ -39,7 +40,18 @@
       "start": "Iniciar análisis automático",
       "again": "Volver a analizar",
       "running": "Analizando tu equipo…",
-      "runningHint": "Esto toma unos segundos. Puedes seguir usando el PC."
+      "runningHint": "Esto toma unos segundos. Puedes seguir usando el PC.",
+      "stages": {
+        "telemetry": "Capturando telemetría…",
+        "ai": "Generando diagnóstico con IA…",
+        "saving": "Guardando informe…"
+      },
+      "stepsLabel": "Progreso del análisis",
+      "steps": {
+        "telemetry": "Telemetría",
+        "ai": "Diagnóstico IA",
+        "saving": "Guardado"
+      }
     },
     "errors": {
       "unavailable": "No pudimos conectar con el servicio de diagnóstico. Comprueba que server.py esté en ejecución.",
@@ -55,7 +67,9 @@
       "diskDetail": "Espacio ocupado",
       "read": "Lectura",
       "write": "Escritura",
-      "noData": "Sin datos"
+      "noData": "Sin datos",
+      "temperature": "Temperatura",
+      "temperatureUnavailable": "No disponible"
     },
     "levels": {
       "ok": "Normal",
@@ -93,14 +107,16 @@
     },
     "findings": {
       "title": "Hallazgos",
-      "issue": "Problema detectado",
-      "cause": "Causa probable",
       "empty": "No se encontraron causas relevantes. ¡Buen trabajo!"
     },
     "solutions": {
       "title": "Soluciones recomendadas",
-      "step": "Paso {{n}}",
-      "empty": "No hay acciones pendientes."
+      "empty": "No hay acciones pendientes.",
+      "impact": {
+        "low": "Impacto bajo",
+        "medium": "Impacto medio",
+        "high": "Impacto alto"
+      }
     },
     "health": {
       "title": "Resumen de salud del sistema",
@@ -110,6 +126,28 @@
     "empty": {
       "title": "Aún no hay diagnóstico",
       "description": "Inicia un análisis automático y Nexora te explicará por qué tu equipo va lento y cómo solucionarlo."
+    },
+    "probableCause": "Causa probable",
+    "source": {
+      "ai": "IA · {{model}}",
+      "rules": "Motor de reglas"
+    },
+    "aiNotice": {
+      "ai_not_configured": "El motor de IA no está configurado (falta ANTHROPIC_API_KEY en el servidor). Se muestra el diagnóstico del motor de reglas.",
+      "ai_unavailable": "El motor de IA no respondió. Se muestra el diagnóstico del motor de reglas.",
+      "ai_refused": "El motor de IA no pudo procesar esta telemetría. Se muestra el diagnóstico del motor de reglas.",
+      "network": "No hay conexión con el servicio de IA. Se muestra el diagnóstico del motor de reglas."
+    },
+    "languageMismatch": "Este diagnóstico se generó en {{language}}. Vuelve a analizar para obtenerlo en {{current}}.",
+    "save": {
+      "saved": "Informe guardado en tu historial",
+      "error": "No se pudo guardar el informe en Supabase.",
+      "unauthorized": "Supabase rechazó el guardado. Revisa la política RLS de diagnostic_reports.",
+      "skipped": "Modo local: el informe no se guarda."
+    },
+    "rules": {
+      "healthyTitle": "No se detectó ningún cuello de botella",
+      "healthyExplanation": "CPU, memoria y almacenamiento están dentro de rangos normales."
     }
   },
   "backend": {
@@ -121,7 +159,9 @@
       "lowDisk": "Poco espacio en disco",
       "diskGettingLow": "El espacio en disco se está agotando",
       "highDiskActivity": "Actividad de disco elevada",
-      "persistentCpu": "Uso de CPU alto y persistente en {{name}}"
+      "persistentCpu": "Uso de CPU alto y persistente en {{name}}",
+      "highTemperature": "Temperatura del sistema muy alta",
+      "elevatedTemperature": "Temperatura del sistema elevada"
     },
     "recommendations": {
       "closeUnnecessary": "Cierra las aplicaciones o procesos innecesarios.",
@@ -130,7 +170,8 @@
       "reduceMemory": "Considera cerrar algunas aplicaciones para reducir el uso de memoria.",
       "freeDisk": "Libera espacio eliminando archivos innecesarios.",
       "considerFreeDisk": "Considera liberar algo de espacio en disco.",
-      "closeProcess": "Considera cerrar {{name}} si no lo necesitas."
+      "closeProcess": "Considera cerrar {{name}} si no lo necesitas.",
+      "checkCooling": "Comprueba que las rejillas estén limpias y que los ventiladores funcionen."
     },
     "causes": {
       "processCpu": "{{name}} podría estar provocando el alto uso de CPU."

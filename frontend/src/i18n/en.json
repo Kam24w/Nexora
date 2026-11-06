@@ -3,7 +3,8 @@
     "appName": "Nexora",
     "loading": "Loading…",
     "percent": "{{value}}%",
-    "mbps": "{{value}} MB/s"
+    "mbps": "{{value}} MB/s",
+    "celsius": "{{value}} °C"
   },
   "nav": {
     "primary": "Main navigation",
@@ -39,7 +40,18 @@
       "start": "Start automatic analysis",
       "again": "Analyze again",
       "running": "Analyzing your computer…",
-      "runningHint": "This takes a few seconds. You can keep using your PC."
+      "runningHint": "This takes a few seconds. You can keep using your PC.",
+      "stages": {
+        "telemetry": "Capturing telemetry…",
+        "ai": "Generating AI diagnosis…",
+        "saving": "Saving report…"
+      },
+      "stepsLabel": "Analysis progress",
+      "steps": {
+        "telemetry": "Telemetry",
+        "ai": "AI diagnosis",
+        "saving": "Saved"
+      }
     },
     "errors": {
       "unavailable": "We couldn't reach the diagnosis service. Make sure server.py is running.",
@@ -55,7 +67,9 @@
       "diskDetail": "Space used",
       "read": "Read",
       "write": "Write",
-      "noData": "No data"
+      "noData": "No data",
+      "temperature": "Temperature",
+      "temperatureUnavailable": "Unavailable"
     },
     "levels": {
       "ok": "Normal",
@@ -93,14 +107,16 @@
     },
     "findings": {
       "title": "Findings",
-      "issue": "Issue detected",
-      "cause": "Probable cause",
       "empty": "No relevant causes found. Nice work!"
     },
     "solutions": {
       "title": "Recommended solutions",
-      "step": "Step {{n}}",
-      "empty": "No pending actions."
+      "empty": "No pending actions.",
+      "impact": {
+        "low": "Low impact",
+        "medium": "Medium impact",
+        "high": "High impact"
+      }
     },
     "health": {
       "title": "System health summary",
@@ -110,6 +126,28 @@
     "empty": {
       "title": "No diagnosis yet",
       "description": "Start an automatic analysis and Nexora will explain why your computer is slow and how to fix it."
+    },
+    "probableCause": "Probable cause",
+    "source": {
+      "ai": "AI · {{model}}",
+      "rules": "Rule engine"
+    },
+    "aiNotice": {
+      "ai_not_configured": "The AI engine isn't configured (ANTHROPIC_API_KEY is missing on the server). Showing the rule engine's diagnosis.",
+      "ai_unavailable": "The AI engine didn't respond. Showing the rule engine's diagnosis.",
+      "ai_refused": "The AI engine couldn't process this telemetry. Showing the rule engine's diagnosis.",
+      "network": "Can't reach the AI service. Showing the rule engine's diagnosis."
+    },
+    "languageMismatch": "This diagnosis was generated in {{language}}. Analyze again to get it in {{current}}.",
+    "save": {
+      "saved": "Report saved to your history",
+      "error": "The report couldn't be saved to Supabase.",
+      "unauthorized": "Supabase rejected the save. Check the RLS policy on diagnostic_reports.",
+      "skipped": "Local mode: the report isn't saved."
+    },
+    "rules": {
+      "healthyTitle": "No bottleneck detected",
+      "healthyExplanation": "CPU, memory and storage are within normal ranges."
     }
   },
   "backend": {
@@ -121,7 +159,9 @@
       "lowDisk": "Low disk space",
       "diskGettingLow": "Disk space is getting low",
       "highDiskActivity": "High disk activity",
-      "persistentCpu": "Persistent high CPU usage in {{name}}"
+      "persistentCpu": "Persistent high CPU usage in {{name}}",
+      "highTemperature": "High system temperature",
+      "elevatedTemperature": "Elevated system temperature"
     },
     "recommendations": {
       "closeUnnecessary": "Close unnecessary applications or processes.",
@@ -130,7 +170,8 @@
       "reduceMemory": "Consider closing some applications to reduce memory usage.",
       "freeDisk": "Free up disk space by removing unnecessary files.",
       "considerFreeDisk": "Consider freeing up some disk space.",
-      "closeProcess": "Consider closing {{name}} if it is not needed."
+      "closeProcess": "Consider closing {{name}} if it is not needed.",
+      "checkCooling": "Check that the vents are clean and the fans are working."
     },
     "causes": {
       "processCpu": "{{name}} may be contributing to high CPU usage."

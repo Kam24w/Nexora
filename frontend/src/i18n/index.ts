@@ -1,5 +1,5 @@
 import type { Language } from '../types/preferences'
-import type { TranslationKey, TranslationParams, TranslationSchema } from '../types/i18n'
+import type { Message, TranslationKey, TranslationParams, TranslationSchema } from '../types/i18n'
 import en from './en.json'
 import es from './es.json'
 
@@ -25,3 +25,7 @@ export const translate = (language: Language, key: TranslationKey, params?: Tran
     name in params ? String(params[name]) : match,
   )
 }
+
+/** Resuelve un `Message`: una clave i18n se traduce; el texto literal se devuelve tal cual. */
+export const resolveMessage = (language: Language, message: Message): string =>
+  'raw' in message ? message.raw : translate(language, message.key, message.params)
