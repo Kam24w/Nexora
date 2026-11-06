@@ -4,7 +4,16 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nexora · Panel de diagnóstico</title>
+    <title>Nexora · Diagnóstico IA</title>
+    <script>
+      // Aplica el tema y el idioma guardados antes del primer render (evita parpadeos).
+      // Claves compartidas con src/services/storage.ts.
+      try {
+        if (localStorage.getItem('nexora.theme') === 'dark') document.documentElement.classList.add('dark')
+        var lang = localStorage.getItem('nexora.language')
+        if (lang === 'es' || lang === 'en') document.documentElement.lang = lang
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
