@@ -1,11 +1,19 @@
+import os
 import psutil
 import time
+
+
+def get_system_root():
+    """Root of the system drive: C:\\ on Windows (or wherever Windows is installed), / elsewhere."""
+    if os.name == "nt":
+        return os.environ.get("SystemDrive", "C:") + "\\"
+    return os.path.abspath(os.sep)
 
 
 def get_system_metrics():
     cpu_usage = psutil.cpu_percent(interval=1)
     ram_usage = psutil.virtual_memory().percent
-    disk_space = psutil.disk_usage("C:\\").percent
+    disk_space = psutil.disk_usage(get_system_root()).percent
 
     return {
         "cpu": round(cpu_usage, 1),
