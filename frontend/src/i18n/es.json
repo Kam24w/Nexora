@@ -1,0 +1,183 @@
+{
+  "common": {
+    "appName": "Nexora",
+    "loading": "Cargando…",
+    "percent": "{{value}} %",
+    "mbps": "{{value}} MB/s"
+  },
+  "nav": {
+    "primary": "Navegación principal",
+    "dashboard": "Panel",
+    "analysis": "Análisis",
+    "reports": "Informes",
+    "profile": "Perfil",
+    "soon": "Pronto",
+    "preferences": "Preferencias",
+    "language": "Idioma",
+    "theme": "Tema",
+    "themeLight": "Claro",
+    "themeDark": "Oscuro",
+    "switchToDark": "Activar modo oscuro",
+    "switchToLight": "Activar modo claro",
+    "signOut": "Cerrar sesión",
+    "localUser": "Usuario local",
+    "localMode": "Modo local"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English"
+  },
+  "dashboard": {
+    "eyebrow": "Nexora · Monitor",
+    "title": "Panel de diagnóstico IA",
+    "lastScan": "Último análisis: {{time}}",
+    "noScanYet": "Sin análisis todavía",
+    "savedSnapshot": "Mostrando el último diagnóstico guardado",
+    "scan": {
+      "readyTitle": "Escaneo automático listo",
+      "readyDescription": "Nexora mide CPU, memoria, disco y procesos para explicarte qué frena tu equipo.",
+      "start": "Iniciar análisis automático",
+      "again": "Volver a analizar",
+      "running": "Analizando tu equipo…",
+      "runningHint": "Esto toma unos segundos. Puedes seguir usando el PC."
+    },
+    "errors": {
+      "unavailable": "No pudimos conectar con el servicio de diagnóstico. Comprueba que server.py esté en ejecución.",
+      "dismiss": "Cerrar aviso"
+    },
+    "metrics": {
+      "title": "Telemetría del sistema",
+      "cpu": "Estado de la CPU",
+      "ram": "Uso de RAM",
+      "disk": "Almacenamiento",
+      "cpuDetail": "Carga de procesamiento",
+      "ramDetail": "Memoria en uso",
+      "diskDetail": "Espacio ocupado",
+      "read": "Lectura",
+      "write": "Escritura",
+      "noData": "Sin datos"
+    },
+    "levels": {
+      "ok": "Normal",
+      "warn": "Atención",
+      "crit": "Crítico"
+    },
+    "processes": {
+      "title": "Apps activas",
+      "subtitle": "Procesos con mayor consumo",
+      "live": "En vivo",
+      "name": "Proceso",
+      "pid": "PID",
+      "cpu": "CPU",
+      "memory": "RAM",
+      "empty": "Ejecuta un análisis para ver los procesos activos."
+    }
+  },
+  "diagnosis": {
+    "eyebrow": "Causa probable y soluciones IA",
+    "title": "¿Por qué está lento?",
+    "subtitle": "Diagnóstico",
+    "status": {
+      "NORMAL": {
+        "label": "Sistema estable",
+        "description": "No se detectaron anomalías importantes en los recursos de tu PC."
+      },
+      "WARNING": {
+        "label": "Requiere atención",
+        "description": "Algunos indicadores conviene revisarlos para mantener el rendimiento."
+      },
+      "CRITICAL": {
+        "label": "Problema crítico",
+        "description": "Nexora detectó condiciones que afectan la estabilidad de tu PC."
+      }
+    },
+    "findings": {
+      "title": "Hallazgos",
+      "issue": "Problema detectado",
+      "cause": "Causa probable",
+      "empty": "No se encontraron causas relevantes. ¡Buen trabajo!"
+    },
+    "solutions": {
+      "title": "Soluciones recomendadas",
+      "step": "Paso {{n}}",
+      "empty": "No hay acciones pendientes."
+    },
+    "health": {
+      "title": "Resumen de salud del sistema",
+      "score": "Puntuación",
+      "outOf": "/100"
+    },
+    "empty": {
+      "title": "Aún no hay diagnóstico",
+      "description": "Inicia un análisis automático y Nexora te explicará por qué tu equipo va lento y cómo solucionarlo."
+    }
+  },
+  "backend": {
+    "issues": {
+      "highCpu": "Uso de CPU elevado",
+      "elevatedCpu": "Uso de CPU por encima de lo normal",
+      "highRam": "Uso de RAM elevado",
+      "elevatedRam": "Uso de RAM por encima de lo normal",
+      "lowDisk": "Poco espacio en disco",
+      "diskGettingLow": "El espacio en disco se está agotando",
+      "highDiskActivity": "Actividad de disco elevada",
+      "persistentCpu": "Uso de CPU alto y persistente en {{name}}"
+    },
+    "recommendations": {
+      "closeUnnecessary": "Cierra las aplicaciones o procesos innecesarios.",
+      "closeCpuHeavy": "Considera cerrar las aplicaciones que consumen mucha CPU.",
+      "closeMemoryHeavy": "Cierra las aplicaciones que consumen mucha memoria.",
+      "reduceMemory": "Considera cerrar algunas aplicaciones para reducir el uso de memoria.",
+      "freeDisk": "Libera espacio eliminando archivos innecesarios.",
+      "considerFreeDisk": "Considera liberar algo de espacio en disco.",
+      "closeProcess": "Considera cerrar {{name}} si no lo necesitas."
+    },
+    "causes": {
+      "processCpu": "{{name}} podría estar provocando el alto uso de CPU."
+    }
+  },
+  "auth": {
+    "tagline": "Diagnóstico inteligente para tu PC",
+    "heroTitle": "Entiende por qué tu equipo va lento",
+    "heroDescription": "Telemetría en tiempo real, causas probables y soluciones claras en un solo lugar.",
+    "signInTitle": "Inicia sesión",
+    "signUpTitle": "Crea tu cuenta",
+    "resetTitle": "Recupera tu contraseña",
+    "signInSubtitle": "Accede a tu panel de diagnóstico.",
+    "signUpSubtitle": "Guarda tus diagnósticos y sincroniza tus equipos.",
+    "resetSubtitle": "Te enviaremos un enlace para restablecerla.",
+    "fullName": "Nombre completo",
+    "fullNamePlaceholder": "Tu nombre",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "nombre@correo.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Mínimo 8 caracteres",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña",
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "sendResetLink": "Enviar enlace",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "noAccount": "¿No tienes cuenta?",
+    "haveAccount": "¿Ya tienes cuenta?",
+    "backToSignIn": "Volver a iniciar sesión",
+    "continueLocal": "Continuar sin cuenta (solo desarrollo)",
+    "checkEmail": "Revisa tu correo para confirmar la cuenta y luego inicia sesión.",
+    "resetSent": "Si el correo existe, recibirás un enlace para restablecer la contraseña.",
+    "validation": {
+      "emailInvalid": "Introduce un correo electrónico válido.",
+      "passwordShort": "La contraseña debe tener al menos 8 caracteres.",
+      "nameRequired": "Introduce tu nombre."
+    },
+    "errors": {
+      "invalidCredentials": "Correo o contraseña incorrectos.",
+      "emailNotConfirmed": "Confirma tu correo antes de iniciar sesión.",
+      "userAlreadyExists": "Ya existe una cuenta con este correo.",
+      "weakPassword": "La contraseña es demasiado débil.",
+      "rateLimited": "Demasiados intentos. Espera un momento y vuelve a probar.",
+      "network": "Sin conexión con el servidor de autenticación.",
+      "notConfigured": "La autenticación no está configurada. Define VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en .env.local.",
+      "unknown": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    }
+  }
+}

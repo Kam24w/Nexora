@@ -1,0 +1,183 @@
+{
+  "common": {
+    "appName": "Nexora",
+    "loading": "Loading…",
+    "percent": "{{value}}%",
+    "mbps": "{{value}} MB/s"
+  },
+  "nav": {
+    "primary": "Main navigation",
+    "dashboard": "Dashboard",
+    "analysis": "Analysis",
+    "reports": "Reports",
+    "profile": "Profile",
+    "soon": "Soon",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Theme",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "switchToDark": "Switch to dark mode",
+    "switchToLight": "Switch to light mode",
+    "signOut": "Sign out",
+    "localUser": "Local user",
+    "localMode": "Local mode"
+  },
+  "languages": {
+    "es": "Español",
+    "en": "English"
+  },
+  "dashboard": {
+    "eyebrow": "Nexora · Monitor",
+    "title": "AI Diagnosis Dashboard",
+    "lastScan": "Last scan: {{time}}",
+    "noScanYet": "No scans yet",
+    "savedSnapshot": "Showing the last saved diagnosis",
+    "scan": {
+      "readyTitle": "Automatic scan ready",
+      "readyDescription": "Nexora measures CPU, memory, disk and processes to explain what is slowing your computer down.",
+      "start": "Start automatic analysis",
+      "again": "Analyze again",
+      "running": "Analyzing your computer…",
+      "runningHint": "This takes a few seconds. You can keep using your PC."
+    },
+    "errors": {
+      "unavailable": "We couldn't reach the diagnosis service. Make sure server.py is running.",
+      "dismiss": "Dismiss notice"
+    },
+    "metrics": {
+      "title": "System telemetry",
+      "cpu": "CPU status",
+      "ram": "RAM usage",
+      "disk": "Storage",
+      "cpuDetail": "Processing load",
+      "ramDetail": "Memory in use",
+      "diskDetail": "Space used",
+      "read": "Read",
+      "write": "Write",
+      "noData": "No data"
+    },
+    "levels": {
+      "ok": "Normal",
+      "warn": "Warning",
+      "crit": "Critical"
+    },
+    "processes": {
+      "title": "Active apps",
+      "subtitle": "Highest resource usage",
+      "live": "Live",
+      "name": "Process",
+      "pid": "PID",
+      "cpu": "CPU",
+      "memory": "RAM",
+      "empty": "Run an analysis to see active processes."
+    }
+  },
+  "diagnosis": {
+    "eyebrow": "Probable cause & AI solutions",
+    "title": "Why is it slow?",
+    "subtitle": "Diagnosis",
+    "status": {
+      "NORMAL": {
+        "label": "System stable",
+        "description": "No significant anomalies were found in your PC's resources."
+      },
+      "WARNING": {
+        "label": "Needs attention",
+        "description": "Some indicators are worth reviewing to keep performance up."
+      },
+      "CRITICAL": {
+        "label": "Critical issue",
+        "description": "Nexora detected conditions affecting your PC's stability."
+      }
+    },
+    "findings": {
+      "title": "Findings",
+      "issue": "Issue detected",
+      "cause": "Probable cause",
+      "empty": "No relevant causes found. Nice work!"
+    },
+    "solutions": {
+      "title": "Recommended solutions",
+      "step": "Step {{n}}",
+      "empty": "No pending actions."
+    },
+    "health": {
+      "title": "System health summary",
+      "score": "Score",
+      "outOf": "/100"
+    },
+    "empty": {
+      "title": "No diagnosis yet",
+      "description": "Start an automatic analysis and Nexora will explain why your computer is slow and how to fix it."
+    }
+  },
+  "backend": {
+    "issues": {
+      "highCpu": "High CPU usage",
+      "elevatedCpu": "Elevated CPU usage",
+      "highRam": "High RAM usage",
+      "elevatedRam": "Elevated RAM usage",
+      "lowDisk": "Low disk space",
+      "diskGettingLow": "Disk space is getting low",
+      "highDiskActivity": "High disk activity",
+      "persistentCpu": "Persistent high CPU usage in {{name}}"
+    },
+    "recommendations": {
+      "closeUnnecessary": "Close unnecessary applications or processes.",
+      "closeCpuHeavy": "Consider closing applications that are using a lot of CPU.",
+      "closeMemoryHeavy": "Close applications that are using a lot of memory.",
+      "reduceMemory": "Consider closing some applications to reduce memory usage.",
+      "freeDisk": "Free up disk space by removing unnecessary files.",
+      "considerFreeDisk": "Consider freeing up some disk space.",
+      "closeProcess": "Consider closing {{name}} if it is not needed."
+    },
+    "causes": {
+      "processCpu": "{{name}} may be contributing to high CPU usage."
+    }
+  },
+  "auth": {
+    "tagline": "Smart diagnostics for your PC",
+    "heroTitle": "Understand why your computer is slow",
+    "heroDescription": "Real-time telemetry, probable causes and clear fixes in one place.",
+    "signInTitle": "Sign in",
+    "signUpTitle": "Create your account",
+    "resetTitle": "Reset your password",
+    "signInSubtitle": "Access your diagnosis dashboard.",
+    "signUpSubtitle": "Save your diagnoses and sync your devices.",
+    "resetSubtitle": "We'll email you a link to reset it.",
+    "fullName": "Full name",
+    "fullNamePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "name@email.com",
+    "password": "Password",
+    "passwordPlaceholder": "At least 8 characters",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "sendResetLink": "Send link",
+    "forgotPassword": "Forgot your password?",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "backToSignIn": "Back to sign in",
+    "continueLocal": "Continue without an account (development only)",
+    "checkEmail": "Check your email to confirm your account, then sign in.",
+    "resetSent": "If the email exists, you'll receive a link to reset your password.",
+    "validation": {
+      "emailInvalid": "Enter a valid email address.",
+      "passwordShort": "Password must be at least 8 characters.",
+      "nameRequired": "Enter your name."
+    },
+    "errors": {
+      "invalidCredentials": "Incorrect email or password.",
+      "emailNotConfirmed": "Confirm your email before signing in.",
+      "userAlreadyExists": "An account with this email already exists.",
+      "weakPassword": "The password is too weak.",
+      "rateLimited": "Too many attempts. Wait a moment and try again.",
+      "network": "Can't reach the authentication server.",
+      "notConfigured": "Authentication isn't configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local.",
+      "unknown": "Something went wrong. Please try again."
+    }
+  }
+}
