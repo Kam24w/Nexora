@@ -46,7 +46,7 @@ export function TelemetryPanel() {
 
       <ServiceStatusBanner />
 
-      {error && (
+      {error && error !== 'offline' && (
         <div role="alert" className="flex items-start gap-3 rounded-xl border border-crit/30 bg-crit-soft p-4 text-sm text-crit">
           <Icon name="alert" className="mt-0.5 size-4" />
           <p className="flex-1">{t(`dashboard.errors.${error}`)}</p>
