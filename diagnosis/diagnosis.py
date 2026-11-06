@@ -11,7 +11,7 @@ def diagnose_system(cpu_usage, ram_usage, disk_space, disk_read, disk_write, pro
             and process["persistence"] >= 60
         )
     ]
-        
+
     # Check global CPU usage
     if cpu_usage >= 80:
         critical_issues.append("High CPU usage")
