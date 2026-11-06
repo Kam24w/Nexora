@@ -55,7 +55,13 @@
     },
     "errors": {
       "unavailable": "We couldn't reach the diagnosis service. Make sure server.py is running.",
-      "dismiss": "Dismiss notice"
+      "dismiss": "Dismiss notice",
+      "offline": "Can't connect to the local service at {{url}}.",
+      "offlineHint": "Start it from the project root (with the .venv environment active):",
+      "autoRetry": "Nexora retries automatically every 5 seconds.",
+      "retry": "Retry",
+      "timeout": "The diagnosis service took too long to respond. Please try again.",
+      "serverError": "The diagnosis service returned an error. Check the console running server.py."
     },
     "metrics": {
       "title": "System telemetry",
