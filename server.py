@@ -1,4 +1,5 @@
 import logging
+import os
 import platform
 
 from pathlib import Path
@@ -32,6 +33,15 @@ LOCAL_ORIGINS = r"^http://(localhost|127\.0\.0\.1)(:\d{1,5})?$"
 CORS(app, origins=[LOCAL_ORIGINS])
 
 ai_service = AIDiagnosticService()
+
+if not os.environ.get("GROQ_API_KEY"):
+    misplaced = ROOT / "frontend" / ".env.local"
+    hint = (
+        " It was found in frontend/.env.local, which only Vite reads: move it to .env."
+        if misplaced.exists() and "GROQ_API_KEY" in misplaced.read_text(encoding="utf-8", errors="ignore")
+        else ""
+    )
+    logging.warning("GROQ_API_KEY is not set in %s; /ai-diagnosis will use the rule engine.%s", ROOT / ".env", hint)
 
 OPERATING_SYSTEMS = {"Windows": "Windows", "Linux": "Linux", "Darwin": "macOS"}
 
