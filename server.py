@@ -25,7 +25,11 @@ logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 
-CORS(app, origins=["http://localhost:5173", "http://127.0.0.1:5173"])
+# Any port on the local machine: Vite moves to 5174+ when 5173 is busy, and
+# `vite preview` serves on 4173. Every other origin is rejected.
+LOCAL_ORIGINS = r"^http://(localhost|127\.0\.0\.1)(:\d{1,5})?$"
+
+CORS(app, origins=[LOCAL_ORIGINS])
 
 ai_service = AIDiagnosticService()
 
