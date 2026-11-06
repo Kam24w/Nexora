@@ -135,7 +135,7 @@ function SourceBadge({ diagnosis }: { diagnosis: AIDiagnosis }) {
       }`}
     >
       <Icon name={isAI ? 'sparkles' : 'dashboard'} className="size-3" />
-      {isAI ? t('diagnosis.source.ai', { model: diagnosis.model ?? 'Claude' }) : t('diagnosis.source.rules')}
+      {isAI ? t('diagnosis.source.ai', { model: diagnosis.model ?? 'LLM' }) : t('diagnosis.source.rules')}
     </span>
   )
 }
