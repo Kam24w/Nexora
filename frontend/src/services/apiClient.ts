@@ -2,6 +2,8 @@
  * Cliente HTTP del servicio local de Nexora (server.py).
  *
  * Única fuente de la URL base: todos los servicios (telemetría, IA) pasan por aquí.
+ * Flask escucha solo en IPv4 (127.0.0.1); `localhost` puede resolverse a ::1 en
+ * Windows/macOS y fallar, por eso se fuerza siempre 127.0.0.1.
  */
 
 export const DEFAULT_API_BASE_URL = 'http://127.0.0.1:5000'
@@ -12,6 +14,7 @@ const resolveBaseUrl = (configured: string | undefined): string => {
 
   try {
     const url = new URL(value)
+    if (url.hostname === 'localhost' || url.hostname === '[::1]') url.hostname = '127.0.0.1'
     return url.origin + url.pathname.replace(/\/+$/, '')
   } catch {
     if (import.meta.env.DEV) console.warn(`[Nexora] VITE_DIAGNOSIS_API_URL inválida ("${value}"); se usa ${DEFAULT_API_BASE_URL}`)
