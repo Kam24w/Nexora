@@ -54,7 +54,6 @@
       }
     },
     "errors": {
-      "unavailable": "We couldn't reach the diagnosis service. Make sure server.py is running.",
       "dismiss": "Dismiss notice",
       "offline": "Can't connect to the local service at {{url}}.",
       "offlineHint": "Start it from the project root (with the .venv environment active):",
