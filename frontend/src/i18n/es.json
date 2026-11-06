@@ -139,7 +139,7 @@
       "rules": "Motor de reglas"
     },
     "aiNotice": {
-      "ai_not_configured": "El motor de IA no está configurado (falta ANTHROPIC_API_KEY en el servidor). Se muestra el diagnóstico del motor de reglas.",
+      "ai_not_configured": "El motor de IA no está configurado (falta GROQ_API_KEY en el servidor). Se muestra el diagnóstico del motor de reglas.",
       "ai_unavailable": "El motor de IA no respondió. Se muestra el diagnóstico del motor de reglas.",
       "ai_refused": "El motor de IA no pudo procesar esta telemetría. Se muestra el diagnóstico del motor de reglas.",
       "network": "No hay conexión con el servicio de IA. Se muestra el diagnóstico del motor de reglas."
