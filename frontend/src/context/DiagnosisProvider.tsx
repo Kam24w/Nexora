@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { aiDiagnosticService, type AIFailureReason } from '../services/aiDiagnosticService'
-import { diagnosisService } from '../services/diagnosisService'
+import { diagnosisService } from '../services/telemetryService'
 import { reportsService } from '../services/reportsService'
 import { buildRuleBasedDiagnosis } from '../services/ruleBasedDiagnosis'
 import type { AIDiagnosis, Telemetry } from '../types/diagnosis'

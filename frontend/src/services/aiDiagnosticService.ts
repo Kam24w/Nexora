@@ -9,7 +9,7 @@ import type {
   Telemetry,
 } from '../types/diagnosis'
 import type { Language } from '../types/preferences'
-import { API_BASE_URL } from './diagnosisService'
+import { API_BASE_URL } from './telemetryService'
 
 /**
  * Cliente de AIDiagnosticService (diagnosis/ai_diagnostic_service.py, POST /ai-diagnosis).
