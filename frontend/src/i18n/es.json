@@ -55,7 +55,13 @@
     },
     "errors": {
       "unavailable": "No pudimos conectar con el servicio de diagnóstico. Comprueba que server.py esté en ejecución.",
-      "dismiss": "Cerrar aviso"
+      "dismiss": "Cerrar aviso",
+      "offline": "No se puede conectar con el servicio local en {{url}}.",
+      "offlineHint": "Inícialo desde la raíz del proyecto (con el entorno .venv activo):",
+      "autoRetry": "Nexora vuelve a intentarlo automáticamente cada 5 segundos.",
+      "retry": "Reintentar",
+      "timeout": "El servicio de diagnóstico tardó demasiado en responder. Inténtalo de nuevo.",
+      "serverError": "El servicio de diagnóstico devolvió un error. Revisa la consola donde corre server.py."
     },
     "metrics": {
       "title": "Telemetría del sistema",
