@@ -3,7 +3,15 @@ import type { SaveReportError } from '../services/reportsService'
 import type { AIDiagnosis, Telemetry } from '../types/diagnosis'
 import { createStrictContext } from './createStrictContext'
 
-export type DiagnosisError = 'unavailable' | null
+/**
+ * - offline: el servicio local no responde (no está en ejecución, otro puerto o CORS).
+ * - timeout: el servicio tardó demasiado.
+ * - serverError: el servicio respondió con un error.
+ */
+export type DiagnosisError = 'offline' | 'timeout' | 'serverError' | null
+
+/** Disponibilidad del servicio local (server.py), comprobada con GET /health. */
+export type ServiceStatus = 'checking' | 'online' | 'offline'
 
 /** Etapa en curso del análisis automático; `null` cuando no hay análisis en marcha. */
 export type AnalysisStage = 'telemetry' | 'ai' | 'saving' | null

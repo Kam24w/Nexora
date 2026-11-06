@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { aiDiagnosticService, type AIFailureReason } from '../services/aiDiagnosticService'
+import { ApiError, isAbortError } from '../services/apiClient'
 import { telemetryService } from '../services/telemetryService'
 import { reportsService } from '../services/reportsService'
 import { buildRuleBasedDiagnosis } from '../services/ruleBasedDiagnosis'
@@ -14,7 +15,10 @@ import {
 } from './DiagnosisContext'
 import { useI18n } from './I18nContext'
 
-const isAbort = (error: unknown) => error instanceof DOMException && error.name === 'AbortError'
+const toDiagnosisError = (reason: unknown): Exclude<DiagnosisError, null> => {
+  if (reason instanceof ApiError) return reason.kind === 'http' ? 'serverError' : reason.kind
+  return 'serverError'
+}
 
 /**
  * Orquesta el análisis automático:
@@ -82,8 +86,9 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       if (signal.aborted) return
       setSaveState(saved.ok ? { status: 'saved', reportId: saved.report.id } : { status: 'error', error: saved.error })
     } catch (reason) {
-      if (isAbort(reason) || signal.aborted) return
-      setError('unavailable')
+      if (isAbortError(reason) || signal.aborted) return
+      const kind = toDiagnosisError(reason)
+      setError(kind)
       if (import.meta.env.DEV) console.warn('[Nexora] analysis failed', reason)
     } finally {
       controllerRef.current = null
