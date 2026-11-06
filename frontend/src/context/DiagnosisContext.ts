@@ -34,7 +34,10 @@ export interface DiagnosisContextValue {
   saveState: SaveState
   error: DiagnosisError
   lastScanAt: Date | null
+  serviceStatus: ServiceStatus
   analyze: () => void
+  /** Vuelve a comprobar la conexión con el servicio local. */
+  recheckService: () => void
   dismissError: () => void
 }
 

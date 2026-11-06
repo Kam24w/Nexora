@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { aiDiagnosticService, type AIFailureReason } from '../services/aiDiagnosticService'
-import { ApiError, isAbortError } from '../services/apiClient'
+import { ApiError, checkServiceHealth, isAbortError } from '../services/apiClient'
 import { telemetryService } from '../services/telemetryService'
 import { reportsService } from '../services/reportsService'
 import { buildRuleBasedDiagnosis } from '../services/ruleBasedDiagnosis'
@@ -12,8 +12,13 @@ import {
   type DiagnosisContextValue,
   type DiagnosisError,
   type SaveState,
+  type ServiceStatus,
 } from './DiagnosisContext'
 import { useI18n } from './I18nContext'
+
+const ignoreAbort = (reason: unknown) => {
+  if (!isAbortError(reason)) throw reason
+}
 
 const toDiagnosisError = (reason: unknown): Exclude<DiagnosisError, null> => {
   if (reason instanceof ApiError) return reason.kind === 'http' ? 'serverError' : reason.kind
@@ -37,6 +42,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
   const [saveState, setSaveState] = useState<SaveState>({ status: 'idle' })
   const [error, setError] = useState<DiagnosisError>(null)
   const [lastScanAt, setLastScanAt] = useState<Date | null>(null)
+  const [serviceStatus, setServiceStatus] = useState<ServiceStatus>('checking')
   const controllerRef = useRef<AbortController | null>(null)
 
   // Muestra el último diagnóstico guardado en disco mientras no se ejecute uno nuevo.
@@ -49,6 +55,22 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => () => controllerRef.current?.abort(), [])
+
+  const applyHealth = useCallback((online: boolean) => {
+    setServiceStatus(online ? 'online' : 'offline')
+    if (online) setError((current) => (current === 'offline' ? null : current))
+  }, [])
+
+  const recheckService = useCallback(() => {
+    checkServiceHealth().then(applyHealth)
+  }, [applyHealth])
+
+  // Comprueba el servicio local al abrir el panel para avisar antes de pulsar "Analizar".
+  useEffect(() => {
+    const controller = new AbortController()
+    checkServiceHealth(controller.signal).then(applyHealth, ignoreAbort)
+    return () => controller.abort()
+  }, [applyHealth])
 
   const accessToken = session?.accessToken
   const userId = session?.user.id
@@ -67,6 +89,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
     try {
       setStage('telemetry')
       const captured = await telemetryService.capture({ signal, accessToken })
+      setServiceStatus('online')
       setTelemetry(captured)
       setAIDiagnosis(null)
       setLastScanAt(new Date())
@@ -89,6 +112,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       if (isAbortError(reason) || signal.aborted) return
       const kind = toDiagnosisError(reason)
       setError(kind)
+      if (kind === 'offline') setServiceStatus('offline')
       if (import.meta.env.DEV) console.warn('[Nexora] analysis failed', reason)
     } finally {
       controllerRef.current = null
@@ -115,10 +139,12 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       saveState,
       error,
       lastScanAt,
+      serviceStatus,
       analyze: () => void analyze(),
+      recheckService,
       dismissError,
     }),
-    [telemetry, diagnosis, aiFailure, stage, saveState, error, lastScanAt, analyze, dismissError],
+    [telemetry, diagnosis, aiFailure, stage, saveState, error, lastScanAt, serviceStatus, analyze, recheckService, dismissError],
   )
 
   return <DiagnosisContext.Provider value={value}>{children}</DiagnosisContext.Provider>
