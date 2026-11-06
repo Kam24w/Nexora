@@ -23,3 +23,26 @@ const resolveBaseUrl = (configured: string | undefined): string => {
 }
 
 export const API_BASE_URL = resolveBaseUrl(import.meta.env.VITE_DIAGNOSIS_API_URL)
+
+/**
+ * - offline: no hay conexión con el servicio (no está en ejecución, puerto distinto o CORS).
+ * - timeout: el servicio no respondió a tiempo.
+ * - http: el servicio respondió con un código de error.
+ */
+export type ApiErrorKind = 'offline' | 'timeout' | 'http'
+
+export class ApiError extends Error {
+  readonly kind: ApiErrorKind
+  readonly status: number | null
+  readonly body: unknown
+
+  constructor(kind: ApiErrorKind, options: { status?: number; body?: unknown; cause?: unknown } = {}) {
+    super(`API ${kind}${options.status ? ` ${options.status}` : ''}`, { cause: options.cause })
+    this.name = 'ApiError'
+    this.kind = kind
+    this.status = options.status ?? null
+    this.body = options.body ?? null
+  }
+}
+
+export const isAbortError = (error: unknown): boolean => error instanceof DOMException && error.name === 'AbortError'
