@@ -16,6 +16,9 @@ import {
 } from './DiagnosisContext'
 import { useI18n } from './I18nContext'
 
+/** Mientras el servicio local no responda, se vuelve a comprobar con esta frecuencia. */
+const OFFLINE_RECHECK_MS = 5_000
+
 const ignoreAbort = (reason: unknown) => {
   if (!isAbortError(reason)) throw reason
 }
@@ -71,6 +74,19 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
     checkServiceHealth(controller.signal).then(applyHealth, ignoreAbort)
     return () => controller.abort()
   }, [applyHealth])
+
+  // Sin conexión: reintenta en segundo plano; el aviso desaparece en cuanto arranca server.py.
+  useEffect(() => {
+    if (serviceStatus !== 'offline') return
+    const controller = new AbortController()
+    const id = window.setInterval(() => {
+      checkServiceHealth(controller.signal).then(applyHealth, ignoreAbort)
+    }, OFFLINE_RECHECK_MS)
+    return () => {
+      window.clearInterval(id)
+      controller.abort()
+    }
+  }, [serviceStatus, applyHealth])
 
   const accessToken = session?.accessToken
   const userId = session?.user.id
