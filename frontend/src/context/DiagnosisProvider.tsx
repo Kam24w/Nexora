@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { aiDiagnosticService, type AIFailureReason } from '../services/aiDiagnosticService'
-import { diagnosisService } from '../services/telemetryService'
+import { telemetryService } from '../services/telemetryService'
 import { reportsService } from '../services/reportsService'
 import { buildRuleBasedDiagnosis } from '../services/ruleBasedDiagnosis'
 import type { AIDiagnosis, Telemetry } from '../types/diagnosis'
@@ -38,7 +38,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
   // Muestra el último diagnóstico guardado en disco mientras no se ejecute uno nuevo.
   useEffect(() => {
     const controller = new AbortController()
-    diagnosisService.loadLatest(controller.signal).then((latest) => {
+    telemetryService.loadLatest(controller.signal).then((latest) => {
       if (latest) setTelemetry((current) => current ?? latest)
     })
     return () => controller.abort()
@@ -62,7 +62,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
 
     try {
       setStage('telemetry')
-      const captured = await diagnosisService.run({ signal, accessToken })
+      const captured = await telemetryService.capture({ signal, accessToken })
       setTelemetry(captured)
       setAIDiagnosis(null)
       setLastScanAt(new Date())

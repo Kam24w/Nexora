@@ -1,29 +1,28 @@
-import type { Telemetry, ProcessSample, SystemStatus } from '../types/diagnosis'
+import type { ProcessSample, SystemStatus, Telemetry } from '../types/diagnosis'
+import { apiRequest } from './apiClient'
 
-const API_URL = (import.meta.env.VITE_DIAGNOSIS_API_URL ?? 'http://127.0.0.1:5000').replace(/\/+$/, '')
-
-export class DiagnosisUnavailableError extends Error {
-  constructor(cause?: unknown) {
-    super('Diagnosis service unavailable', { cause })
-    this.name = 'DiagnosisUnavailableError'
-  }
-}
-
-export const API_BASE_URL = API_URL
+/** La captura tarda ~15 s (muestreo de CPU y procesos); se deja margen. */
+const CAPTURE_TIMEOUT_MS = 60_000
 
 const STATUSES: readonly SystemStatus[] = ['NORMAL', 'WARNING', 'CRITICAL']
+
+export class InvalidTelemetryError extends Error {
+  constructor() {
+    super('Invalid telemetry payload')
+    this.name = 'InvalidTelemetryError'
+  }
+}
 
 const num = (value: unknown): number => (typeof value === 'number' && Number.isFinite(value) ? value : 0)
 
 const strings = (value: unknown): string[] =>
   Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
 
 /** Valida y normaliza la respuesta del backend: la UI nunca recibe datos malformados. */
 const parseTelemetry = (raw: unknown): Telemetry => {
-  if (!isRecord(raw)) throw new DiagnosisUnavailableError('Invalid payload')
+  if (!isRecord(raw)) throw new InvalidTelemetryError()
   const status = STATUSES.find((s) => s === raw.status) ?? 'NORMAL'
   const processes: ProcessSample[] = Array.isArray(raw.processes)
     ? raw.processes.filter(isRecord).map((p) => ({
@@ -51,32 +50,26 @@ const parseTelemetry = (raw: unknown): Telemetry => {
   }
 }
 
-const request = async (input: string, init?: RequestInit): Promise<Telemetry> => {
-  let response: Response
-  try {
-    response = await fetch(input, init)
-  } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') throw error
-    throw new DiagnosisUnavailableError(error)
-  }
-  if (!response.ok) throw new DiagnosisUnavailableError(response.status)
-  return parseTelemetry(await response.json())
-}
-
-export const diagnosisService = {
-  /** Captura CPU, RAM, almacenamiento, temperatura y procesos (POST /diagnose). */
-  run(options: { signal?: AbortSignal; accessToken?: string } = {}): Promise<Telemetry> {
-    return request(`${API_URL}/diagnose`, {
+export const telemetryService = {
+  /**
+   * Captura CPU, RAM, almacenamiento, temperatura y procesos (POST /diagnose).
+   * Lanza `ApiError` si el servicio no está disponible.
+   */
+  async capture(options: { signal?: AbortSignal; accessToken?: string } = {}): Promise<Telemetry> {
+    const body = await apiRequest('/diagnose', {
       method: 'POST',
       signal: options.signal,
+      timeoutMs: CAPTURE_TIMEOUT_MS,
       headers: options.accessToken ? { Authorization: `Bearer ${options.accessToken}` } : undefined,
     })
+    return parseTelemetry(body)
   },
 
-  /** Último diagnóstico guardado (public/diagnosis.json). Devuelve null si no existe. */
+  /** Último diagnóstico guardado por `python main.py` (public/diagnosis.json, servido por Vite). */
   async loadLatest(signal?: AbortSignal): Promise<Telemetry | null> {
     try {
-      return await request('/diagnosis.json', { signal })
+      const response = await fetch('/diagnosis.json', { signal })
+      return response.ok ? parseTelemetry(await response.json()) : null
     } catch {
       return null
     }
