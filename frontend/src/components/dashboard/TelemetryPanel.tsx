@@ -5,6 +5,7 @@ import { Icon } from '../ui/Icon'
 import { MetricGaugeCard } from './MetricGaugeCard'
 import { ProcessList } from './ProcessList'
 import { ScanHero } from './ScanHero'
+import { TemperatureReading } from './TemperatureReading'
 
 /** Refresca el texto relativo ("hace 2 minutos") cada 30 s. */
 function useNow(intervalMs = 30_000) {
@@ -18,7 +19,7 @@ function useNow(intervalMs = 30_000) {
 
 /** Columna central: telemetría y botón de análisis. */
 export function TelemetryPanel() {
-  const { diagnosis, error, lastScanAt, dismissError } = useDiagnosis()
+  const { telemetry, error, lastScanAt, dismissError } = useDiagnosis()
   const { t, formatNumber, formatRelativeTime } = useI18n()
   useNow()
 
@@ -36,7 +37,7 @@ export function TelemetryPanel() {
         <p className="text-xs text-muted">
           {lastScanAt
             ? t('dashboard.lastScan', { time: formatRelativeTime(lastScanAt) })
-            : t(diagnosis ? 'dashboard.savedSnapshot' : 'dashboard.noScanYet')}
+            : t(telemetry ? 'dashboard.savedSnapshot' : 'dashboard.noScanYet')}
         </p>
       </header>
 
@@ -57,22 +58,26 @@ export function TelemetryPanel() {
           {t('dashboard.metrics.title')}
         </h2>
         <div className="grid gap-4 @lg:grid-cols-2 @2xl:grid-cols-3">
-          <MetricGaugeCard kind="cpu" value={diagnosis?.cpu ?? null} />
-          <MetricGaugeCard kind="ram" value={diagnosis?.ram ?? null} />
+          <MetricGaugeCard
+            kind="cpu"
+            value={telemetry?.cpu ?? null}
+            footer={telemetry ? <TemperatureReading celsius={telemetry.cpu_temperature} /> : undefined}
+          />
+          <MetricGaugeCard kind="ram" value={telemetry?.ram ?? null} />
           <MetricGaugeCard
             kind="disk"
             className="@lg:col-span-2 @2xl:col-span-1"
-            value={diagnosis?.disk_space ?? null}
+            value={telemetry?.disk_space ?? null}
             footer={
-              diagnosis ? (
+              telemetry ? (
                 <dl className="grid grid-cols-2 gap-2">
                   <div>
                     <dt>{t('dashboard.metrics.read')}</dt>
-                    <dd className="font-semibold text-ink-soft tabular-nums">{mbps(diagnosis.disk_read)}</dd>
+                    <dd className="font-semibold text-ink-soft tabular-nums">{mbps(telemetry.disk_read)}</dd>
                   </div>
                   <div>
                     <dt>{t('dashboard.metrics.write')}</dt>
-                    <dd className="font-semibold text-ink-soft tabular-nums">{mbps(diagnosis.disk_write)}</dd>
+                    <dd className="font-semibold text-ink-soft tabular-nums">{mbps(telemetry.disk_write)}</dd>
                   </div>
                 </dl>
               ) : undefined
@@ -81,7 +86,7 @@ export function TelemetryPanel() {
         </div>
       </section>
 
-      <ProcessList processes={diagnosis?.processes ?? []} />
+      <ProcessList processes={telemetry?.processes ?? []} />
     </main>
   )
 }

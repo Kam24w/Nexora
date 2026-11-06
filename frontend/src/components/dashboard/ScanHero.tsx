@@ -1,12 +1,15 @@
-import { useDiagnosis } from '../../context/DiagnosisContext'
+import { useDiagnosis, type AnalysisStage } from '../../context/DiagnosisContext'
 import { useI18n } from '../../context/I18nContext'
 import { Icon } from '../ui/Icon'
 import { Spinner } from '../ui/Spinner'
 
-/** Tarjeta principal con el botón de análisis automático. */
+const STEPS = ['telemetry', 'ai', 'saving'] as const satisfies readonly NonNullable<AnalysisStage>[]
+
+/** Tarjeta principal con el botón de análisis automático y el progreso por etapas. */
 export function ScanHero() {
-  const { diagnosis, isAnalyzing, analyze } = useDiagnosis()
+  const { telemetry, stage, isAnalyzing, analyze } = useDiagnosis()
   const { t } = useI18n()
+  const current = stage ? STEPS.indexOf(stage) : -1
 
   return (
     <section
@@ -20,14 +23,47 @@ export function ScanHero() {
       <div className="relative flex flex-col items-center gap-5 text-center">
         <div className="flex items-center gap-2 rounded-full bg-surface/80 px-3 py-1 text-xs font-semibold text-brand-strong ring-1 ring-brand/20">
           <Icon name="sparkles" className="size-3.5" />
-          {t(isAnalyzing ? 'dashboard.scan.running' : 'dashboard.scan.readyTitle')}
+          {t('dashboard.scan.readyTitle')}
         </div>
-        <p className="max-w-md text-sm leading-relaxed text-ink-soft">
-          {t(isAnalyzing ? 'dashboard.scan.runningHint' : 'dashboard.scan.readyDescription')}
+
+        {stage ? (
+          <ol aria-label={t('dashboard.scan.stepsLabel')} className="flex flex-wrap items-center justify-center gap-2">
+            {STEPS.map((step, index) => {
+              const done = index < current
+              const active = index === current
+              return (
+                <li key={step} className="flex items-center gap-2">
+                  {index > 0 && <span aria-hidden="true" className={`h-px w-6 ${done || active ? 'bg-brand' : 'bg-line'}`} />}
+                  <span
+                    aria-current={active ? 'step' : undefined}
+                    className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition ${
+                      active
+                        ? 'bg-brand text-white'
+                        : done
+                          ? 'bg-brand-soft text-brand-strong'
+                          : 'bg-surface-sunken text-muted'
+                    }`}
+                  >
+                    {done ? <Icon name="check" className="size-3" strokeWidth={2.6} /> : active ? <Spinner className="size-3" /> : null}
+                    {t(`dashboard.scan.steps.${step}`)}
+                  </span>
+                </li>
+              )
+            })}
+          </ol>
+        ) : (
+          <p className="max-w-md text-sm leading-relaxed text-ink-soft">{t('dashboard.scan.readyDescription')}</p>
+        )}
+
+        <p role="status" className="sr-only">
+          {stage ? t(`dashboard.scan.stages.${stage}`) : ''}
         </p>
+
         <button type="button" onClick={analyze} disabled={isAnalyzing} className="btn-primary min-w-64 py-3.5 tracking-wide uppercase">
-          {isAnalyzing ? <Spinner /> : <Icon name={diagnosis ? 'refresh' : 'search'} className="size-4" />}
-          {t(isAnalyzing ? 'dashboard.scan.running' : diagnosis ? 'dashboard.scan.again' : 'dashboard.scan.start')}
+          {isAnalyzing ? <Spinner /> : <Icon name={telemetry ? 'refresh' : 'search'} className="size-4" />}
+          {stage
+            ? t(`dashboard.scan.stages.${stage}`)
+            : t(telemetry ? 'dashboard.scan.again' : 'dashboard.scan.start')}
         </button>
       </div>
       {isAnalyzing && (
