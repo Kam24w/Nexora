@@ -67,6 +67,8 @@ const PATHS = {
       <path d="M12 9v4m0 4h.01" />
     </>
   ),
+  thermometer: <path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0ZM12 17v-6" />,
+  cloud: <path d="M7 18a5 5 0 1 1 .9-9.9A6 6 0 0 1 19.5 10 4 4 0 0 1 18 18Z" />,
   search: (
     <>
       <circle cx="11" cy="11" r="7" />
