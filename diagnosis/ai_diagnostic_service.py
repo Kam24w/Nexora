@@ -6,7 +6,7 @@ The API key is read from the server environment (GROQ_API_KEY, loaded from
 <repo>/.env by server.py) and never reaches the browser.
 
 llama-3.3-70b-versatile only supports Groq's JSON mode (valid JSON, no schema
-enforcement), so the schema is enforced here with Pydantic models. A
+enforcement), so the schema is enforced here with strict Pydantic models. A
 response that fails validation reaches the client as an error, and the client
 falls back to the local rule engine.
 """
@@ -14,10 +14,10 @@ falls back to the local rule engine.
 import json
 import logging
 import os
-from typing import List, Literal, Optional
+from typing import Annotated, List, Literal, Optional
 
 import groq
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -30,37 +30,43 @@ SUPPORTED_LANGUAGES = {"es": "Spanish (neutral Latin American)", "en": "English"
 
 Metric = Literal["cpu", "ram", "disk", "temperature", "process", "none"]
 Severity = Literal["ok", "warn", "crit"]
+Text = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=600)]
 
 
-# --- Output contract -------------------------------------------------------
+# --- Output contract (strict) ----------------------------------------------
 
 
-class ProbableCause(BaseModel):
-    title: str
-    explanation: str
+class StrictModel(BaseModel):
+    # Unknown keys are rejected and no type coercion happens ("1" is not a number).
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+
+class ProbableCause(StrictModel):
+    title: Text
+    explanation: Text
     metric: Metric
 
 
-class Finding(BaseModel):
-    title: str
-    detail: str
+class Finding(StrictModel):
+    title: Text
+    detail: Text
     severity: Severity
     metric: Metric
 
 
-class Solution(BaseModel):
-    title: str
-    description: str
+class Solution(StrictModel):
+    title: Text
+    description: Text
     impact: Literal["low", "medium", "high"]
-    steps: List[str]
+    steps: List[Text] = Field(max_length=6)
 
 
-class AIDiagnosis(BaseModel):
+class AIDiagnosis(StrictModel):
     status: Literal["NORMAL", "WARNING", "CRITICAL"]
-    summary: str
+    summary: Text
     probable_cause: ProbableCause
-    findings: List[Finding]
-    solutions: List[Solution]
+    findings: List[Finding] = Field(max_length=6)
+    solutions: List[Solution] = Field(min_length=1, max_length=5)
 
 
 OUTPUT_FORMAT = """{
