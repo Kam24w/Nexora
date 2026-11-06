@@ -1,12 +1,16 @@
 import logging
 import platform
 
+from pathlib import Path
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
-# Loads ANTHROPIC_API_KEY (and friends) from ./.env before the AI client is created.
-load_dotenv()
+ROOT = Path(__file__).resolve().parent
+
+# Loads GROQ_API_KEY from <repo>/.env (next to this file, whatever the working
+# directory is) before the AI client is created.
+load_dotenv(ROOT / ".env")
 
 from diagnosis.ai_diagnostic_service import (  # noqa: E402
     AIDiagnosisError,
