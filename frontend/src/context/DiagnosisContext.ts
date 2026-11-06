@@ -1,11 +1,29 @@
-import type { Diagnosis } from '../types/diagnosis'
+import type { AIFailureReason } from '../services/aiDiagnosticService'
+import type { SaveReportError } from '../services/reportsService'
+import type { AIDiagnosis, Telemetry } from '../types/diagnosis'
 import { createStrictContext } from './createStrictContext'
 
 export type DiagnosisError = 'unavailable' | null
 
+/** Etapa en curso del análisis automático; `null` cuando no hay análisis en marcha. */
+export type AnalysisStage = 'telemetry' | 'ai' | 'saving' | null
+
+export type SaveState =
+  | { status: 'idle' }
+  | { status: 'saved'; reportId: string }
+  | { status: 'skipped' }
+  | { status: 'error'; error: SaveReportError }
+
 export interface DiagnosisContextValue {
-  diagnosis: Diagnosis | null
+  /** Última telemetría capturada (o el último diagnóstico guardado en disco). */
+  telemetry: Telemetry | null
+  /** Diagnóstico a mostrar: el de la IA si existe; si no, el del motor de reglas en el idioma activo. */
+  diagnosis: AIDiagnosis | null
+  /** Motivo por el que se usa el motor de reglas tras un análisis; `null` si respondió la IA. */
+  aiFailure: AIFailureReason | null
+  stage: AnalysisStage
   isAnalyzing: boolean
+  saveState: SaveState
   error: DiagnosisError
   lastScanAt: Date | null
   analyze: () => void
