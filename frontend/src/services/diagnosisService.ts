@@ -1,4 +1,4 @@
-import type { Diagnosis, ProcessSample, SystemStatus } from '../types/diagnosis'
+import type { Telemetry, ProcessSample, SystemStatus } from '../types/diagnosis'
 
 const API_URL = (import.meta.env.VITE_DIAGNOSIS_API_URL ?? 'http://127.0.0.1:5000').replace(/\/+$/, '')
 
@@ -8,6 +8,8 @@ export class DiagnosisUnavailableError extends Error {
     this.name = 'DiagnosisUnavailableError'
   }
 }
+
+export const API_BASE_URL = API_URL
 
 const STATUSES: readonly SystemStatus[] = ['NORMAL', 'WARNING', 'CRITICAL']
 
@@ -20,7 +22,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
 
 /** Valida y normaliza la respuesta del backend: la UI nunca recibe datos malformados. */
-const parseDiagnosis = (raw: unknown): Diagnosis => {
+const parseTelemetry = (raw: unknown): Telemetry => {
   if (!isRecord(raw)) throw new DiagnosisUnavailableError('Invalid payload')
   const status = STATUSES.find((s) => s === raw.status) ?? 'NORMAL'
   const processes: ProcessSample[] = Array.isArray(raw.processes)
@@ -38,6 +40,9 @@ const parseDiagnosis = (raw: unknown): Diagnosis => {
     disk_space: num(raw.disk_space),
     disk_read: num(raw.disk_read),
     disk_write: num(raw.disk_write),
+    cpu_temperature:
+      typeof raw.cpu_temperature === 'number' && Number.isFinite(raw.cpu_temperature) ? raw.cpu_temperature : null,
+    temperature_source: typeof raw.temperature_source === 'string' ? raw.temperature_source : null,
     status,
     issues: strings(raw.issues),
     recommendations: strings(raw.recommendations),
@@ -46,7 +51,7 @@ const parseDiagnosis = (raw: unknown): Diagnosis => {
   }
 }
 
-const request = async (input: string, init?: RequestInit): Promise<Diagnosis> => {
+const request = async (input: string, init?: RequestInit): Promise<Telemetry> => {
   let response: Response
   try {
     response = await fetch(input, init)
@@ -55,12 +60,12 @@ const request = async (input: string, init?: RequestInit): Promise<Diagnosis> =>
     throw new DiagnosisUnavailableError(error)
   }
   if (!response.ok) throw new DiagnosisUnavailableError(response.status)
-  return parseDiagnosis(await response.json())
+  return parseTelemetry(await response.json())
 }
 
 export const diagnosisService = {
-  /** Ejecuta un análisis completo en el servicio local (POST /diagnose). */
-  run(options: { signal?: AbortSignal; accessToken?: string } = {}): Promise<Diagnosis> {
+  /** Captura CPU, RAM, almacenamiento, temperatura y procesos (POST /diagnose). */
+  run(options: { signal?: AbortSignal; accessToken?: string } = {}): Promise<Telemetry> {
     return request(`${API_URL}/diagnose`, {
       method: 'POST',
       signal: options.signal,
@@ -69,7 +74,7 @@ export const diagnosisService = {
   },
 
   /** Último diagnóstico guardado (public/diagnosis.json). Devuelve null si no existe. */
-  async loadLatest(signal?: AbortSignal): Promise<Diagnosis | null> {
+  async loadLatest(signal?: AbortSignal): Promise<Telemetry | null> {
     try {
       return await request('/diagnosis.json', { signal })
     } catch {
