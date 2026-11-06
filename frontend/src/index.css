@@ -1,14 +1,140 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Space+Grotesk:wght@500;600;700&display=swap');
+@import 'tailwindcss';
 
+/* Modo oscuro por clase (.dark en <html>), controlado por ThemeContext. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Tokens semánticos. Los componentes solo usan estas utilidades (bg-surface, text-ink…),
+ * por lo que el cambio de tema es un simple intercambio de variables.
+ */
 :root {
-  font-family: 'DM Sans', sans-serif;
-  color: #172d3a;
-  background: #f5f8fa;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  --app-bg: #eef5f6;
+  --app-glow-1: rgb(20 195 181 / 0.16);
+  --app-glow-2: rgb(9 141 178 / 0.12);
+  --surface: #ffffff;
+  --surface-muted: #f4f9f9;
+  --surface-sunken: #e9f1f2;
+  --line: #e1ebee;
+  --ink: #142a37;
+  --ink-soft: #46606b;
+  --muted: #7f949c;
+  --brand: #0c9ca2;
+  --brand-strong: #087c86;
+  --brand-soft: #e3f7f4;
+  --ok: #14a88f;
+  --ok-soft: #e3f6f0;
+  --warn: #e08a1e;
+  --warn-soft: #fff3e1;
+  --crit: #e0525c;
+  --crit-soft: #fdecee;
+  --shadow-card: 0 1px 2px rgb(20 42 55 / 0.04), 0 12px 32px -12px rgb(20 60 75 / 0.14);
 }
 
-* { box-sizing: border-box; }
-body { margin: 0; min-width: 1180px; }
-button { font: inherit; }
+.dark {
+  --app-bg: #08131b;
+  --app-glow-1: rgb(20 195 181 / 0.1);
+  --app-glow-2: rgb(9 141 178 / 0.12);
+  --surface: #0f1e29;
+  --surface-muted: #132634;
+  --surface-sunken: #0b1821;
+  --line: #1e3342;
+  --ink: #e5f1f4;
+  --ink-soft: #b2c5cc;
+  --muted: #7d939c;
+  --brand: #19c2b8;
+  --brand-strong: #46dccf;
+  --brand-soft: rgb(25 194 184 / 0.12);
+  --ok: #2cc9a4;
+  --ok-soft: rgb(44 201 164 / 0.12);
+  --warn: #f2a33a;
+  --warn-soft: rgb(242 163 58 / 0.12);
+  --crit: #f06b74;
+  --crit-soft: rgb(240 107 116 / 0.13);
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 16px 36px -16px rgb(0 0 0 / 0.55);
+}
+
+@theme inline {
+  --font-sans: 'DM Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Space Grotesk', 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+
+  --color-app: var(--app-bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-crit: var(--crit);
+  --color-crit-soft: var(--crit-soft);
+
+  --shadow-card: var(--shadow-card);
+
+  --animate-scan: scan 1.4s ease-in-out infinite;
+  --animate-fade-in: fade-in 0.35s ease-out both;
+
+  @keyframes scan {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(300%); }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  html.dark {
+    color-scheme: dark;
+  }
+  body {
+    @apply min-h-screen bg-app font-sans text-ink;
+    background-image:
+      radial-gradient(60rem 40rem at 0% 0%, var(--app-glow-1), transparent 60%),
+      radial-gradient(50rem 40rem at 100% 100%, var(--app-glow-2), transparent 60%);
+    background-attachment: fixed;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  button:not(:disabled) {
+    cursor: pointer;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-line bg-surface shadow-card;
+  }
+  .eyebrow {
+    @apply text-[0.68rem] font-bold tracking-[0.14em] text-muted uppercase;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-white
+      bg-linear-to-r from-[#0b9aa3] to-[#16c4b4] shadow-[0_10px_24px_-8px_rgb(12_156_162/0.55)]
+      transition hover:brightness-105 active:translate-y-px disabled:cursor-wait disabled:opacity-70;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
