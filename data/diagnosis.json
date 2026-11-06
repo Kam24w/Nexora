@@ -1,0 +1,63 @@
+{
+  "cpu": 21.4,
+  "ram": 87.6,
+  "disk_space": 92.0,
+  "disk_read": 0.02,
+  "disk_write": 0.2,
+  "status": "CRITICAL",
+  "issues": [
+    "Low disk space"
+  ],
+  "recommendations": [
+    "Consider closing some applications to reduce memory usage.",
+    "Free up disk space by removing unnecessary files.",
+    "Consider closing qemu-system-x86_64.exe if it is not needed."
+  ],
+  "causes": [
+    "qemu-system-x86_64.exe may be contributing to high CPU usage."
+  ],
+  "processes": [
+    {
+      "pid": 3512,
+      "name": "qemu-system-x86_64.exe",
+      "cpu": 60.7,
+      "memory": 13.38978537082894
+    },
+    {
+      "pid": 4712,
+      "name": "audiodg.exe",
+      "cpu": 17.4,
+      "memory": 0.7776576290209927
+    },
+    {
+      "pid": 2092,
+      "name": "dwm.exe",
+      "cpu": 3.6,
+      "memory": 0.5527043485713554
+    },
+    {
+      "pid": 29300,
+      "name": "studio64.exe",
+      "cpu": 3.6,
+      "memory": 11.687505890226214
+    },
+    {
+      "pid": 7184,
+      "name": "MsMpEng.exe",
+      "cpu": 1.7,
+      "memory": 1.7070244990721763
+    },
+    {
+      "pid": 9080,
+      "name": "OverlayHelper.exe",
+      "cpu": 1.7,
+      "memory": 0.09161661958316736
+    },
+    {
+      "pid": 11056,
+      "name": "iCloudHome.exe",
+      "cpu": 1.6,
+      "memory": 0.5535581235208759
+    }
+  ]
+}
