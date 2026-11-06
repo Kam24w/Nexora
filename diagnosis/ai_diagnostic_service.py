@@ -1,12 +1,12 @@
 """AI diagnosis engine: turns system telemetry into a probable cause and
 actionable solutions, written in the user's language, using Groq
-(model llama-3.3-70b-versatile).
+(model from GROQ_MODEL, default openai/gpt-oss-120b).
 
 The API key is read from the server environment (GROQ_API_KEY, loaded from
 <repo>/.env by server.py) and never reaches the browser.
 
-llama-3.3-70b-versatile only supports Groq's JSON mode (valid JSON, no schema
-enforcement), so the schema is enforced here with strict Pydantic models. A
+The request uses Groq's JSON mode (valid JSON, no schema enforcement) so any
+JSON-capable model works; the schema is enforced here with strict Pydantic models. A
 response that fails validation gets one corrective retry; if it fails again the
 error reaches the client, which falls back to the local rule engine.
 """
@@ -21,8 +21,12 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, Validation
 
 logger = logging.getLogger(__name__)
 
-MODEL = "llama-3.3-70b-versatile"
-MAX_COMPLETION_TOKENS = 4096
+# llama-3.3-70b-versatile was retired from Groq (404 model_not_found). Override
+# with GROQ_MODEL in .env; the model must support Groq's JSON mode.
+DEFAULT_MODEL = "openai/gpt-oss-120b"
+MODEL = os.environ.get("GROQ_MODEL", "").strip() or DEFAULT_MODEL
+# gpt-oss is a reasoning model: its reasoning tokens count towards this limit.
+MAX_COMPLETION_TOKENS = 8192
 TEMPERATURE = 0.2
 REQUEST_TIMEOUT_S = 60.0
 VALIDATION_RETRIES = 1
