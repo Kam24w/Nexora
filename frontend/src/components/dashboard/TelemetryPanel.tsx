@@ -5,6 +5,7 @@ import { Icon } from '../ui/Icon'
 import { MetricGaugeCard } from './MetricGaugeCard'
 import { ProcessList } from './ProcessList'
 import { ScanHero } from './ScanHero'
+import { ServiceStatusBanner } from './ServiceStatusBanner'
 import { TemperatureReading } from './TemperatureReading'
 
 /** Refresca el texto relativo ("hace 2 minutos") cada 30 s. */
@@ -42,6 +43,8 @@ export function TelemetryPanel() {
       </header>
 
       <ScanHero />
+
+      <ServiceStatusBanner />
 
       {error && (
         <div role="alert" className="flex items-start gap-3 rounded-xl border border-crit/30 bg-crit-soft p-4 text-sm text-crit">
