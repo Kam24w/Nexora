@@ -7,8 +7,8 @@ The API key is read from the server environment (GROQ_API_KEY, loaded from
 
 llama-3.3-70b-versatile only supports Groq's JSON mode (valid JSON, no schema
 enforcement), so the schema is enforced here with strict Pydantic models. A
-response that fails validation reaches the client as an error, and the client
-falls back to the local rule engine.
+response that fails validation gets one corrective retry; if it fails again the
+error reaches the client, which falls back to the local rule engine.
 """
 
 import json
@@ -25,6 +25,7 @@ MODEL = "llama-3.3-70b-versatile"
 MAX_COMPLETION_TOKENS = 4096
 TEMPERATURE = 0.2
 REQUEST_TIMEOUT_S = 60.0
+VALIDATION_RETRIES = 1
 MAX_PROCESSES = 10
 SUPPORTED_LANGUAGES = {"es": "Spanish (neutral Latin American)", "en": "English"}
 
@@ -186,6 +187,15 @@ def build_snapshot(telemetry, operating_system):
     }
 
 
+def _validation_summary(error: ValidationError) -> str:
+    """Compact, model-readable list of schema violations for the corrective retry."""
+    lines = []
+    for issue in error.errors()[:15]:
+        location = ".".join(str(part) for part in issue["loc"]) or "<root>"
+        lines.append(f"- {location}: {issue['msg']}")
+    return "\n".join(lines)
+
+
 # --- Service ---------------------------------------------------------------
 
 
@@ -266,15 +276,29 @@ class AIDiagnosticService:
             },
         ]
 
-        content = self._complete(client, messages)
-        try:
-            diagnosis = AIDiagnosis.model_validate_json(content)
-        except ValidationError as error:
-            logger.error("Model output failed validation: %s", error)
-            raise AIUnavailableError("invalid model output") from error
+        for attempt in range(VALIDATION_RETRIES + 1):
+            content = self._complete(client, messages)
+            try:
+                diagnosis = AIDiagnosis.model_validate_json(content)
+            except ValidationError as error:
+                logger.warning("Model output failed validation (attempt %d): %s", attempt + 1, error)
+                if attempt == VALIDATION_RETRIES:
+                    raise AIUnavailableError("invalid model output") from error
+                messages += [
+                    {"role": "assistant", "content": content},
+                    {
+                        "role": "user",
+                        "content": "Your JSON does not match the required shape:\n"
+                        + _validation_summary(error)
+                        + "\nReturn the corrected JSON object only.",
+                    },
+                ]
+                continue
 
-        return {
-            **diagnosis.model_dump(),
-            "language": language,
-            "model": self._model,
-        }
+            return {
+                **diagnosis.model_dump(),
+                "language": language,
+                "model": self._model,
+            }
+
+        raise AIUnavailableError("invalid model output")  # unreachable; keeps type checkers happy
