@@ -54,7 +54,6 @@
       }
     },
     "errors": {
-      "unavailable": "No pudimos conectar con el servicio de diagnóstico. Comprueba que server.py esté en ejecución.",
       "dismiss": "Cerrar aviso",
       "offline": "No se puede conectar con el servicio local en {{url}}.",
       "offlineHint": "Inícialo desde la raíz del proyecto (con el entorno .venv activo):",
