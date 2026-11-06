@@ -139,7 +139,7 @@
       "rules": "Rule engine"
     },
     "aiNotice": {
-      "ai_not_configured": "The AI engine isn't configured (ANTHROPIC_API_KEY is missing on the server). Showing the rule engine's diagnosis.",
+      "ai_not_configured": "The AI engine isn't configured (GROQ_API_KEY is missing on the server). Showing the rule engine's diagnosis.",
       "ai_unavailable": "The AI engine didn't respond. Showing the rule engine's diagnosis.",
       "ai_refused": "The AI engine couldn't process this telemetry. Showing the rule engine's diagnosis.",
       "network": "Can't reach the AI service. Showing the rule engine's diagnosis."
