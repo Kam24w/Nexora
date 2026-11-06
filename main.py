@@ -2,8 +2,16 @@ import json
 from pathlib import Path
 
 from collector.collector import get_system_metrics, get_disk_activity, get_process_data, monitor_cpu, monitor_processes
+from collector.temperature import get_system_temperature
 
 from diagnosis.diagnosis import diagnose_system
+
+
+ROOT = Path(__file__).parent
+OUTPUT_PATHS = (
+    ROOT / "data" / "diagnosis.json",
+    ROOT / "frontend" / "public" / "diagnosis.json",
+)
 
 
 def run_diagnosis():
@@ -12,40 +20,31 @@ def run_diagnosis():
 
     disk_activity = get_disk_activity()
 
+    temperature = get_system_temperature()
+
     process_data = get_process_data()
-    
+
     cpu_monitor = monitor_cpu()
 
     print("CPU monitoring:")
     print(cpu_monitor)
-    
+
     process_monitor = monitor_processes()
 
     print("Process monitoring:")
 
     for process in process_monitor[:10]:
         print(
-        "PID:", process["pid"],
-        "| Process:", process["name"],
-        "| Average CPU:", process["average_cpu"], "%",
-        "| Maximum CPU:", process["maximum_cpu"], "%",
-        "| Persistence:", process["persistence"], "%"
+            "PID:", process["pid"],
+            "| Process:", process["name"],
+            "| Average CPU:", process["average_cpu"], "%",
+            "| Maximum CPU:", process["maximum_cpu"], "%",
+            "| Persistence:", process["persistence"], "%"
         )
-
-    cpu_usage = metrics["cpu"]
-
-    ram_usage = metrics["ram"]
-
-    disk_space = metrics["disk_space"]
-
-    disk_read = disk_activity["read"]
-
-    disk_write = disk_activity["write"]
 
     print("Top processes:")
 
     for process in process_data[:10]:
-
         print(
             "PID:", process["pid"],
             "| Process:", process["name"],
@@ -54,35 +53,40 @@ def run_diagnosis():
         )
 
     print("Disk activity:")
-
     print(disk_activity)
 
     print("System metrics:")
-
     print(metrics)
 
+    print("Temperature:")
+    print(temperature)
+
     diagnosis = diagnose_system(
-        cpu_usage,
-        ram_usage,
-        disk_space,
-        disk_read,
-        disk_write,
+        metrics["cpu"],
+        metrics["ram"],
+        metrics["disk_space"],
+        disk_activity["read"],
+        disk_activity["write"],
         process_data,
-        process_monitor
+        process_monitor,
+        temperature["celsius"],
     )
 
+    diagnosis["cpu_temperature"] = temperature["celsius"]
+    diagnosis["temperature_source"] = temperature["source"]
+
     return diagnosis
-    
-diagnosis = run_diagnosis()
 
-data_path = Path(__file__).parent / "data" / "diagnosis.json"
 
-with open(data_path, "w", encoding="utf-8") as file:
-    json.dump(diagnosis, file, indent=2)
-frontend_path = Path(__file__).parent / "frontend" / "public" / "diagnosis.json"
+def save_diagnosis(diagnosis):
+    for path in OUTPUT_PATHS:
+        with open(path, "w", encoding="utf-8") as file:
+            json.dump(diagnosis, file, indent=2)
 
-with open(frontend_path, "w", encoding="utf-8") as file:
-    json.dump(diagnosis, file, indent=2)
 
-print("\nStructured diagnosis:")
-print(json.dumps(diagnosis, indent=2))
+if __name__ == "__main__":
+    result = run_diagnosis()
+    save_diagnosis(result)
+
+    print("\nStructured diagnosis:")
+    print(json.dumps(result, indent=2))
