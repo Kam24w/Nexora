@@ -4,6 +4,7 @@ import App from './App.tsx'
 import { AuthProvider } from './context/AuthProvider.tsx'
 import { I18nProvider } from './context/I18nProvider.tsx'
 import { ThemeProvider } from './context/ThemeProvider.tsx'
+import { ToastProvider } from './context/ToastProvider.tsx'
 import './index.css'
 
 const root = document.getElementById('root')
@@ -13,9 +14,11 @@ createRoot(root).render(
   <StrictMode>
     <ThemeProvider>
       <I18nProvider>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <App />
+          </AuthProvider>
+        </ToastProvider>
       </I18nProvider>
     </ThemeProvider>
   </StrictMode>,
