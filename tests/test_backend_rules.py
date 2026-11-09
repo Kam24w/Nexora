@@ -112,6 +112,12 @@ class SnapshotTests(unittest.TestCase):
         self.assertEqual(len(names), 11)
         self.assertIn("svchost.exe", names)
 
+    def test_hardware_is_included_and_sanitized(self):
+        hardware = {"cpu": {"model": "Ryzen\n7", "logical_cores": 12}, "ram_total_gb": 23.24, "gpus": ["RTX 3050", 5]}
+        snapshot = build_snapshot({**self.BASE, "hardware": hardware}, "Windows")
+        self.assertEqual(snapshot["hardware"], {"cpu_model": "Ryzen 7", "logical_cores": 12, "ram_total_gb": 23.2, "gpus": ["RTX 3050"]})
+        self.assertIsNone(build_snapshot(self.BASE, "Windows")["hardware"])
+
     def test_non_finite_number_is_rejected(self):
         with self.assertRaises(InvalidTelemetryError):
             build_snapshot({**self.BASE, "cpu": float("nan")}, "Windows")
