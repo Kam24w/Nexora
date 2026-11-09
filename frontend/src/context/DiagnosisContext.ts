@@ -1,6 +1,7 @@
 import type { AIFailureReason } from '../services/aiDiagnosticService'
 import type { SaveReportError } from '../services/reportsService'
 import type { AIDiagnosis, Telemetry } from '../types/diagnosis'
+import type { AnalysisProgress } from '../types/scan'
 import { createStrictContext } from './createStrictContext'
 
 /**
@@ -31,6 +32,8 @@ export interface DiagnosisContextValue {
   /** Motivo por el que se usa el motor de reglas tras un análisis; `null` si respondió la IA. */
   aiFailure: AIFailureReason | null
   stage: AnalysisStage
+  /** Paso a paso del análisis en curso (escaneo, IA, guardado); `null` si no hay ninguno. */
+  progress: AnalysisProgress | null
   isAnalyzing: boolean
   saveState: SaveState
   error: DiagnosisError

@@ -1,12 +1,6 @@
 import type { ProcessSample, SystemStatus, Telemetry } from '../types/diagnosis'
-import { apiRequest } from './apiClient'
 import { parseHardware } from './hardwareService'
 import { parseProcess, parseProcessSummary } from './processParsing'
-
-/** La captura tarda ~15 s (muestreo de CPU y procesos); se deja margen. */
-const CAPTURE_TIMEOUT_MS = 60_000
-/** El escaneo profundo observa los procesos durante más tiempo (alrededor de 1 min). */
-const DEEP_SCAN_TIMEOUT_MS = 120_000
 
 const STATUSES: readonly SystemStatus[] = ['NORMAL', 'WARNING', 'CRITICAL']
 
@@ -48,21 +42,4 @@ export const parseTelemetry = (raw: unknown): Telemetry => {
     process_summary: parseProcessSummary(raw.process_summary),
     hardware: isRecord(raw.hardware) ? parseHardware(raw.hardware) : null,
   }
-}
-
-export const telemetryService = {
-  /**
-   * Captura CPU, RAM, almacenamiento, temperatura y procesos (POST /diagnose o,
-   * con `deep`, POST /deep-scan: todos los procesos y una observación más larga).
-   * Lanza `ApiError` si el servicio no está disponible.
-   */
-  async capture(options: { signal?: AbortSignal; accessToken?: string; deep?: boolean } = {}): Promise<Telemetry> {
-    const body = await apiRequest(options.deep ? '/deep-scan' : '/diagnose', {
-      method: 'POST',
-      signal: options.signal,
-      timeoutMs: options.deep ? DEEP_SCAN_TIMEOUT_MS : CAPTURE_TIMEOUT_MS,
-      headers: options.accessToken ? { Authorization: `Bearer ${options.accessToken}` } : undefined,
-    })
-    return parseTelemetry(body)
-  },
 }

@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { aiDiagnosticService, type AIFailureReason } from '../services/aiDiagnosticService'
 import { ApiError, checkServiceHealth, isAbortError } from '../services/apiClient'
-import { telemetryService } from '../services/telemetryService'
+import { scanService } from '../services/scanService'
+import { advanceProgress, startProgress } from '../services/scanProgress'
 import { reportsService } from '../services/reportsService'
 import { buildRuleBasedDiagnosis } from '../services/ruleBasedDiagnosis'
 import type { AIDiagnosis, Telemetry } from '../types/diagnosis'
+import type { AnalysisProgress, ProgressStep } from '../types/scan'
 import { useAuth } from './AuthContext'
 import {
   DiagnosisContext,
@@ -33,7 +35,8 @@ const toDiagnosisError = (reason: unknown): Exclude<DiagnosisError, null> => {
 
 /**
  * Orquesta el análisis automático:
- *   1. telemetría (CPU, RAM, almacenamiento, temperatura, procesos) → servicio local
+ *   1. telemetría (CPU, RAM, almacenamiento, temperatura, procesos) → escaneo en segundo
+ *      plano del servicio local, con el avance de cada paso
  *   2. AIDiagnosticService → causa probable + soluciones en el idioma activo
  *      (si falla, motor de reglas localizado)
  *   3. informe → Supabase `diagnostic_reports`
@@ -50,6 +53,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
   const [lastScanAt, setLastScanAt] = useState<Date | null>(null)
   const [deepScan, setDeepScan] = useState<Telemetry | null>(null)
   const [deepScanAt, setDeepScanAt] = useState<Date | null>(null)
+  const [progress, setProgress] = useState<AnalysisProgress | null>(null)
   const [serviceStatus, setServiceStatus] = useState<ServiceStatus>('checking')
   const controllerRef = useRef<AbortController | null>(null)
 
@@ -84,7 +88,6 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
     }
   }, [serviceStatus, applyHealth])
 
-  const accessToken = session?.accessToken
   const userId = session?.user.id
 
   const runScan = useCallback(async (deep: boolean) => {
@@ -97,10 +100,15 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
     setError(null)
     setAIFailure(null)
     setSaveState({ status: 'idle' })
+    setProgress(startProgress(deep ? 'advanced' : 'basic', Boolean(userId)))
+    const reach = (step: ProgressStep, fraction = 0) => setProgress((current) => current && advanceProgress(current, step, fraction))
 
     try {
       setStage('telemetry')
-      const captured = await telemetryService.capture({ signal, accessToken, deep })
+      const captured = await scanService.run(deep ? 'advanced' : 'basic', {
+        signal,
+        onProgress: ({ step, stepFraction }) => reach(step, stepFraction),
+      })
       setServiceStatus('online')
       setTelemetry(captured)
       setAIDiagnosis(null)
@@ -111,6 +119,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       }
 
       setStage('ai')
+      reach('ai')
       const ai = await aiDiagnosticService.generate(captured, requestLanguage, signal)
       const result = ai.ok ? ai.diagnosis : buildRuleBasedDiagnosis(captured, requestLanguage)
       if (ai.ok) setAIDiagnosis(ai.diagnosis)
@@ -121,6 +130,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
         return
       }
       setStage('saving')
+      reach('saving')
       const saved = await reportsService.save(userId, captured, result)
       if (signal.aborted) return
       setSaveState(saved.ok ? { status: 'saved', reportId: saved.report.id } : { status: 'error', error: saved.error, code: saved.code })
@@ -132,9 +142,12 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       if (import.meta.env.DEV) console.warn('[Nexora] analysis failed', reason)
     } finally {
       controllerRef.current = null
-      if (!signal.aborted) setStage(null)
+      if (!signal.aborted) {
+        setStage(null)
+        setProgress(null)
+      }
     }
-  }, [accessToken, userId, language])
+  }, [userId, language])
 
   const dismissError = useCallback(() => setError(null), [])
 
@@ -151,6 +164,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       diagnosis,
       aiFailure,
       stage,
+      progress,
       isAnalyzing: stage !== null,
       saveState,
       error,
@@ -163,7 +177,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       recheckService,
       dismissError,
     }),
-    [telemetry, diagnosis, aiFailure, stage, saveState, error, lastScanAt, deepScan, deepScanAt, serviceStatus, runScan, recheckService, dismissError],
+    [telemetry, diagnosis, aiFailure, stage, progress, saveState, error, lastScanAt, deepScan, deepScanAt, serviceStatus, runScan, recheckService, dismissError],
   )
 
   return <DiagnosisContext.Provider value={value}>{children}</DiagnosisContext.Provider>
