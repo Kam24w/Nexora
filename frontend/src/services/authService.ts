@@ -148,7 +148,9 @@ export const authService = {
   /** Notifica login, logout y refresco del JWT. Devuelve la función para cancelar la suscripción. */
   onSessionChange(callback: (session: AuthSession | null) => void): () => void {
     if (!supabase) return () => undefined
-    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      // El enlace de recuperación abre una sesión: se lleva al formulario de nueva contraseña.
+      if (event === 'PASSWORD_RECOVERY') window.location.hash = 'profile'
       callback(session ? toAuthSession(session) : null)
     })
     return () => data.subscription.unsubscribe()
