@@ -18,11 +18,21 @@ export const validateEmail = (value: string): TranslationKey | null => {
   return EMAIL_PATTERN.test(email) && !email.includes('..') ? null : 'auth.validation.emailInvalid'
 }
 
-export const validatePassword = (password: string): TranslationKey | null => {
+/** Estado de cada requisito, para marcarlos mientras el usuario escribe. */
+export const getPasswordChecks = (password: string) => {
   // El spread cuenta caracteres reales, igual que `len` en Python (un emoji es 1, no 2).
   const length = [...password].length
-  if (length < PASSWORD_MIN_LENGTH || length > PASSWORD_MAX_LENGTH) return 'auth.validation.passwordLength'
-  if (/\p{C}/u.test(password) || !/\p{L}/u.test(password) || !/[0-9]/.test(password)) return 'auth.validation.passwordComposition'
+  return {
+    length: length >= PASSWORD_MIN_LENGTH && length <= PASSWORD_MAX_LENGTH,
+    letter: /\p{L}/u.test(password),
+    number: /[0-9]/.test(password),
+  }
+}
+
+export const validatePassword = (password: string): TranslationKey | null => {
+  const checks = getPasswordChecks(password)
+  if (!checks.length) return 'auth.validation.passwordLength'
+  if (/\p{C}/u.test(password) || !checks.letter || !checks.number) return 'auth.validation.passwordComposition'
   return null
 }
 
