@@ -7,6 +7,7 @@ import { ScanErrorAlert } from '../dashboard/ScanErrorAlert'
 import { ScanHero } from '../dashboard/ScanHero'
 import { ServiceStatusBanner } from '../dashboard/ServiceStatusBanner'
 import { DiagnosisPanel } from '../diagnosis/DiagnosisPanel'
+import { HardwareList } from '../hardware/HardwareList'
 
 /** Vista "Análisis": escaneo profundo bajo demanda con el inventario completo de procesos. */
 export function AnalysisView() {
@@ -30,6 +31,16 @@ export function AnalysisView() {
         <ScanHero type="advanced" />
         <ServiceStatusBanner />
         <ScanErrorAlert />
+
+        {result?.hardware && (
+          <section className="card flex flex-col gap-4 p-5">
+            <header>
+              <p className="eyebrow">{t('analysis.hardware.subtitle')}</p>
+              <h2 className="mt-1 font-display text-lg font-semibold tracking-tight text-ink">{t('analysis.hardware.title')}</h2>
+            </header>
+            <HardwareList hardware={result.hardware} />
+          </section>
+        )}
 
         {result ? (
           <section className="card flex flex-col gap-4 p-5">
