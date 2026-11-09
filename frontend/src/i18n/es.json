@@ -459,5 +459,46 @@
     "category": "Categoría",
     "translatedNote": "Traducido automáticamente con IA desde el {{language}}.",
     "footer": "Generado por Nexora · Informe {{id}} · Exportado el {{date}}"
+  },
+  "chat": {
+    "title": "Conversación con la IA",
+    "subtitle": "Pregunta lo que quieras sobre este informe: la IA responde con los datos de este análisis.",
+    "back": "Volver a los informes",
+    "open": "Preguntar a la IA",
+    "reportSummary": "Resumen del informe",
+    "conversation": "Mensajes de la conversación",
+    "you": "Tú",
+    "assistant": "Asistente de Nexora",
+    "thinking": "La IA está escribiendo…",
+    "placeholder": "Escribe tu pregunta sobre este informe…",
+    "send": "Enviar pregunta",
+    "hint": "Enter para enviar · Mayús + Enter para una nueva línea",
+    "loadingHistory": "Cargando la conversación…",
+    "notSaved": "No guardado en tu cuenta",
+    "empty": {
+      "title": "Empieza la conversación",
+      "description": "Elige una pregunta sugerida o escribe la tuya."
+    },
+    "suggestions": {
+      "label": "Preguntas sugeridas",
+      "why": "¿Por qué mi equipo va lento?",
+      "first": "¿Qué debería hacer primero?",
+      "safe": "¿Es seguro cerrar los procesos que aparecen?",
+      "explain": "Explícame el informe con palabras sencillas"
+    },
+    "clear": {
+      "action": "Borrar conversación",
+      "confirm": "¿Borrar todos los mensajes de este informe?",
+      "yes": "Borrar"
+    },
+    "errors": {
+      "notFound": "Este informe no existe o pertenece a otra cuenta.",
+      "historyUnavailable": "El historial del chat no está disponible: falta ejecutar la migración report_messages en Supabase. Puedes conversar, pero los mensajes no se guardarán.",
+      "notSaved": "Algunos mensajes no se pudieron guardar en tu cuenta.",
+      "ai_not_configured": "El asistente de IA no está configurado en el servicio local.",
+      "ai_unavailable": "La IA no respondió. Inténtalo de nuevo en unos segundos.",
+      "ai_refused": "La IA no pudo responder a esa pregunta. Prueba a formularla de otra manera.",
+      "network": "No hay conexión con el servicio local de Nexora."
+    }
   }
 }
