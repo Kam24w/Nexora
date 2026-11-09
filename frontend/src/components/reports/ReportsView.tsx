@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useI18n } from '../../context/I18nContext'
+import { useToast } from '../../context/ToastContext'
 import type { AppView } from '../../types/navigation'
 import { Icon } from '../ui/Icon'
 import { LogoMark } from '../ui/LogoMark'
@@ -13,6 +14,7 @@ import { useReports } from './useReports'
 export function ReportsView({ onNavigate }: { onNavigate: (view: AppView) => void }) {
   const { session } = useAuth()
   const { t } = useI18n()
+  const { notify } = useToast()
   const { state, reload, remove } = useReports(Boolean(session))
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [showDetailOnMobile, setShowDetailOnMobile] = useState(false)
@@ -108,6 +110,7 @@ export function ReportsView({ onNavigate }: { onNavigate: (view: AppView) => voi
               report={selected}
               onDelete={async (id) => {
                 const ok = await remove(id)
+                if (ok) notify({ kind: 'success', title: t('reports.delete.done') })
                 if (ok) setSelectedId(null)
                 return ok
               }}
