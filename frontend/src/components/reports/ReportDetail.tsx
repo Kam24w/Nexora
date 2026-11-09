@@ -5,6 +5,7 @@ import { getHighlightedProcesses, getLevel, getTemperatureLevel } from '../../se
 import type { StoredReport } from '../../services/reportsService'
 import type { HealthLevel } from '../../types/diagnosis'
 import { ProcessBadge } from '../dashboard/ProcessBadge'
+import { ReportExportControls } from './ReportExportControls'
 import { FindingCard } from '../diagnosis/FindingCard'
 import { HealthSummary } from '../diagnosis/HealthSummary'
 import { SolutionCard } from '../diagnosis/SolutionCard'
@@ -213,10 +214,7 @@ export function ReportDetail({ report, onDelete, onBack }: ReportDetailProps) {
           </div>
         ) : (
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <button type="button" onClick={() => window.print()} className="btn-secondary">
-              <Icon name="printer" className="size-3.5" />
-              {t('reports.export.pdf')}
-            </button>
+            <ReportExportControls report={report} />
             <button type="button" onClick={() => downloadReportJson(report)} className="btn-secondary">
               <Icon name="download" className="size-3.5" />
               {t('reports.export.json')}
