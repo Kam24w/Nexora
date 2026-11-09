@@ -5,7 +5,7 @@ import { supabase } from './supabaseClient'
 
 /**
  * Persistencia de informes en la tabla `diagnostic_reports` de Supabase
- * (columnas: id, user_id, created_at, ai_diagnosis jsonb).
+ * (columnas: id, user_id, created_at, ai_diagnosis jsonb o text).
  *
  * La inserción viaja con el JWT del usuario, así que la política RLS
  * (ver supabase/migrations) garantiza que cada usuario solo escribe y lee sus filas.
@@ -49,7 +49,7 @@ export interface SavedReport {
 
 export type SaveReportError = 'notConfigured' | 'unauthorized' | 'network' | 'unknown'
 
-export type SaveReportResult = { ok: true; report: SavedReport } | { ok: false; error: SaveReportError }
+export type SaveReportResult = { ok: true; report: SavedReport } | { ok: false; error: SaveReportError; code?: string }
 
 export const toReportPayload = (telemetry: Telemetry, diagnosis: AIDiagnosis): DiagnosticReportPayload => ({
   version: REPORT_SCHEMA_VERSION,
@@ -92,9 +92,7 @@ export const reportsService = {
 
       if (error) {
         if (import.meta.env.DEV) console.warn('[Nexora] could not save report', error)
-        // 42501: violación de RLS · PGRST301/PGRST303: JWT inválido o caducado
-        const unauthorized = error.code === '42501' || error.code?.startsWith('PGRST30')
-        return { ok: false, error: unauthorized ? 'unauthorized' : 'unknown' }
+        return { ok: false, error: toReportError(error.code), code: error.code || undefined }
       }
 
       return { ok: true, report: { id: String(data.id), createdAt: String(data.created_at) } }
@@ -154,8 +152,11 @@ export interface StoredReport {
 export type ListReportsResult = { ok: true; reports: StoredReport[] } | { ok: false; error: SaveReportError }
 export type RemoveReportResult = { ok: true } | { ok: false; error: SaveReportError }
 
-const toReportError = (code: string | undefined): SaveReportError =>
-  code === '42501' || code?.startsWith('PGRST30') ? 'unauthorized' : 'unknown'
+/** 42501: violación de RLS · PGRST30x: JWT inválido o caducado · sin código: la petición no llegó. */
+const toReportError = (code: string | undefined): SaveReportError => {
+  if (!code) return 'network'
+  return code === '42501' || code.startsWith('PGRST30') ? 'unauthorized' : 'unknown'
+}
 
 const STATUSES: readonly DiagnosticReportPayload['status'][] = ['NORMAL', 'WARNING', 'CRITICAL']
 const SEVERITIES = ['ok', 'warn', 'crit'] as const
@@ -169,12 +170,23 @@ const pick = <T extends string>(options: readonly T[], value: unknown, fallback:
   options.find((option) => option === value) ?? fallback
 const records = (value: unknown): Record<string, unknown>[] => (Array.isArray(value) ? value.filter(isRecord) : [])
 
+/** En tablas antiguas `ai_diagnosis` es de tipo text: Supabase devuelve el JSON como cadena. */
+const decodeColumn = (value: unknown): unknown => {
+  if (typeof value !== 'string') return value
+  try {
+    return JSON.parse(value)
+  } catch {
+    return null
+  }
+}
+
 /**
  * Valida el JSON de `ai_diagnosis`. Las filas son datos persistidos (pueden venir de
  * versiones anteriores o haberse editado a mano), así que nunca se confía en su forma.
  * Devuelve `null` si la fila no es un informe de Nexora reconocible.
  */
-export const parsePayload = (raw: unknown): DiagnosticReportPayload | null => {
+export const parsePayload = (column: unknown): DiagnosticReportPayload | null => {
+  const raw = decodeColumn(column)
   if (!isRecord(raw) || !isRecord(raw.telemetry) || !isRecord(raw.probable_cause)) return null
   const telemetry = raw.telemetry
   const cause = raw.probable_cause
