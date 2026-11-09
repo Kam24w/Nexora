@@ -5,10 +5,10 @@ from collector.collector import (
     get_system_metrics,
     get_disk_activity,
     get_process_data,
-    monitor_cpu,
     monitor_processes,
     summarize_processes,
 )
+from collector.hardware import get_hardware_profile
 from collector.temperature import get_system_temperature
 
 from diagnosis.diagnosis import diagnose_system
@@ -19,63 +19,46 @@ OUTPUT_PATHS = (
     ROOT / "data" / "diagnosis.json",
 )
 
-
-# Deep scan: every process (not only the top consumers) and a longer CPU observation.
+# Basic scan: the busiest processes and a short CPU observation (~15 s).
+BASIC_MONITOR_DURATION_S = 3
+# Advanced scan: every process, a longer CPU observation and the hardware profile (~1 min).
 DEEP_PROCESS_SAMPLE_S = 3
 DEEP_MONITOR_DURATION_S = 12
 
+SCAN_STEPS = {
+    False: ("metrics", "processes", "monitor", "rules"),
+    True: ("metrics", "processes", "monitor", "hardware", "rules"),
+}
 
-def run_diagnosis(deep=False):
 
+def run_diagnosis(deep=False, on_progress=None):
+    """Runs a scan. `on_progress(step, fraction)` is called when a step starts and while it advances."""
+    report = on_progress or (lambda step, fraction=0.0: None)
+
+    report("metrics")
     metrics = get_system_metrics()
-
     disk_activity = get_disk_activity()
-
     temperature = get_system_temperature()
 
+    report("processes")
     process_data = (
         get_process_data(sample_seconds=DEEP_PROCESS_SAMPLE_S, include_inactive=True)
         if deep
         else get_process_data()
     )
 
-    cpu_monitor = monitor_cpu()
+    report("monitor")
+    process_monitor = monitor_processes(
+        duration=DEEP_MONITOR_DURATION_S if deep else BASIC_MONITOR_DURATION_S,
+        on_tick=lambda done, total: report("monitor", done / total),
+    )
 
-    print("CPU monitoring:")
-    print(cpu_monitor)
+    hardware = None
+    if deep:
+        report("hardware")
+        hardware = get_hardware_profile()
 
-    process_monitor = monitor_processes(duration=DEEP_MONITOR_DURATION_S) if deep else monitor_processes()
-
-    print("Process monitoring:")
-
-    for process in process_monitor[:10]:
-        print(
-            "PID:", process["pid"],
-            "| Process:", process["name"],
-            "| Average CPU:", process["average_cpu"], "%",
-            "| Maximum CPU:", process["maximum_cpu"], "%",
-            "| Persistence:", process["persistence"], "%"
-        )
-
-    print("Top processes:")
-
-    for process in process_data[:10]:
-        print(
-            "PID:", process["pid"],
-            "| Process:", process["name"],
-            "| CPU:", round(process["cpu"], 1), "%",
-            "| RAM:", round(process["memory"], 1), "%"
-        )
-
-    print("Disk activity:")
-    print(disk_activity)
-
-    print("System metrics:")
-    print(metrics)
-
-    print("Temperature:")
-    print(temperature)
-
+    report("rules")
     diagnosis = diagnose_system(
         metrics["cpu"],
         metrics["ram"],
@@ -91,6 +74,8 @@ def run_diagnosis(deep=False):
     diagnosis["temperature_source"] = temperature["source"]
     diagnosis["scan_type"] = "deep" if deep else "standard"
     diagnosis["process_summary"] = summarize_processes(process_data)
+    if hardware is not None:
+        diagnosis["hardware"] = hardware
 
     return diagnosis
 
@@ -102,7 +87,7 @@ def save_diagnosis(diagnosis):
 
 
 if __name__ == "__main__":
-    result = run_diagnosis()
+    result = run_diagnosis(on_progress=lambda step, fraction=0.0: print(f"[{step}] {fraction:.0%}"))
     save_diagnosis(result)
 
     print("\nStructured diagnosis:")
