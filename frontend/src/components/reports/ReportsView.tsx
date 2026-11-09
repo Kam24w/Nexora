@@ -27,7 +27,7 @@ export function ReportsView({ onNavigate }: { onNavigate: (view: AppView) => voi
 
   return (
     <main className="flex min-w-0 flex-col gap-5">
-      <header className="flex flex-wrap items-end justify-between gap-3 px-1">
+      <header className="flex flex-wrap items-end justify-between gap-3 px-1 print:hidden">
         <div>
           <p className="eyebrow">{t('reports.eyebrow')}</p>
           <h1 className="mt-1 font-display text-[1.75rem] leading-tight font-bold tracking-[-0.04em] text-ink">
@@ -44,7 +44,7 @@ export function ReportsView({ onNavigate }: { onNavigate: (view: AppView) => voi
               type="button"
               onClick={reload}
               disabled={state.status === 'loading'}
-              className="flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-semibold text-ink-soft transition hover:bg-surface-muted disabled:opacity-60"
+              className="btn-secondary"
             >
               {state.status === 'loading' ? <Spinner className="size-3.5" /> : <Icon name="refresh" className="size-3.5" />}
               {t('reports.refresh')}
@@ -56,9 +56,14 @@ export function ReportsView({ onNavigate }: { onNavigate: (view: AppView) => voi
       {state.status === 'disabled' && <Notice icon="profile" text={t('reports.localMode')} />}
 
       {state.status === 'loading' && (
-        <div role="status" className="card flex items-center justify-center gap-2 p-10 text-sm text-muted">
-          <Spinner />
-          {t('reports.loading')}
+        <div role="status" className="grid items-start gap-5 lg:grid-cols-[minmax(260px,340px)_minmax(0,1fr)]">
+          <span className="sr-only">{t('reports.loading')}</span>
+          <div className="flex flex-col gap-2">
+            {[0, 1, 2].map((item) => (
+              <div key={item} className="skeleton h-24" />
+            ))}
+          </div>
+          <div className="skeleton h-96" />
         </div>
       )}
 
@@ -89,15 +94,15 @@ export function ReportsView({ onNavigate }: { onNavigate: (view: AppView) => voi
       )}
 
       {state.status === 'ready' && selected && (
-        <div className="grid items-start gap-5 lg:grid-cols-[minmax(260px,340px)_minmax(0,1fr)]">
-          <nav aria-label={t('reports.listLabel')} className={showDetailOnMobile ? 'max-lg:hidden' : ''}>
+        <div className="grid items-start gap-5 lg:grid-cols-[minmax(260px,340px)_minmax(0,1fr)] print:block">
+          <nav aria-label={t('reports.listLabel')} className={`print:hidden! ${showDetailOnMobile ? 'max-lg:hidden' : ''}`}>
             <ul className="flex flex-col gap-2 lg:max-h-[calc(100vh-11rem)] lg:overflow-y-auto lg:pr-1">
               {reports.map((report) => (
                 <ReportListItem key={report.id} report={report} selected={report.id === selected.id} onSelect={select} />
               ))}
             </ul>
           </nav>
-          <div className={showDetailOnMobile ? '' : 'max-lg:hidden'}>
+          <div className={`print:block! ${showDetailOnMobile ? '' : 'max-lg:hidden'}`}>
             <ReportDetail
               key={selected.id}
               report={selected}

@@ -33,7 +33,7 @@ export function Sidebar({ activeView, onNavigate }: SidebarProps) {
   const caption = status === 'local' ? t('nav.localMode') : user?.email
 
   return (
-    <aside className="card flex flex-col gap-6 p-5 lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)]">
+    <aside className="card flex flex-col print:hidden gap-6 p-5 lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)]">
       <div className="px-1.5 pt-1">
         <Logo label={t('common.appName')} />
       </div>
