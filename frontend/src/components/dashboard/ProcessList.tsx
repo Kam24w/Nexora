@@ -10,15 +10,9 @@ export function ProcessList({ processes }: { processes: ProcessSample[] }) {
 
   return (
     <section className="card p-5">
-      <header className="mb-4 flex items-end justify-between gap-3">
-        <div>
-          <p className="eyebrow">{t('dashboard.processes.subtitle')}</p>
-          <h2 className="mt-1 font-display text-lg font-semibold tracking-tight text-ink">{t('dashboard.processes.title')}</h2>
-        </div>
-        <span className="flex items-center gap-1.5 text-[0.65rem] font-bold tracking-widest text-ok uppercase">
-          <span className="size-1.5 animate-pulse rounded-full bg-ok" />
-          {t('dashboard.processes.live')}
-        </span>
+      <header className="mb-4">
+        <p className="eyebrow">{t('dashboard.processes.subtitle')}</p>
+        <h2 className="mt-1 font-display text-lg font-semibold tracking-tight text-ink">{t('dashboard.processes.title')}</h2>
       </header>
 
       {top.length === 0 ? (
