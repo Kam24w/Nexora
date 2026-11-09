@@ -2,9 +2,10 @@ import type { TranslationKey } from '../types/i18n'
 import { ApiError, apiRequest } from './apiClient'
 
 /** Mismas reglas que security/input_validation.py. */
-const EMAIL_MAX_LENGTH = 100
+export const EMAIL_MAX_LENGTH = 100
 const PASSWORD_MIN_LENGTH = 8
-const PASSWORD_MAX_LENGTH = 20
+export const PASSWORD_MAX_LENGTH = 20
+export const FULL_NAME_MAX_LENGTH = 100
 const EMAIL_PATTERN = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/
 const VALIDATION_TIMEOUT_MS = 3_000
 

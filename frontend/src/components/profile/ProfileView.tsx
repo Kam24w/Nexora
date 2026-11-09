@@ -1,7 +1,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useI18n } from '../../context/I18nContext'
-import { validatePassword } from '../../services/authValidation'
+import { FULL_NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH, validatePassword } from '../../services/authValidation'
 import type { AuthErrorCode } from '../../types/auth'
 import type { TranslationKey } from '../../types/i18n'
 import { TextField } from '../auth/TextField'
@@ -152,6 +152,7 @@ function AccountForm({ initialName, email }: { initialName: string; email: strin
           label={t('profile.account.name')}
           icon="profile"
           autoComplete="name"
+          maxLength={FULL_NAME_MAX_LENGTH}
           value={name}
           onChange={(event) => {
             setName(event.target.value)
@@ -207,6 +208,7 @@ function PasswordForm() {
           icon="lock"
           type="password"
           autoComplete="new-password"
+          maxLength={PASSWORD_MAX_LENGTH}
           placeholder={t('auth.passwordPlaceholder')}
           value={password}
           onChange={(event) => setPassword(event.target.value)}
@@ -217,6 +219,7 @@ function PasswordForm() {
           icon="lock"
           type="password"
           autoComplete="new-password"
+          maxLength={PASSWORD_MAX_LENGTH}
           value={confirm}
           onChange={(event) => setConfirm(event.target.value)}
           error={fieldError.confirm && t(fieldError.confirm)}

@@ -1,7 +1,15 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useI18n } from '../../context/I18nContext'
-import { validateEmail, validateOnServer, validatePassword, type AuthFieldErrors } from '../../services/authValidation'
+import {
+  EMAIL_MAX_LENGTH,
+  FULL_NAME_MAX_LENGTH,
+  PASSWORD_MAX_LENGTH,
+  validateEmail,
+  validateOnServer,
+  validatePassword,
+  type AuthFieldErrors,
+} from '../../services/authValidation'
 import type { AuthErrorCode } from '../../types/auth'
 import type { TranslationKey } from '../../types/i18n'
 import { LanguageSwitcher } from '../layout/LanguageSwitcher'
@@ -92,7 +100,7 @@ export function AuthScreen() {
     <div className="flex min-h-screen items-center justify-center p-4 sm:p-8">
       <div className="card grid w-full max-w-5xl overflow-hidden lg:grid-cols-[1.05fr_1fr]">
         {/* Panel de marca */}
-        <section className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-[#0b3c52] via-[#0a6f86] to-[#13b8ad] p-10 text-white lg:flex">
+        <section className="relative hidden flex-col justify-between overflow-hidden bg-linear-to-br from-[#0b3c52] via-[#0a6f86] to-[#0a7480] p-10 text-white lg:flex">
           <div aria-hidden="true" className="absolute -top-24 -right-24 size-80 rounded-full bg-white/10 blur-2xl" />
           <div aria-hidden="true" className="absolute -bottom-32 -left-16 size-96 rounded-full bg-[#1fe0cc]/20 blur-3xl" />
           <div className="relative flex items-center gap-2.5">
@@ -102,9 +110,9 @@ export function AuthScreen() {
             <span className="font-display text-2xl font-bold tracking-[-0.05em]">{t('common.appName')}</span>
           </div>
           <div className="relative">
-            <p className="text-xs font-bold tracking-[0.18em] text-white/70 uppercase">{t('auth.tagline')}</p>
+            <p className="text-xs font-bold tracking-[0.18em] text-white/90 uppercase">{t('auth.tagline')}</p>
             <h1 className="mt-3 max-w-sm font-display text-4xl leading-[1.1] font-bold tracking-[-0.04em]">{t('auth.heroTitle')}</h1>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/80">{t('auth.heroDescription')}</p>
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/90">{t('auth.heroDescription')}</p>
           </div>
           <ul className="relative grid grid-cols-3 gap-3" aria-hidden="true">
             {(['cpu', 'memory', 'disk'] as const).map((icon) => (
@@ -142,6 +150,7 @@ export function AuthScreen() {
                 label={t('auth.fullName')}
                 icon="profile"
                 autoComplete="name"
+                maxLength={FULL_NAME_MAX_LENGTH}
                 placeholder={t('auth.fullNamePlaceholder')}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
@@ -154,6 +163,7 @@ export function AuthScreen() {
               type="email"
               autoComplete="email"
               inputMode="email"
+              maxLength={EMAIL_MAX_LENGTH}
               placeholder={t('auth.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -165,6 +175,7 @@ export function AuthScreen() {
                 icon="lock"
                 type="password"
                 autoComplete={mode === 'signUp' ? 'new-password' : 'current-password'}
+                maxLength={PASSWORD_MAX_LENGTH}
                 placeholder={t('auth.passwordPlaceholder')}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
