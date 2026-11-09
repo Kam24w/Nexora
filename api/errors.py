@@ -11,11 +11,13 @@ from diagnosis.ai_diagnostic_service import (
     AIRefusedError,
     InvalidTelemetryError,
 )
+from diagnosis.report_assistant import InvalidRequestError
 
 logger = logging.getLogger(__name__)
 
 AI_ERROR_STATUS = {
     InvalidTelemetryError: 400,
+    InvalidRequestError: 400,
     AIRefusedError: 422,
     AINotConfiguredError: 503,
 }
