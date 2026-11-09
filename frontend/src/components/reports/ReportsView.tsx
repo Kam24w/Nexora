@@ -11,7 +11,7 @@ import { ReportListItem } from './ReportListItem'
 import { useReports } from './useReports'
 
 /** Vista "Informes": historial de diagnósticos guardados en Supabase. */
-export function ReportsView({ onNavigate }: { onNavigate: (view: AppView) => void }) {
+export function ReportsView({ onNavigate }: { onNavigate: (view: AppView, reportId?: string) => void }) {
   const { session } = useAuth()
   const { t } = useI18n()
   const { notify } = useToast()
@@ -115,6 +115,7 @@ export function ReportsView({ onNavigate }: { onNavigate: (view: AppView) => voi
                 return ok
               }}
               onBack={() => setShowDetailOnMobile(false)}
+              onOpenChat={(id) => onNavigate('chat', id)}
             />
           </div>
         </div>

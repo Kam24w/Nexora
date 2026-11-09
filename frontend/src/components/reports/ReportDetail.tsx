@@ -18,9 +18,11 @@ interface ReportDetailProps {
   report: StoredReport
   onDelete: (id: string) => Promise<boolean>
   onBack: () => void
+  /** Abre la conversación con la IA sobre este informe. */
+  onOpenChat: (id: string) => void
 }
 
-export function ReportDetail({ report, onDelete, onBack }: ReportDetailProps) {
+export function ReportDetail({ report, onDelete, onBack, onOpenChat }: ReportDetailProps) {
   const { t, formatDate, formatNumber } = useI18n()
   const { payload } = report
   const { telemetry } = payload
@@ -84,10 +86,16 @@ export function ReportDetail({ report, onDelete, onBack }: ReportDetailProps) {
             {payload.scan_type === 'deep' && ` · ${t('reports.detail.deepScan')}`}
           </p>
         </div>
-        <span className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold ${LEVEL_STYLES[status].soft}`}>
-          <span className={`size-2 rounded-full ${LEVEL_STYLES[status].dot}`} />
-          {t(`diagnosis.status.${payload.status}.label`)}
-        </span>
+        <div className="flex flex-col items-end gap-2">
+          <span className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold ${LEVEL_STYLES[status].soft}`}>
+            <span className={`size-2 rounded-full ${LEVEL_STYLES[status].dot}`} />
+            {t(`diagnosis.status.${payload.status}.label`)}
+          </span>
+          <button type="button" onClick={() => onOpenChat(report.id)} className="btn-primary px-3.5 py-2 text-xs print:hidden">
+            <Icon name="sparkles" className="size-3.5" />
+            {t('chat.open')}
+          </button>
+        </div>
       </header>
 
       {payload.summary && <p className="text-sm leading-relaxed text-ink-soft">{payload.summary}</p>}
