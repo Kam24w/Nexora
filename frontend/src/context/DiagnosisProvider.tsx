@@ -45,6 +45,8 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
   const [saveState, setSaveState] = useState<SaveState>({ status: 'idle' })
   const [error, setError] = useState<DiagnosisError>(null)
   const [lastScanAt, setLastScanAt] = useState<Date | null>(null)
+  const [deepScan, setDeepScan] = useState<Telemetry | null>(null)
+  const [deepScanAt, setDeepScanAt] = useState<Date | null>(null)
   const [serviceStatus, setServiceStatus] = useState<ServiceStatus>('checking')
   const controllerRef = useRef<AbortController | null>(null)
 
@@ -91,7 +93,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
   const accessToken = session?.accessToken
   const userId = session?.user.id
 
-  const analyze = useCallback(async () => {
+  const runScan = useCallback(async (deep: boolean) => {
     if (controllerRef.current) return
     const controller = new AbortController()
     controllerRef.current = controller
@@ -104,11 +106,15 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
 
     try {
       setStage('telemetry')
-      const captured = await telemetryService.capture({ signal, accessToken })
+      const captured = await telemetryService.capture({ signal, accessToken, deep })
       setServiceStatus('online')
       setTelemetry(captured)
       setAIDiagnosis(null)
       setLastScanAt(new Date())
+      if (deep) {
+        setDeepScan(captured)
+        setDeepScanAt(new Date())
+      }
 
       setStage('ai')
       const ai = await aiDiagnosticService.generate(captured, requestLanguage, signal)
@@ -155,12 +161,15 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       saveState,
       error,
       lastScanAt,
+      deepScan,
+      deepScanAt,
       serviceStatus,
-      analyze: () => void analyze(),
+      analyze: () => void runScan(false),
+      startDeepScan: () => void runScan(true),
       recheckService,
       dismissError,
     }),
-    [telemetry, diagnosis, aiFailure, stage, saveState, error, lastScanAt, serviceStatus, analyze, recheckService, dismissError],
+    [telemetry, diagnosis, aiFailure, stage, saveState, error, lastScanAt, deepScan, deepScanAt, serviceStatus, runScan, recheckService, dismissError],
   )
 
   return <DiagnosisContext.Provider value={value}>{children}</DiagnosisContext.Provider>

@@ -6,9 +6,13 @@ import { Spinner } from '../ui/Spinner'
 const STEPS = ['telemetry', 'ai', 'saving'] as const satisfies readonly NonNullable<AnalysisStage>[]
 
 /** Tarjeta principal con el botón de análisis automático y el progreso por etapas. */
-export function ScanHero() {
-  const { telemetry, stage, isAnalyzing, analyze } = useDiagnosis()
+export function ScanHero({ deep = false }: { deep?: boolean }) {
+  const { telemetry, deepScan, stage, isAnalyzing, analyze, startDeepScan } = useDiagnosis()
   const { t } = useI18n()
+  const hasResult = deep ? deepScan !== null : telemetry !== null
+  const copy = deep
+    ? { title: 'analysis.scan.readyTitle', description: 'analysis.scan.readyDescription', start: 'analysis.scan.start', again: 'analysis.scan.again' } as const
+    : { title: 'dashboard.scan.readyTitle', description: 'dashboard.scan.readyDescription', start: 'dashboard.scan.start', again: 'dashboard.scan.again' } as const
   const current = stage ? STEPS.indexOf(stage) : -1
 
   return (
@@ -23,7 +27,7 @@ export function ScanHero() {
       <div className="relative flex flex-col items-center gap-5 text-center">
         <div className="flex items-center gap-2 rounded-full bg-surface/80 px-3 py-1 text-xs font-semibold text-brand-strong ring-1 ring-brand/20">
           <Icon name="sparkles" className="size-3.5" />
-          {t('dashboard.scan.readyTitle')}
+          {t(copy.title)}
         </div>
 
         {stage ? (
@@ -52,18 +56,18 @@ export function ScanHero() {
             })}
           </ol>
         ) : (
-          <p className="max-w-md text-sm leading-relaxed text-ink-soft">{t('dashboard.scan.readyDescription')}</p>
+          <p className="max-w-md text-sm leading-relaxed text-ink-soft">{t(copy.description)}</p>
         )}
 
         <p role="status" className="sr-only">
           {stage ? t(`dashboard.scan.stages.${stage}`) : ''}
         </p>
 
-        <button type="button" onClick={analyze} disabled={isAnalyzing} className="btn-primary min-w-64 py-3.5 tracking-wide uppercase">
-          {isAnalyzing ? <Spinner /> : <Icon name={telemetry ? 'refresh' : 'search'} className="size-4" />}
+        <button type="button" onClick={deep ? startDeepScan : analyze} disabled={isAnalyzing} className="btn-primary min-w-64 py-3.5 tracking-wide uppercase">
+          {isAnalyzing ? <Spinner /> : <Icon name={hasResult ? 'refresh' : 'search'} className="size-4" />}
           {stage
             ? t(`dashboard.scan.stages.${stage}`)
-            : t(telemetry ? 'dashboard.scan.again' : 'dashboard.scan.start')}
+            : t(hasResult ? copy.again : copy.start)}
         </button>
       </div>
       {isAnalyzing && (

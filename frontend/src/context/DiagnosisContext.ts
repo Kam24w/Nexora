@@ -34,8 +34,13 @@ export interface DiagnosisContextValue {
   saveState: SaveState
   error: DiagnosisError
   lastScanAt: Date | null
+  /** Resultado del último escaneo profundo (inventario completo); no lo reemplaza un análisis normal. */
+  deepScan: Telemetry | null
+  deepScanAt: Date | null
   serviceStatus: ServiceStatus
   analyze: () => void
+  /** Escaneo profundo bajo demanda; sigue el mismo flujo de IA e informe que `analyze`. */
+  startDeepScan: () => void
   /** Vuelve a comprobar la conexión con el servicio local. */
   recheckService: () => void
   dismissError: () => void
