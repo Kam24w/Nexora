@@ -128,6 +128,21 @@ export const reportsService = {
     }
   },
 
+  /** Un informe del usuario autenticado; `notFound` si no existe o pertenece a otra cuenta (RLS). */
+  async get(id: string): Promise<GetReportResult> {
+    if (!supabase) return { ok: false, error: 'notConfigured' }
+
+    try {
+      const { data, error } = await supabase.from('diagnostic_reports').select('id, created_at, ai_diagnosis').eq('id', id).maybeSingle()
+      if (error) return { ok: false, error: error.code === '22P02' ? 'notFound' : toReportError(error.code) }
+      const payload = data ? parsePayload(data.ai_diagnosis) : null
+      if (!data || !payload) return { ok: false, error: 'notFound' }
+      return { ok: true, report: { id: String(data.id), createdAt: String(data.created_at), payload } }
+    } catch {
+      return { ok: false, error: 'network' }
+    }
+  },
+
   async remove(id: string): Promise<RemoveReportResult> {
     if (!supabase) return { ok: false, error: 'notConfigured' }
 
@@ -155,6 +170,8 @@ export interface StoredReport {
 
 export type ListReportsResult = { ok: true; reports: StoredReport[] } | { ok: false; error: SaveReportError }
 export type RemoveReportResult = { ok: true } | { ok: false; error: SaveReportError }
+/** 22P02: el id no tiene el formato de la columna, equivale a "no existe". */
+export type GetReportResult = { ok: true; report: StoredReport } | { ok: false; error: SaveReportError | 'notFound' }
 
 /** 42501: violación de RLS · PGRST30x: JWT inválido o caducado · sin código: la petición no llegó. */
 const toReportError = (code: string | undefined): SaveReportError => {
