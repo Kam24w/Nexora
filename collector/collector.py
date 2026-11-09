@@ -120,7 +120,8 @@ def summarize_processes(processes):
     return summary
 
 
-def monitor_processes(duration=5, interval=1):
+def monitor_processes(duration=5, interval=1, on_tick=None):
+    """Samples CPU per process; `on_tick(done, total)` reports progress after each sample."""
     process_samples = {}
     process_list = []
 
@@ -144,7 +145,7 @@ def monitor_processes(duration=5, interval=1):
             pass
 
     # Collect CPU samples over time
-    for _ in range(duration):
+    for tick in range(duration):
         time.sleep(interval)
 
         for process in process_list:
@@ -164,6 +165,9 @@ def monitor_processes(duration=5, interval=1):
 
             except (psutil.NoSuchProcess, psutil.AccessDenied):
                 pass
+
+        if on_tick:
+            on_tick(tick + 1, duration)
 
     # Process the collected samples
     monitored_processes = []
