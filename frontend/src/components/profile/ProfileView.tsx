@@ -1,9 +1,11 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useI18n } from '../../context/I18nContext'
+import { useToast } from '../../context/ToastContext'
 import { FULL_NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH, validatePassword } from '../../services/authValidation'
 import type { AuthErrorCode } from '../../types/auth'
 import type { TranslationKey } from '../../types/i18n'
+import { PasswordRequirements } from '../auth/PasswordRequirements'
 import { TextField } from '../auth/TextField'
 import { LanguageSwitcher } from '../layout/LanguageSwitcher'
 import { ThemeToggle } from '../layout/ThemeToggle'
@@ -16,6 +18,10 @@ import { HardwareSection } from './HardwareSection'
 type Feedback = { kind: 'ok'; key: TranslationKey } | { kind: 'error'; key: TranslationKey } | null
 
 const authError = (code: AuthErrorCode): Feedback => ({ kind: 'error', key: `auth.errors.${code}` })
+
+/** Lleva el foco al primer campo con error para que el usuario sepa qué corregir. */
+const focusFirstInvalid = (form: HTMLFormElement | null) =>
+  requestAnimationFrame(() => form?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus())
 
 /** Vista "Perfil": datos de la cuenta de Supabase, estadísticas y preferencias. */
 export function ProfileView() {
@@ -128,6 +134,7 @@ function ProfileStats() {
 function AccountForm({ initialName, email }: { initialName: string; email: string }) {
   const { updateProfile } = useAuth()
   const { t } = useI18n()
+  const { notify } = useToast()
   const [name, setName] = useState(initialName)
   const [saving, setSaving] = useState(false)
   const [feedback, setFeedback] = useState<Feedback>(null)
@@ -142,7 +149,12 @@ function AccountForm({ initialName, email }: { initialName: string; email: strin
     setSaving(true)
     const result = await updateProfile(name)
     setSaving(false)
-    setFeedback(result.ok ? { kind: 'ok', key: 'profile.account.saved' } : authError(result.error))
+    if (result.ok) {
+      setFeedback(null)
+      notify({ kind: 'success', title: t('profile.account.savedToast'), description: t('profile.account.savedToastDescription') })
+    } else {
+      setFeedback(authError(result.error))
+    }
   }
 
   return (
@@ -172,6 +184,9 @@ function AccountForm({ initialName, email }: { initialName: string; email: strin
 function PasswordForm() {
   const { updatePassword } = useAuth()
   const { t } = useI18n()
+  const { notify } = useToast()
+  const formRef = useRef<HTMLFormElement>(null)
+  const requirementsId = useId()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [saving, setSaving] = useState(false)
@@ -186,7 +201,10 @@ function PasswordForm() {
     else if (password !== confirm) errors.confirm = 'profile.password.mismatch'
     setFieldError(errors)
     setFeedback(null)
-    if (Object.keys(errors).length) return
+    if (Object.keys(errors).length) {
+      focusFirstInvalid(formRef.current)
+      return
+    }
 
     setSaving(true)
     const result = await updatePassword(password)
@@ -194,7 +212,7 @@ function PasswordForm() {
     if (result.ok) {
       setPassword('')
       setConfirm('')
-      setFeedback({ kind: 'ok', key: 'profile.password.saved' })
+      notify({ kind: 'success', title: t('profile.password.savedToast'), description: t('profile.password.savedToastDescription') })
     } else {
       setFeedback(authError(result.error))
     }
@@ -202,7 +220,7 @@ function PasswordForm() {
 
   return (
     <Section icon="lock" title={t('profile.password.title')}>
-      <form noValidate onSubmit={submit} className="flex flex-col gap-4">
+      <form ref={formRef} noValidate onSubmit={submit} className="flex flex-col gap-4">
         <TextField
           label={t('profile.password.new')}
           icon="lock"
@@ -213,7 +231,9 @@ function PasswordForm() {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           error={fieldError.password && t(fieldError.password)}
+          hintId={requirementsId}
         />
+        <PasswordRequirements id={requirementsId} password={password} />
         <TextField
           label={t('profile.password.confirm')}
           icon="lock"
@@ -224,6 +244,12 @@ function PasswordForm() {
           onChange={(event) => setConfirm(event.target.value)}
           error={fieldError.confirm && t(fieldError.confirm)}
         />
+        {confirm && confirm === password && !fieldError.confirm && (
+          <p className="-mt-2 flex items-center gap-1.5 text-xs text-ok">
+            <Icon name="check" className="size-3.5" strokeWidth={2.6} />
+            {t('profile.password.matches')}
+          </p>
+        )}
         <FormFooter feedback={feedback} saving={saving} disabled={!password} label={t('profile.password.save')} />
       </form>
     </Section>
