@@ -37,7 +37,6 @@
     "title": "Panel de diagnóstico IA",
     "lastScan": "Último análisis: {{time}}",
     "noScanYet": "Sin análisis todavía",
-    "savedSnapshot": "Mostrando el último diagnóstico guardado",
     "scan": {
       "readyTitle": "Escaneo automático listo",
       "readyDescription": "Nexora mide CPU, memoria, disco y procesos para explicarte qué frena tu equipo.",
@@ -89,7 +88,6 @@
     "processes": {
       "title": "Apps activas",
       "subtitle": "Procesos con mayor consumo",
-      "live": "En vivo",
       "name": "Proceso",
       "pid": "PID",
       "cpu": "CPU",

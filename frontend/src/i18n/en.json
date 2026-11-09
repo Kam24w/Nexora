@@ -37,7 +37,6 @@
     "title": "AI Diagnosis Dashboard",
     "lastScan": "Last scan: {{time}}",
     "noScanYet": "No scans yet",
-    "savedSnapshot": "Showing the last saved diagnosis",
     "scan": {
       "readyTitle": "Automatic scan ready",
       "readyDescription": "Nexora measures CPU, memory, disk and processes to explain what is slowing your computer down.",
@@ -89,7 +88,6 @@
     "processes": {
       "title": "Active apps",
       "subtitle": "Highest resource usage",
-      "live": "Live",
       "name": "Process",
       "pid": "PID",
       "cpu": "CPU",
