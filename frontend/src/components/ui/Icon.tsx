@@ -81,6 +81,13 @@ const PATHS = {
       <path d="m20 20-3.5-3.5" />
     </>
   ),
+  download: <path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16" />,
+  printer: (
+    <>
+      <path d="M7 8V3h10v5M7 17H5a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+      <rect x="7" y="14" width="10" height="7" rx="1" />
+    </>
+  ),
   check: <path d="m5 12.5 4.5 4.5L19 7.5" />,
   close: <path d="M6 6l12 12M18 6 6 18" />,
   refresh: <path d="M20 11a8 8 0 0 0-14.7-3L3 11m0 0V6m0 5h5M4 13a8 8 0 0 0 14.7 3L21 13m0 0v5m0-5h-5" />,
