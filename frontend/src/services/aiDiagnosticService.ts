@@ -10,6 +10,7 @@ import type {
 } from '../types/diagnosis'
 import type { Language } from '../types/preferences'
 import { ApiError, apiRequest } from './apiClient'
+import { toHardwarePayload } from './hardwareService'
 
 /** El servidor puede reintentar una vez si la salida del modelo no valida el esquema. */
 const AI_TIMEOUT_MS = 90_000
@@ -88,7 +89,7 @@ export const aiDiagnosticService = {
     try {
       body = await apiRequest('/ai-diagnosis', {
         method: 'POST',
-        json: { telemetry, language },
+        json: { telemetry: { ...telemetry, hardware: telemetry.hardware && toHardwarePayload(telemetry.hardware) }, language },
         signal,
         timeoutMs: AI_TIMEOUT_MS,
       })

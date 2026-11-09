@@ -1,4 +1,5 @@
 import type { AIDiagnosis, Telemetry } from '../types/diagnosis'
+import { parseHardware, toHardwarePayload } from './hardwareService'
 import { getHealthScore, getHighlightedProcesses } from './healthService'
 import { parseProcess, parseProcessSummary } from './processParsing'
 import { supabase } from './supabaseClient'
@@ -39,6 +40,8 @@ export interface DiagnosticReportPayload {
     rule_based_status: Telemetry['status']
     rule_based_issues: string[]
     processes: Telemetry['processes']
+    /** Formato del colector; solo en análisis avanzados. */
+    hardware: ReturnType<typeof toHardwarePayload> | null
   }
 }
 
@@ -76,6 +79,7 @@ export const toReportPayload = (telemetry: Telemetry, diagnosis: AIDiagnosis): D
     rule_based_status: telemetry.status,
     rule_based_issues: telemetry.issues,
     processes: getHighlightedProcesses(telemetry.processes, 10),
+    hardware: telemetry.hardware && toHardwarePayload(telemetry.hardware),
   },
 })
 
@@ -228,6 +232,7 @@ export const parsePayload = (column: unknown): DiagnosticReportPayload | null =>
         ? telemetry.rule_based_issues.filter((issue): issue is string => typeof issue === 'string')
         : [],
       processes: records(telemetry.processes).map(parseProcess),
+      hardware: isRecord(telemetry.hardware) ? toHardwarePayload(parseHardware(telemetry.hardware)) : null,
     },
   }
 }

@@ -1,3 +1,4 @@
+import type { HardwareProfile } from './hardware'
 import type { Language } from './preferences'
 
 /** Estado global del sistema. */
@@ -52,6 +53,8 @@ export interface Telemetry {
   scan_type: ScanType
   /** `null` en diagnósticos guardados por versiones anteriores. */
   process_summary: ProcessSummary | null
+  /** Solo en el análisis avanzado. */
+  hardware: HardwareProfile | null
 }
 
 /** Métrica a la que se atribuye una causa o hallazgo. */

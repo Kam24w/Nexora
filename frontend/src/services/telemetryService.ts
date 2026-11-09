@@ -1,5 +1,6 @@
 import type { ProcessSample, SystemStatus, Telemetry } from '../types/diagnosis'
 import { apiRequest } from './apiClient'
+import { parseHardware } from './hardwareService'
 import { parseProcess, parseProcessSummary } from './processParsing'
 
 /** La captura tarda ~15 s (muestreo de CPU y procesos); se deja margen. */
@@ -45,6 +46,7 @@ const parseTelemetry = (raw: unknown): Telemetry => {
     processes,
     scan_type: raw.scan_type === 'deep' ? 'deep' : 'standard',
     process_summary: parseProcessSummary(raw.process_summary),
+    hardware: isRecord(raw.hardware) ? parseHardware(raw.hardware) : null,
   }
 }
 
