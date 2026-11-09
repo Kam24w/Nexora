@@ -17,7 +17,7 @@ const AI_TIMEOUT_MS = 90_000
 /**
  * Cliente de AIDiagnosticService (diagnosis/ai_diagnostic_service.py, POST /ai-diagnosis).
  *
- * El motor de IA vive en el servidor: la clave de Anthropic nunca llega al navegador.
+ * El motor de IA vive en el servidor: la clave de la API nunca llega al navegador.
  * Este módulo envía la telemetría y el idioma activo y valida la respuesta antes de
  * entregarla a la UI.
  */
