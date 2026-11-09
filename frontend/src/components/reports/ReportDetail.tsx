@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useI18n } from '../../context/I18nContext'
+import { downloadReportJson } from '../../services/reportExport'
 import { getHighlightedProcesses, getLevel, getTemperatureLevel } from '../../services/healthService'
 import type { StoredReport } from '../../services/reportsService'
 import type { HealthLevel } from '../../types/diagnosis'
@@ -92,7 +93,7 @@ export function ReportDetail({ report, onDelete, onBack }: ReportDetailProps) {
 
       {payload.probable_cause.explanation && (
         <section className="flex gap-3 rounded-2xl border border-brand/25 bg-linear-to-br from-brand-soft to-surface p-4">
-          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-white">
+          <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-on-accent">
             <Icon name={METRIC_ICON[payload.probable_cause.metric]} className="size-5" />
           </span>
           <div className="min-w-0">
@@ -141,7 +142,7 @@ export function ReportDetail({ report, onDelete, onBack }: ReportDetailProps) {
             </h3>
             <ol className="flex flex-col gap-2">
               {payload.solutions.map((solution, index) => (
-                <SolutionCard key={`${index}-${solution.title}`} solution={solution} />
+                <SolutionCard key={`${index}-${solution.title}`} solution={solution} position={index + 1} />
               ))}
             </ol>
           </section>
@@ -155,7 +156,7 @@ export function ReportDetail({ report, onDelete, onBack }: ReportDetailProps) {
           </h3>
           <div className="overflow-x-auto rounded-xl border border-line">
             <table className="w-full min-w-[360px] text-sm">
-              <thead className="bg-surface-muted text-left text-[0.65rem] font-bold tracking-wider text-muted uppercase">
+              <thead className="bg-surface-muted text-left text-[0.7rem] font-bold tracking-wider text-muted uppercase">
                 <tr>
                   <th className="px-3 py-2">{t('dashboard.processes.name')}</th>
                   <th className="px-3 py-2 text-right">{t('dashboard.processes.cpu')}</th>
@@ -181,7 +182,7 @@ export function ReportDetail({ report, onDelete, onBack }: ReportDetailProps) {
 
       <HealthSummary score={payload.health_score} status={payload.status} level={status} />
 
-      <footer className="flex flex-col gap-2 border-t border-line pt-4">
+      <footer className="flex flex-col gap-2 border-t border-line pt-4 print:hidden">
         {deleteFailed && (
           <p role="alert" className="text-xs text-crit">
             {t('reports.delete.error')}
@@ -203,7 +204,7 @@ export function ReportDetail({ report, onDelete, onBack }: ReportDetailProps) {
                 type="button"
                 onClick={() => void handleDelete()}
                 disabled={deleting}
-                className="flex items-center gap-1.5 rounded-lg bg-crit px-3 py-2 text-xs font-semibold text-white hover:brightness-110 disabled:opacity-70"
+                className="flex items-center gap-1.5 rounded-lg bg-crit px-3 py-2 text-xs font-semibold text-on-accent hover:brightness-110 disabled:opacity-70"
               >
                 {deleting && <Spinner className="size-3.5" />}
                 {t('reports.delete.yes')}
@@ -211,14 +212,24 @@ export function ReportDetail({ report, onDelete, onBack }: ReportDetailProps) {
             </div>
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => setConfirming(true)}
-            className="flex items-center gap-1.5 self-end rounded-lg px-3 py-2 text-xs font-semibold text-muted transition hover:bg-crit-soft hover:text-crit"
-          >
-            <Icon name="close" className="size-3.5" />
-            {t('reports.delete.action')}
-          </button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button type="button" onClick={() => window.print()} className="btn-secondary">
+              <Icon name="printer" className="size-3.5" />
+              {t('reports.export.pdf')}
+            </button>
+            <button type="button" onClick={() => downloadReportJson(report)} className="btn-secondary">
+              <Icon name="download" className="size-3.5" />
+              {t('reports.export.json')}
+            </button>
+            <button
+              type="button"
+              onClick={() => setConfirming(true)}
+              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold text-ink-soft transition hover:bg-crit-soft hover:text-crit"
+            >
+              <Icon name="close" className="size-3.5" />
+              {t('reports.delete.action')}
+            </button>
+          </div>
         )}
       </footer>
     </article>

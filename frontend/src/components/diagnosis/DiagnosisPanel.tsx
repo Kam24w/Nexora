@@ -18,6 +18,8 @@ export function DiagnosisPanel() {
   return (
     <aside
       aria-busy={isAnalyzing}
+      aria-label={t('diagnosis.title')}
+      tabIndex={0}
       className="card flex min-w-0 flex-col gap-5 p-5 xl:sticky xl:top-5 xl:max-h-[calc(100vh-2.5rem)] xl:overflow-y-auto"
     >
       <header>
@@ -68,7 +70,7 @@ export function DiagnosisPanel() {
             className="relative overflow-hidden rounded-2xl border border-brand/25 bg-linear-to-br from-brand-soft to-surface p-4"
           >
             <div className="flex gap-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-white shadow-[0_8px_18px_-8px_rgb(12_156_162/0.7)]">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-brand text-on-accent shadow-[0_8px_18px_-8px_rgb(12_156_162/0.7)]">
                 <Icon name={METRIC_ICON[diagnosis.probableCause.metric]} className="size-5" />
               </span>
               <div className="min-w-0">
@@ -107,7 +109,7 @@ export function DiagnosisPanel() {
             {diagnosis.solutions.length ? (
               <ol className="flex flex-col gap-2">
                 {diagnosis.solutions.map((solution, index) => (
-                  <SolutionCard key={`${index}-${solution.title}`} solution={solution} />
+                  <SolutionCard key={`${index}-${solution.title}`} solution={solution} position={index + 1} />
                 ))}
               </ol>
             ) : (
@@ -130,7 +132,7 @@ function SourceBadge({ diagnosis }: { diagnosis: AIDiagnosis }) {
   return (
     <span
       title={diagnosis.model ?? undefined}
-      className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.65rem] font-bold whitespace-nowrap ${
+      className={`flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[0.7rem] font-bold whitespace-nowrap ${
         isAI ? 'bg-brand-soft text-brand-strong' : 'bg-surface-sunken text-muted'
       }`}
     >
@@ -173,6 +175,7 @@ function SaveStatus({ state }: { state: SaveState }) {
     <p role="status" className={`flex items-center justify-center gap-1.5 text-xs font-medium ${className}`}>
       <Icon name={icon} className="size-3.5" />
       {text}
+      {state.status === 'error' && state.code && ` (${state.code})`}
     </p>
   )
 }

@@ -1,25 +1,24 @@
 import { useI18n } from '../../context/I18nContext'
 import type { DiagnosisSolution, SolutionImpact } from '../../types/diagnosis'
-import { Icon } from '../ui/Icon'
 
 const IMPACT_STYLE: Readonly<Record<SolutionImpact, string>> = {
-  high: 'bg-brand text-white',
+  high: 'bg-brand text-on-accent',
   medium: 'bg-brand-soft text-brand-strong',
-  low: 'bg-surface-sunken text-muted',
+  low: 'bg-surface-sunken text-ink-soft',
 }
 
-export function SolutionCard({ solution }: { solution: DiagnosisSolution }) {
+export function SolutionCard({ solution, position }: { solution: DiagnosisSolution; position: number }) {
   const { t } = useI18n()
 
   return (
     <li className="flex animate-fade-in gap-3 rounded-xl bg-surface-muted p-3.5">
-      <span className="grid size-6 shrink-0 place-items-center rounded-md bg-brand text-white">
-        <Icon name="check" className="size-3.5" strokeWidth={2.4} />
+      <span aria-hidden="true" className="grid size-6 shrink-0 place-items-center rounded-full bg-brand text-xs font-bold text-on-accent tabular-nums">
+        {position}
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-start justify-between gap-x-2 gap-y-1">
           <p className="text-sm leading-snug font-semibold text-ink">{solution.title}</p>
-          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.6rem] font-bold tracking-wide uppercase ${IMPACT_STYLE[solution.impact]}`}>
+          <span className={`shrink-0 rounded-full px-2 py-0.5 text-[0.7rem] font-bold tracking-wide uppercase ${IMPACT_STYLE[solution.impact]}`}>
             {t(`diagnosis.solutions.impact.${solution.impact}`)}
           </span>
         </div>
