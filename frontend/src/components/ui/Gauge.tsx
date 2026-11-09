@@ -30,12 +30,14 @@ export function Gauge({ value, level, display, unit, label }: GaugeProps) {
 
   return (
     <div
-      role="meter"
+      role={value === null ? 'img' : 'meter'}
       aria-label={label}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      aria-valuenow={value === null ? undefined : Math.round(clamped)}
-      aria-valuetext={value === null ? undefined : `${display}${unit}`}
+      {...(value !== null && {
+        'aria-valuemin': 0,
+        'aria-valuemax': 100,
+        'aria-valuenow': Math.round(clamped),
+        'aria-valuetext': `${display}${unit}`,
+      })}
       className="mx-auto flex w-full max-w-[190px] flex-col items-center"
     >
       <svg viewBox="0 0 120 70" className="w-full overflow-visible">
@@ -80,10 +82,10 @@ export function Gauge({ value, level, display, unit, label }: GaugeProps) {
             <circle cx={CENTER.x} cy={CENTER.y} r="3.6" className="fill-ink" />
           </g>
         )}
-        <text x={CENTER.x - RADIUS} y={CENTER.y + 10} textAnchor="middle" className="fill-muted text-[6px]">
+        <text x={CENTER.x - RADIUS} y={CENTER.y + 10} textAnchor="middle" className="fill-muted text-[7px]">
           0
         </text>
-        <text x={CENTER.x + RADIUS} y={CENTER.y + 10} textAnchor="middle" className="fill-muted text-[6px]">
+        <text x={CENTER.x + RADIUS} y={CENTER.y + 10} textAnchor="middle" className="fill-muted text-[7px]">
           100
         </text>
       </svg>
