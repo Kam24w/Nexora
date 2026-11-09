@@ -6,7 +6,9 @@ from collector.process_classifier import CATEGORIES, classify_process
 
 # Not a real program: its "CPU usage" is the idle time of the machine.
 IDLE_PROCESS = "System Idle Process"
-PROCESS_ATTRS = ["pid", "name", "exe", "ppid"]
+# Only cheap attributes while sampling: reading the executable path of every
+# process takes seconds, so it is read later and only for the processes reported.
+PROCESS_ATTRS = ["pid", "name"]
 
 
 def get_system_root():
@@ -48,7 +50,15 @@ def get_disk_activity():
     }
     
 def _classification(process):
-    return classify_process(process.info["name"], process.info["exe"], process.info["ppid"])
+    try:
+        exe = process.exe()
+    except psutil.Error:
+        exe = None
+    try:
+        parent_pid = process.ppid()
+    except psutil.Error:
+        parent_pid = None
+    return classify_process(process.info["name"], exe, parent_pid)
 
 
 def get_process_data(sample_seconds=1, include_inactive=False):
@@ -72,7 +82,6 @@ def get_process_data(sample_seconds=1, include_inactive=False):
     for process in processes:
         try:
             cpu = process.cpu_percent(None)
-            memory = process.memory_percent()
             pid = process.info["pid"]
             name = process.info["name"]
 
@@ -86,7 +95,8 @@ def get_process_data(sample_seconds=1, include_inactive=False):
                     "pid": pid,
                     "name": name,
                     "cpu": cpu,
-                    "memory": memory,
+                    # Read after filtering: memory and path lookups are per-process system calls.
+                    "memory": process.memory_percent(),
                     **_classification(process)
                 })
 
@@ -146,7 +156,7 @@ def monitor_processes(duration=5, interval=1):
                 if pid not in process_samples:
                     process_samples[pid] = {
                         "name": name,
-                        "category": _classification(process)["category"],
+                        "process": process,
                         "samples": []
                     }
 
@@ -180,15 +190,15 @@ def monitor_processes(duration=5, interval=1):
             monitored_processes.append({
                 "pid": pid,
                 "name": data["name"],
-                "category": data["category"],
+                "process": data["process"],
                 "average_cpu": round(average_cpu, 1),
                 "maximum_cpu": round(maximum_cpu, 1),
                 "persistence": round(persistence, 1)
             })
 
-    # Ignore processes with insignificant CPU usage
+    # Ignore processes with insignificant CPU usage; classify only the ones kept
     monitored_processes = [
-        process
+        {**process, "category": _classification(process.pop("process"))["category"]}
         for process in monitored_processes
         if process["average_cpu"] > 1
     ]
