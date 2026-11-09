@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
 import { useDiagnosis } from '../../context/DiagnosisContext'
 import { useI18n } from '../../context/I18nContext'
+import { useNow } from '../../hooks/useNow'
 import { MetricGaugeCard } from './MetricGaugeCard'
 import { ProcessList } from './ProcessList'
 import { ScanErrorAlert } from './ScanErrorAlert'
@@ -8,20 +8,11 @@ import { ScanHero } from './ScanHero'
 import { ServiceStatusBanner } from './ServiceStatusBanner'
 import { TemperatureReading } from './TemperatureReading'
 
-/** Refresca el texto relativo ("hace 2 minutos") cada 30 s. */
-function useNow(intervalMs = 30_000) {
-  const [now, setNow] = useState(() => Date.now())
-  useEffect(() => {
-    const id = window.setInterval(() => setNow(Date.now()), intervalMs)
-    return () => window.clearInterval(id)
-  }, [intervalMs])
-  return now
-}
-
 /** Columna central: telemetría y botón de análisis. */
 export function TelemetryPanel() {
   const { telemetry, lastScanAt } = useDiagnosis()
   const { t, formatNumber, formatRelativeTime } = useI18n()
+  // Refresca el texto relativo ("hace 2 minutos").
   useNow()
 
   const mbps = (value: number) => t('common.mbps', { value: formatNumber(value, { maximumFractionDigits: 2 }) })
