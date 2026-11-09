@@ -1,42 +1,20 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useDiagnosis } from '../../context/DiagnosisContext'
 import { useI18n } from '../../context/I18nContext'
-import type { ProcessSample } from '../../types/diagnosis'
+import { PROCESS_FILTERS, useProcessInventory } from '../../hooks/useProcessInventory'
 import { ProcessTable } from '../dashboard/ProcessTable'
 import { ScanErrorAlert } from '../dashboard/ScanErrorAlert'
 import { ScanHero } from '../dashboard/ScanHero'
 import { ServiceStatusBanner } from '../dashboard/ServiceStatusBanner'
 import { DiagnosisPanel } from '../diagnosis/DiagnosisPanel'
 
-const FILTERS = {
-  all: () => true,
-  suspicious: (process: ProcessSample) => process.category === 'suspicious',
-  system: (process: ProcessSample) => process.category === 'system' || process.category === 'system_unverified',
-  application: (process: ProcessSample) => process.category === 'application',
-} as const
-
-type Filter = keyof typeof FILTERS
-const FILTER_NAMES = Object.keys(FILTERS) as Filter[]
-
 /** Vista "Análisis": escaneo profundo bajo demanda con el inventario completo de procesos. */
 export function AnalysisView() {
   const { deepScan: result, deepScanAt } = useDiagnosis()
   const { t, formatDate, formatNumber } = useI18n()
-  const [filter, setFilter] = useState<Filter>('all')
 
   const processes = useMemo(() => result?.processes ?? [], [result])
-  const counts = useMemo(
-    () => Object.fromEntries(FILTER_NAMES.map((name) => [name, processes.filter(FILTERS[name]).length])) as Record<Filter, number>,
-    [processes],
-  )
-  // Lo que requiere revisión va primero; dentro de cada grupo, por consumo de CPU.
-  const visible = useMemo(
-    () =>
-      processes
-        .filter(FILTERS[filter])
-        .sort((a, b) => Number(b.category === 'suspicious') - Number(a.category === 'suspicious') || b.cpu - a.cpu),
-    [processes, filter],
-  )
+  const { filter, setFilter, counts, visible } = useProcessInventory(processes)
 
   return (
     <div className="grid min-w-0 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(340px,400px)]">
@@ -71,14 +49,14 @@ export function AnalysisView() {
             )}
 
             <div role="group" aria-label={t('analysis.inventory.filterLabel')} className="flex flex-wrap gap-2">
-              {FILTER_NAMES.map((name) => (
+              {PROCESS_FILTERS.map((name) => (
                 <button
                   key={name}
                   type="button"
                   aria-pressed={filter === name}
                   onClick={() => setFilter(name)}
                   className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                    filter === name ? 'bg-brand text-white' : 'bg-surface-muted text-ink-soft hover:text-ink'
+                    filter === name ? 'bg-brand text-on-accent' : 'bg-surface-muted text-ink-soft hover:text-ink'
                   }`}
                 >
                   {t(`analysis.inventory.filters.${name}`)} · <span className="tabular-nums">{formatNumber(counts[name])}</span>
