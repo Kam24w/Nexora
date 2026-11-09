@@ -1,6 +1,7 @@
 def diagnose_system(cpu_usage, ram_usage, disk_space, disk_read, disk_write, process_data, process_monitor, temperature=None):
     critical_issues = []
     warning_issues = []
+    security_issues = []
     recommendations = []
     causes = []
     persistent_processes = [
@@ -88,21 +89,31 @@ def diagnose_system(cpu_usage, ram_usage, disk_space, disk_read, disk_write, pro
                     f"Persistent high CPU usage in {process['name']}"
                 )
 
-                recommendations.append(
-                    f"Consider closing {process['name']} if it is not needed."
-                )
+                # Closing a Windows component can destabilize the machine.
+                if process.get("category") != "system":
+                    recommendations.append(
+                        f"Consider closing {process['name']} if it is not needed."
+                    )
                 causes.append(
                     f"{process['name']} may be contributing to high CPU usage."
                 )
 
-    # Determine final system status
+    # A system process name running from the wrong folder needs a human check
+    for process in process_data:
+        if process.get("category") == "suspicious":
+            security_issues.append(f"Unexpected location for {process['name']}")
+            recommendations.append(
+                f"Verify {process['name']} with your antivirus: it is not in the usual Windows folder."
+            )
+
+    # Determine final system status (security notes are never dropped)
     if critical_issues:
         status = "CRITICAL"
-        issues = critical_issues
+        issues = critical_issues + security_issues
 
-    elif warning_issues:
+    elif warning_issues or security_issues:
         status = "WARNING"
-        issues = warning_issues
+        issues = warning_issues + security_issues
 
     else:
         status = "NORMAL"
