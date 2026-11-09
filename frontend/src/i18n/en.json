@@ -13,7 +13,6 @@
     "analysis": "Analysis",
     "reports": "Reports",
     "profile": "Profile",
-    "soon": "Soon",
     "preferences": "Preferences",
     "language": "Language",
     "theme": "Theme",
@@ -215,7 +214,6 @@
     "resetSent": "If the email exists, you'll receive a link to reset your password.",
     "validation": {
       "emailInvalid": "Enter a valid email address.",
-      "passwordShort": "Password must be at least 8 characters.",
       "nameRequired": "Enter your name.",
       "emailTooLong": "Email cannot exceed 100 characters.",
       "passwordLength": "Password must be between 8 and 20 characters.",

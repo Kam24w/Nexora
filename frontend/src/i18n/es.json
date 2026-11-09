@@ -13,7 +13,6 @@
     "analysis": "Análisis",
     "reports": "Informes",
     "profile": "Perfil",
-    "soon": "Pronto",
     "preferences": "Preferencias",
     "language": "Idioma",
     "theme": "Tema",
@@ -215,7 +214,6 @@
     "resetSent": "Si el correo existe, recibirás un enlace para restablecer la contraseña.",
     "validation": {
       "emailInvalid": "Introduce un correo electrónico válido.",
-      "passwordShort": "La contraseña debe tener al menos 8 caracteres.",
       "nameRequired": "Introduce tu nombre.",
       "emailTooLong": "El correo no puede superar los 100 caracteres.",
       "passwordLength": "La contraseña debe tener entre 8 y 20 caracteres.",
