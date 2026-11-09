@@ -1,7 +1,14 @@
 import json
 from pathlib import Path
 
-from collector.collector import get_system_metrics, get_disk_activity, get_process_data, monitor_cpu, monitor_processes
+from collector.collector import (
+    get_system_metrics,
+    get_disk_activity,
+    get_process_data,
+    monitor_cpu,
+    monitor_processes,
+    summarize_processes,
+)
 from collector.temperature import get_system_temperature
 
 from diagnosis.diagnosis import diagnose_system
@@ -14,7 +21,12 @@ OUTPUT_PATHS = (
 )
 
 
-def run_diagnosis():
+# Deep scan: every process (not only the top consumers) and a longer CPU observation.
+DEEP_PROCESS_SAMPLE_S = 3
+DEEP_MONITOR_DURATION_S = 12
+
+
+def run_diagnosis(deep=False):
 
     metrics = get_system_metrics()
 
@@ -22,14 +34,18 @@ def run_diagnosis():
 
     temperature = get_system_temperature()
 
-    process_data = get_process_data()
+    process_data = (
+        get_process_data(sample_seconds=DEEP_PROCESS_SAMPLE_S, include_inactive=True)
+        if deep
+        else get_process_data()
+    )
 
     cpu_monitor = monitor_cpu()
 
     print("CPU monitoring:")
     print(cpu_monitor)
 
-    process_monitor = monitor_processes()
+    process_monitor = monitor_processes(duration=DEEP_MONITOR_DURATION_S) if deep else monitor_processes()
 
     print("Process monitoring:")
 
@@ -74,6 +90,8 @@ def run_diagnosis():
 
     diagnosis["cpu_temperature"] = temperature["celsius"]
     diagnosis["temperature_source"] = temperature["source"]
+    diagnosis["scan_type"] = "deep" if deep else "standard"
+    diagnosis["process_summary"] = summarize_processes(process_data)
 
     return diagnosis
 
