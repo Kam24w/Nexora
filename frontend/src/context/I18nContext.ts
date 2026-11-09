@@ -11,6 +11,8 @@ export interface I18nContextValue {
   tm: (message: Message) => string
   formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string
   formatRelativeTime: (date: Date) => string
+  /** Fecha absoluta en el formato del idioma activo (por defecto: fecha y hora medias). */
+  formatDate: (date: Date | string, options?: Intl.DateTimeFormatOptions) => string
 }
 
 export const [I18nContext, useI18n] = createStrictContext<I18nContextValue>('I18n')

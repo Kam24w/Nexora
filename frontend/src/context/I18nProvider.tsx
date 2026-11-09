@@ -41,6 +41,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       tm: (message: Message) => resolveMessage(language, message),
       formatNumber: (number, options) =>
         options ? new Intl.NumberFormat(language, options).format(number) : numberFormatter.format(number),
+      formatDate: (date, options = { dateStyle: 'medium', timeStyle: 'short' }) => {
+        const value = typeof date === 'string' ? new Date(date) : date
+        return Number.isNaN(value.getTime()) ? '—' : new Intl.DateTimeFormat(language, options).format(value)
+      },
       formatRelativeTime: (date) => {
         const seconds = Math.round((date.getTime() - Date.now()) / 1000)
         const [unit, size] = RELATIVE_UNITS.find(([, s]) => Math.abs(seconds) >= s) ?? ['second', 1]
