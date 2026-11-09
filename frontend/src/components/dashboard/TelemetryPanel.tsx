@@ -36,9 +36,7 @@ export function TelemetryPanel() {
           </h1>
         </div>
         <p className="text-xs text-muted">
-          {lastScanAt
-            ? t('dashboard.lastScan', { time: formatRelativeTime(lastScanAt) })
-            : t(telemetry ? 'dashboard.savedSnapshot' : 'dashboard.noScanYet')}
+          {lastScanAt ? t('dashboard.lastScan', { time: formatRelativeTime(lastScanAt) }) : t('dashboard.noScanYet')}
         </p>
       </header>
 

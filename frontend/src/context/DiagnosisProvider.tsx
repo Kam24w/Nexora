@@ -24,7 +24,10 @@ const ignoreAbort = (reason: unknown) => {
 }
 
 const toDiagnosisError = (reason: unknown): Exclude<DiagnosisError, null> => {
-  if (reason instanceof ApiError) return reason.kind === 'http' ? 'serverError' : reason.kind
+  if (reason instanceof ApiError) {
+    if (reason.status === 409) return 'busy'
+    return reason.kind === 'http' ? 'serverError' : reason.kind
+  }
   return 'serverError'
 }
 
@@ -49,15 +52,6 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
   const [deepScanAt, setDeepScanAt] = useState<Date | null>(null)
   const [serviceStatus, setServiceStatus] = useState<ServiceStatus>('checking')
   const controllerRef = useRef<AbortController | null>(null)
-
-  // Muestra el último diagnóstico guardado en disco mientras no se ejecute uno nuevo.
-  useEffect(() => {
-    const controller = new AbortController()
-    telemetryService.loadLatest(controller.signal).then((latest) => {
-      if (latest) setTelemetry((current) => current ?? latest)
-    })
-    return () => controller.abort()
-  }, [])
 
   useEffect(() => () => controllerRef.current?.abort(), [])
 
@@ -129,7 +123,7 @@ export function DiagnosisProvider({ children }: { children: ReactNode }) {
       setStage('saving')
       const saved = await reportsService.save(userId, captured, result)
       if (signal.aborted) return
-      setSaveState(saved.ok ? { status: 'saved', reportId: saved.report.id } : { status: 'error', error: saved.error })
+      setSaveState(saved.ok ? { status: 'saved', reportId: saved.report.id } : { status: 'error', error: saved.error, code: saved.code })
     } catch (reason) {
       if (isAbortError(reason) || signal.aborted) return
       const kind = toDiagnosisError(reason)

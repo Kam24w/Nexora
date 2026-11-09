@@ -5,8 +5,8 @@ import { toMessage } from './diagnosisMessages'
 
 /**
  * Motor de respaldo: convierte el pre-diagnóstico por reglas del backend en un
- * `AIDiagnosis` localizado. Se usa cuando el motor de IA no está disponible y para
- * el último diagnóstico guardado en disco, de modo que la UI tiene un único formato.
+ * `AIDiagnosis` localizado. Se usa cuando el motor de IA no está disponible,
+ * de modo que la UI tiene un único formato.
  */
 
 const STATUS_LEVEL = { NORMAL: 'ok', WARNING: 'warn', CRITICAL: 'crit' } as const satisfies Record<string, HealthLevel>

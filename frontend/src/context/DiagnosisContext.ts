@@ -7,8 +7,9 @@ import { createStrictContext } from './createStrictContext'
  * - offline: el servicio local no responde (no está en ejecución, otro puerto o CORS).
  * - timeout: el servicio tardó demasiado.
  * - serverError: el servicio respondió con un error.
+ * - busy: ya hay otro análisis midiendo el equipo.
  */
-export type DiagnosisError = 'offline' | 'timeout' | 'serverError' | null
+export type DiagnosisError = 'offline' | 'timeout' | 'serverError' | 'busy' | null
 
 /** Disponibilidad del servicio local (server.py), comprobada con GET /health. */
 export type ServiceStatus = 'checking' | 'online' | 'offline'
@@ -20,10 +21,10 @@ export type SaveState =
   | { status: 'idle' }
   | { status: 'saved'; reportId: string }
   | { status: 'skipped' }
-  | { status: 'error'; error: SaveReportError }
+  | { status: 'error'; error: SaveReportError; code?: string }
 
 export interface DiagnosisContextValue {
-  /** Última telemetría capturada (o el último diagnóstico guardado en disco). */
+  /** Última telemetría capturada . */
   telemetry: Telemetry | null
   /** Diagnóstico a mostrar: el de la IA si existe; si no, el del motor de reglas en el idioma activo. */
   diagnosis: AIDiagnosis | null

@@ -63,14 +63,4 @@ export const telemetryService = {
     })
     return parseTelemetry(body)
   },
-
-  /** Último diagnóstico guardado por `python main.py` (public/diagnosis.json, servido por Vite). */
-  async loadLatest(signal?: AbortSignal): Promise<Telemetry | null> {
-    try {
-      const response = await fetch('/diagnosis.json', { signal })
-      return response.ok ? parseTelemetry(await response.json()) : null
-    } catch {
-      return null
-    }
-  },
 }

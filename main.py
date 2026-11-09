@@ -17,7 +17,6 @@ from diagnosis.diagnosis import diagnose_system
 ROOT = Path(__file__).parent
 OUTPUT_PATHS = (
     ROOT / "data" / "diagnosis.json",
-    ROOT / "frontend" / "public" / "diagnosis.json",
 )
 
 
