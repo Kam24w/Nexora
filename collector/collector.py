@@ -2,6 +2,12 @@ import os
 import psutil
 import time
 
+from collector.process_classifier import CATEGORIES, classify_process
+
+# Not a real program: its "CPU usage" is the idle time of the machine.
+IDLE_PROCESS = "System Idle Process"
+PROCESS_ATTRS = ["pid", "name", "exe", "ppid"]
+
 
 def get_system_root():
     """Root of the system drive: C:\\ on Windows (or wherever Windows is installed), / elsewhere."""
@@ -41,12 +47,17 @@ def get_disk_activity():
         "write": round(disk_write, 2)
     }
     
-def get_process_data():
+def _classification(process):
+    return classify_process(process.info["name"], process.info["exe"], process.info["ppid"])
+
+
+def get_process_data(sample_seconds=1, include_inactive=False):
+    """Processes sorted by CPU. By default only those above 1 % (top consumers view)."""
     current_pid = psutil.Process().pid
 
     processes = []
 
-    for process in psutil.process_iter(["pid", "name"]):
+    for process in psutil.process_iter(PROCESS_ATTRS):
         try:
             process.cpu_percent(None)
             processes.append(process)
@@ -54,7 +65,7 @@ def get_process_data():
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
-    time.sleep(1)
+    time.sleep(sample_seconds)
 
     process_data = []
 
@@ -67,14 +78,16 @@ def get_process_data():
 
             if (
                 pid != current_pid
-                and name not in ["System Idle Process", "System"]
-                and cpu > 1
+                and name
+                and name != IDLE_PROCESS
+                and (include_inactive or cpu > 1)
             ):
                 process_data.append({
                     "pid": pid,
                     "name": name,
                     "cpu": cpu,
-                    "memory": memory
+                    "memory": memory,
+                    **_classification(process)
                 })
 
         except (psutil.NoSuchProcess, psutil.AccessDenied):
@@ -87,19 +100,29 @@ def get_process_data():
 
     return process_data
 
+
+def summarize_processes(processes):
+    """Number of processes per category."""
+    summary = {category: 0 for category in CATEGORIES}
+    for process in processes:
+        summary[process["category"]] += 1
+    summary["total"] = len(processes)
+    return summary
+
+
 def monitor_processes(duration=5, interval=1):
     process_samples = {}
     process_list = []
 
     # Get the processes that will be monitored
-    for process in psutil.process_iter(["pid", "name"]):
+    for process in psutil.process_iter(PROCESS_ATTRS):
         try:
             pid = process.info["pid"]
             name = process.info["name"]
 
             if (
                 pid != psutil.Process().pid
-                and name not in ["System Idle Process", "System", "dwm.exe"]
+                and name != IDLE_PROCESS
                 and name
             ):
                 # Establish the initial CPU measurement
@@ -123,6 +146,7 @@ def monitor_processes(duration=5, interval=1):
                 if pid not in process_samples:
                     process_samples[pid] = {
                         "name": name,
+                        "category": _classification(process)["category"],
                         "samples": []
                     }
 
@@ -156,6 +180,7 @@ def monitor_processes(duration=5, interval=1):
             monitored_processes.append({
                 "pid": pid,
                 "name": data["name"],
+                "category": data["category"],
                 "average_cpu": round(average_cpu, 1),
                 "maximum_cpu": round(maximum_cpu, 1),
                 "persistence": round(persistence, 1)
