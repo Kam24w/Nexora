@@ -25,7 +25,7 @@ const strings = (value: unknown): string[] =>
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
 
 /** Valida y normaliza la respuesta del backend: la UI nunca recibe datos malformados. */
-const parseTelemetry = (raw: unknown): Telemetry => {
+export const parseTelemetry = (raw: unknown): Telemetry => {
   if (!isRecord(raw)) throw new InvalidTelemetryError()
   const status = STATUSES.find((s) => s === raw.status) ?? 'NORMAL'
   const processes: ProcessSample[] = Array.isArray(raw.processes) ? raw.processes.filter(isRecord).map(parseProcess) : []
