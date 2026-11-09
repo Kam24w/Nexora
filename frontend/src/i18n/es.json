@@ -281,8 +281,13 @@
       "done": "Informe eliminado"
     },
     "export": {
-      "pdf": "Exportar PDF",
-      "json": "Descargar JSON"
+      "pdf": "Descargar PDF",
+      "json": "Descargar JSON",
+      "language": "Idioma del PDF",
+      "translating": "Traduciendo con IA…",
+      "preparing": "Preparando el PDF…",
+      "hint": "Se abrirá el diálogo de impresión: elige «Guardar como PDF».",
+      "translateFailed": "No se pudo traducir el informe"
     }
   },
   "profile": {
@@ -447,5 +452,12 @@
       "ai": "Generando el diagnóstico con IA",
       "saving": "Guardando el informe"
     }
+  },
+  "reportDocument": {
+    "title": "Informe de diagnóstico",
+    "fileTitle": "Nexora · Informe de diagnóstico · {{date}}",
+    "category": "Categoría",
+    "translatedNote": "Traducido automáticamente con IA desde el {{language}}.",
+    "footer": "Generado por Nexora · Informe {{id}} · Exportado el {{date}}"
   }
 }
