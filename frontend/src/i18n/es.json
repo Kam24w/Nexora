@@ -9,7 +9,8 @@
     "skipToContent": "Saltar al contenido",
     "errorTitle": "Algo salió mal en esta vista",
     "errorDescription": "Tus datos no se han perdido. Recarga la página para continuar.",
-    "reload": "Recargar"
+    "reload": "Recargar",
+    "closeNotification": "Cerrar notificación"
   },
   "nav": {
     "primary": "Navegación principal",
@@ -231,7 +232,16 @@
       "network": "Sin conexión con el servidor de autenticación.",
       "notConfigured": "La autenticación no está configurada. Define VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en .env.local.",
       "unknown": "Ocurrió un error inesperado. Inténtalo de nuevo."
-    }
+    },
+    "requirements": {
+      "title": "Tu contraseña debe tener:",
+      "length": "Entre 8 y 20 caracteres",
+      "letter": "Al menos una letra",
+      "number": "Al menos un número",
+      "met": "(cumplido)",
+      "unmet": "(pendiente)"
+    },
+    "fixErrors": "Revisa los campos marcados para continuar."
   },
   "reports": {
     "eyebrow": "Historial",
@@ -267,7 +277,8 @@
       "confirm": "¿Eliminar este informe? Esta acción no se puede deshacer.",
       "yes": "Eliminar definitivamente",
       "no": "Cancelar",
-      "error": "No se pudo eliminar el informe."
+      "error": "No se pudo eliminar el informe.",
+      "done": "Informe eliminado"
     },
     "export": {
       "pdf": "Exportar PDF",
@@ -291,7 +302,9 @@
       "email": "Correo electrónico",
       "emailHint": "El correo identifica tu cuenta y no se puede cambiar desde aquí.",
       "save": "Guardar cambios",
-      "saved": "Nombre actualizado."
+      "saved": "Nombre actualizado.",
+      "savedToast": "Nombre actualizado",
+      "savedToastDescription": "Así aparecerás en Nexora a partir de ahora."
     },
     "password": {
       "title": "Cambiar contraseña",
@@ -299,7 +312,10 @@
       "confirm": "Confirmar contraseña",
       "mismatch": "Las contraseñas no coinciden.",
       "save": "Actualizar contraseña",
-      "saved": "Contraseña actualizada."
+      "saved": "Contraseña actualizada.",
+      "savedToast": "¡Contraseña actualizada con éxito!",
+      "savedToastDescription": "Úsala la próxima vez que inicies sesión.",
+      "matches": "Las contraseñas coinciden"
     },
     "preferences": {
       "title": "Preferencias",

@@ -9,7 +9,8 @@
     "skipToContent": "Skip to content",
     "errorTitle": "Something went wrong in this view",
     "errorDescription": "Your data has not been lost. Reload the page to continue.",
-    "reload": "Reload"
+    "reload": "Reload",
+    "closeNotification": "Close notification"
   },
   "nav": {
     "primary": "Main navigation",
@@ -231,7 +232,16 @@
       "network": "Can't reach the authentication server.",
       "notConfigured": "Authentication isn't configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local.",
       "unknown": "Something went wrong. Please try again."
-    }
+    },
+    "requirements": {
+      "title": "Your password must have:",
+      "length": "Between 8 and 20 characters",
+      "letter": "At least one letter",
+      "number": "At least one number",
+      "met": "(met)",
+      "unmet": "(pending)"
+    },
+    "fixErrors": "Check the highlighted fields to continue."
   },
   "reports": {
     "eyebrow": "History",
@@ -267,7 +277,8 @@
       "confirm": "Delete this report? This can't be undone.",
       "yes": "Delete permanently",
       "no": "Cancel",
-      "error": "The report couldn't be deleted."
+      "error": "The report couldn't be deleted.",
+      "done": "Report deleted"
     },
     "export": {
       "pdf": "Export PDF",
@@ -291,7 +302,9 @@
       "email": "Email",
       "emailHint": "Your email identifies your account and can't be changed here.",
       "save": "Save changes",
-      "saved": "Name updated."
+      "saved": "Name updated.",
+      "savedToast": "Name updated",
+      "savedToastDescription": "This is how you will appear in Nexora from now on."
     },
     "password": {
       "title": "Change password",
@@ -299,7 +312,10 @@
       "confirm": "Confirm password",
       "mismatch": "Passwords don't match.",
       "save": "Update password",
-      "saved": "Password updated."
+      "saved": "Password updated.",
+      "savedToast": "Password updated successfully!",
+      "savedToastDescription": "Use it the next time you sign in.",
+      "matches": "Passwords match"
     },
     "preferences": {
       "title": "Preferences",
