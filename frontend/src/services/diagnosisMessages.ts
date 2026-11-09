@@ -17,6 +17,8 @@ const RULES: ReadonlyArray<{ pattern: RegExp; key: TranslationKey }> = [
   { pattern: /^Elevated system temperature$/, key: 'backend.issues.elevatedTemperature' },
   { pattern: /^Check that the vents are clean and the fans are working\.$/, key: 'backend.recommendations.checkCooling' },
   { pattern: /^Persistent high CPU usage in (?<name>.+)$/, key: 'backend.issues.persistentCpu' },
+  { pattern: /^Unexpected location for (?<name>.+)$/, key: 'backend.issues.unexpectedLocation' },
+  { pattern: /^Verify (?<name>.+) with your antivirus: it is not in the usual Windows folder\.$/, key: 'backend.recommendations.verifyProcess' },
   { pattern: /^Close unnecessary applications or processes\.$/, key: 'backend.recommendations.closeUnnecessary' },
   { pattern: /^Consider closing applications that are using a lot of CPU\.$/, key: 'backend.recommendations.closeCpuHeavy' },
   { pattern: /^Close applications that are using a lot of memory\.$/, key: 'backend.recommendations.closeMemoryHeavy' },

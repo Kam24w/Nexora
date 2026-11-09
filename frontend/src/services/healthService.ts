@@ -33,3 +33,9 @@ export const getHealthScore = ({ cpu, ram, disk_space }: Telemetry): number => {
 
 export const getTopProcesses = (processes: ProcessSample[], limit = 5): ProcessSample[] =>
   [...processes].sort((a, b) => b.cpu - a.cpu).slice(0, limit)
+
+/** Los de mayor consumo más los que requieren revisión, aunque apenas consuman: no deben perderse. */
+export const getHighlightedProcesses = (processes: ProcessSample[], limit = 5): ProcessSample[] => {
+  const top = getTopProcesses(processes, limit)
+  return [...top, ...processes.filter((process) => process.category === 'suspicious' && !top.includes(process))]
+}

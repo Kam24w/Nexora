@@ -16,7 +16,7 @@ const metricOf = (text: string): DiagnosisMetric => {
   if (lower.includes('temperature')) return 'temperature'
   if (lower.includes('disk')) return 'disk'
   if (lower.includes('ram') || lower.includes('memory')) return 'ram'
-  if (lower.includes('may be contributing') || lower.includes('persistent')) return 'process'
+  if (lower.includes('may be contributing') || lower.includes('persistent') || lower.includes('unexpected location')) return 'process'
   if (lower.includes('cpu')) return 'cpu'
   return 'none'
 }

@@ -8,6 +8,18 @@ export type HealthLevel = 'ok' | 'warn' | 'crit'
 
 export type MetricKind = 'cpu' | 'ram' | 'disk'
 
+/**
+ * Clasificación del colector (collector/process_classifier.py). Ningún proceso se oculta:
+ * - system: componente de Windows con la ubicación confirmada.
+ * - system_unverified: nombre de Windows, pero el sistema no deja leer su ruta.
+ * - suspicious: nombre de Windows ejecutándose desde una carpeta inesperada.
+ */
+export type ProcessCategory = 'system' | 'system_unverified' | 'suspicious' | 'application'
+
+export type ProcessSummary = Record<ProcessCategory | 'total', number>
+
+export type ScanType = 'standard' | 'deep'
+
 export interface ProcessSample {
   pid: number
   name: string
@@ -15,6 +27,9 @@ export interface ProcessSample {
   cpu: number
   /** Porcentaje de memoria RAM utilizada. */
   memory: number
+  category: ProcessCategory
+  /** Ruta del ejecutable (sin el nombre de la cuenta); `null` si no se pudo leer. */
+  path: string | null
 }
 
 /** Telemetría capturada por el servicio local (POST /diagnose) junto al pre-diagnóstico por reglas. */
@@ -34,6 +49,9 @@ export interface Telemetry {
   recommendations: string[]
   causes: string[]
   processes: ProcessSample[]
+  scan_type: ScanType
+  /** `null` en diagnósticos guardados por versiones anteriores. */
+  process_summary: ProcessSummary | null
 }
 
 /** Métrica a la que se atribuye una causa o hallazgo. */

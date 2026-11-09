@@ -1,5 +1,6 @@
 import type { AIDiagnosis, Telemetry } from '../types/diagnosis'
-import { getHealthScore, getTopProcesses } from './healthService'
+import { getHealthScore, getHighlightedProcesses } from './healthService'
+import { parseProcess, parseProcessSummary } from './processParsing'
 import { supabase } from './supabaseClient'
 
 /**
@@ -20,6 +21,8 @@ export interface DiagnosticReportPayload {
   source: AIDiagnosis['source']
   model: string | null
   health_score: number
+  scan_type: Telemetry['scan_type']
+  process_summary: Telemetry['process_summary']
   status: AIDiagnosis['status']
   summary: string
   probable_cause: AIDiagnosis['probableCause']
@@ -55,6 +58,8 @@ export const toReportPayload = (telemetry: Telemetry, diagnosis: AIDiagnosis): D
   source: diagnosis.source,
   model: diagnosis.model,
   health_score: getHealthScore(telemetry),
+  scan_type: telemetry.scan_type,
+  process_summary: telemetry.process_summary,
   status: diagnosis.status,
   summary: diagnosis.summary,
   probable_cause: diagnosis.probableCause,
@@ -70,7 +75,7 @@ export const toReportPayload = (telemetry: Telemetry, diagnosis: AIDiagnosis): D
     temperature_source: telemetry.temperature_source,
     rule_based_status: telemetry.status,
     rule_based_issues: telemetry.issues,
-    processes: getTopProcesses(telemetry.processes, 10),
+    processes: getHighlightedProcesses(telemetry.processes, 10),
   },
 })
 
@@ -97,4 +102,120 @@ export const reportsService = {
       return { ok: false, error: 'network' }
     }
   },
+
+  /** Informes del usuario autenticado, del más reciente al más antiguo (RLS filtra por usuario). */
+  async list(limit = REPORTS_PAGE_SIZE): Promise<ListReportsResult> {
+    if (!supabase) return { ok: false, error: 'notConfigured' }
+
+    try {
+      const { data, error } = await supabase
+        .from('diagnostic_reports')
+        .select('id, created_at, ai_diagnosis')
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+      if (error) return { ok: false, error: toReportError(error.code) }
+
+      const reports = (data ?? []).flatMap((row) => {
+        const payload = parsePayload(row.ai_diagnosis)
+        return payload ? [{ id: String(row.id), createdAt: String(row.created_at), payload }] : []
+      })
+      return { ok: true, reports }
+    } catch {
+      return { ok: false, error: 'network' }
+    }
+  },
+
+  async remove(id: string): Promise<RemoveReportResult> {
+    if (!supabase) return { ok: false, error: 'notConfigured' }
+
+    try {
+      // `count: 'exact'` permite detectar un borrado que RLS haya filtrado (0 filas).
+      const { error, count } = await supabase.from('diagnostic_reports').delete({ count: 'exact' }).eq('id', id)
+      if (error) return { ok: false, error: toReportError(error.code) }
+      if (count === 0) return { ok: false, error: 'unauthorized' }
+      return { ok: true }
+    } catch {
+      return { ok: false, error: 'network' }
+    }
+  },
+}
+
+// --- Lectura --------------------------------------------------------------
+
+export const REPORTS_PAGE_SIZE = 50
+
+export interface StoredReport {
+  id: string
+  createdAt: string
+  payload: DiagnosticReportPayload
+}
+
+export type ListReportsResult = { ok: true; reports: StoredReport[] } | { ok: false; error: SaveReportError }
+export type RemoveReportResult = { ok: true } | { ok: false; error: SaveReportError }
+
+const toReportError = (code: string | undefined): SaveReportError =>
+  code === '42501' || code?.startsWith('PGRST30') ? 'unauthorized' : 'unknown'
+
+const STATUSES: readonly DiagnosticReportPayload['status'][] = ['NORMAL', 'WARNING', 'CRITICAL']
+const SEVERITIES = ['ok', 'warn', 'crit'] as const
+const IMPACTS = ['low', 'medium', 'high'] as const
+const METRICS = ['cpu', 'ram', 'disk', 'temperature', 'process', 'none'] as const
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
+const str = (value: unknown): string => (typeof value === 'string' ? value : '')
+const num = (value: unknown): number => (typeof value === 'number' && Number.isFinite(value) ? value : 0)
+const pick = <T extends string>(options: readonly T[], value: unknown, fallback: T): T =>
+  options.find((option) => option === value) ?? fallback
+const records = (value: unknown): Record<string, unknown>[] => (Array.isArray(value) ? value.filter(isRecord) : [])
+
+/**
+ * Valida el JSON de `ai_diagnosis`. Las filas son datos persistidos (pueden venir de
+ * versiones anteriores o haberse editado a mano), así que nunca se confía en su forma.
+ * Devuelve `null` si la fila no es un informe de Nexora reconocible.
+ */
+export const parsePayload = (raw: unknown): DiagnosticReportPayload | null => {
+  if (!isRecord(raw) || !isRecord(raw.telemetry) || !isRecord(raw.probable_cause)) return null
+  const telemetry = raw.telemetry
+  const cause = raw.probable_cause
+
+  return {
+    version: REPORT_SCHEMA_VERSION,
+    generated_at: str(raw.generated_at),
+    language: raw.language === 'en' ? 'en' : 'es',
+    source: raw.source === 'ai' ? 'ai' : 'rules',
+    model: typeof raw.model === 'string' ? raw.model : null,
+    health_score: Math.round(Math.min(100, Math.max(0, num(raw.health_score)))),
+    scan_type: raw.scan_type === 'deep' ? 'deep' : 'standard',
+    process_summary: parseProcessSummary(raw.process_summary),
+    status: pick(STATUSES, raw.status, 'NORMAL'),
+    summary: str(raw.summary),
+    probable_cause: { title: str(cause.title), explanation: str(cause.explanation), metric: pick(METRICS, cause.metric, 'none') },
+    findings: records(raw.findings).map((f) => ({
+      title: str(f.title),
+      detail: str(f.detail),
+      severity: pick(SEVERITIES, f.severity, 'ok'),
+      metric: pick(METRICS, f.metric, 'none'),
+    })),
+    solutions: records(raw.solutions).map((s) => ({
+      title: str(s.title),
+      description: str(s.description),
+      impact: pick(IMPACTS, s.impact, 'medium'),
+      steps: Array.isArray(s.steps) ? s.steps.filter((step): step is string => typeof step === 'string') : [],
+    })),
+    telemetry: {
+      cpu: num(telemetry.cpu),
+      ram: num(telemetry.ram),
+      disk_space: num(telemetry.disk_space),
+      disk_read: num(telemetry.disk_read),
+      disk_write: num(telemetry.disk_write),
+      cpu_temperature: typeof telemetry.cpu_temperature === 'number' ? telemetry.cpu_temperature : null,
+      temperature_source: typeof telemetry.temperature_source === 'string' ? telemetry.temperature_source : null,
+      rule_based_status: pick(STATUSES, telemetry.rule_based_status, 'NORMAL'),
+      rule_based_issues: Array.isArray(telemetry.rule_based_issues)
+        ? telemetry.rule_based_issues.filter((issue): issue is string => typeof issue === 'string')
+        : [],
+      processes: records(telemetry.processes).map(parseProcess),
+    },
+  }
 }

@@ -1,8 +1,11 @@
 import type { ProcessSample, SystemStatus, Telemetry } from '../types/diagnosis'
 import { apiRequest } from './apiClient'
+import { parseProcess, parseProcessSummary } from './processParsing'
 
 /** La captura tarda ~15 s (muestreo de CPU y procesos); se deja margen. */
 const CAPTURE_TIMEOUT_MS = 60_000
+/** El escaneo profundo observa los procesos durante más tiempo (alrededor de 1 min). */
+const DEEP_SCAN_TIMEOUT_MS = 120_000
 
 const STATUSES: readonly SystemStatus[] = ['NORMAL', 'WARNING', 'CRITICAL']
 
@@ -24,14 +27,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> => typeof va
 const parseTelemetry = (raw: unknown): Telemetry => {
   if (!isRecord(raw)) throw new InvalidTelemetryError()
   const status = STATUSES.find((s) => s === raw.status) ?? 'NORMAL'
-  const processes: ProcessSample[] = Array.isArray(raw.processes)
-    ? raw.processes.filter(isRecord).map((p) => ({
-        pid: num(p.pid),
-        name: typeof p.name === 'string' ? p.name : '—',
-        cpu: num(p.cpu),
-        memory: num(p.memory),
-      }))
-    : []
+  const processes: ProcessSample[] = Array.isArray(raw.processes) ? raw.processes.filter(isRecord).map(parseProcess) : []
 
   return {
     cpu: num(raw.cpu),
@@ -47,19 +43,22 @@ const parseTelemetry = (raw: unknown): Telemetry => {
     recommendations: strings(raw.recommendations),
     causes: strings(raw.causes),
     processes,
+    scan_type: raw.scan_type === 'deep' ? 'deep' : 'standard',
+    process_summary: parseProcessSummary(raw.process_summary),
   }
 }
 
 export const telemetryService = {
   /**
-   * Captura CPU, RAM, almacenamiento, temperatura y procesos (POST /diagnose).
+   * Captura CPU, RAM, almacenamiento, temperatura y procesos (POST /diagnose o,
+   * con `deep`, POST /deep-scan: todos los procesos y una observación más larga).
    * Lanza `ApiError` si el servicio no está disponible.
    */
-  async capture(options: { signal?: AbortSignal; accessToken?: string } = {}): Promise<Telemetry> {
-    const body = await apiRequest('/diagnose', {
+  async capture(options: { signal?: AbortSignal; accessToken?: string; deep?: boolean } = {}): Promise<Telemetry> {
+    const body = await apiRequest(options.deep ? '/deep-scan' : '/diagnose', {
       method: 'POST',
       signal: options.signal,
-      timeoutMs: CAPTURE_TIMEOUT_MS,
+      timeoutMs: options.deep ? DEEP_SCAN_TIMEOUT_MS : CAPTURE_TIMEOUT_MS,
       headers: options.accessToken ? { Authorization: `Bearer ${options.accessToken}` } : undefined,
     })
     return parseTelemetry(body)
