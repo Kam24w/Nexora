@@ -26,6 +26,17 @@ def sanitize_text(value, max_length):
     return " ".join(visible.split())[:max_length].strip()
 
 
+def sanitize_multiline(value, max_length):
+    """Like sanitize_text, but keeps line breaks (chat messages)."""
+    if not isinstance(value, str):
+        return ""
+    lines = [sanitize_text(line, max_length) for line in value.replace("\r\n", "\n").split("\n")]
+    text = "\n".join(lines)
+    while "\n\n\n" in text:
+        text = text.replace("\n\n\n", "\n\n")
+    return text.strip()[:max_length].strip()
+
+
 def validate_email(value):
     """Returns (normalized_email, error_code)."""
     if not isinstance(value, str):
