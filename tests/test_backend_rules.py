@@ -44,6 +44,10 @@ class ClassifierTests(unittest.TestCase):
         self.assertEqual(self.category("Registry", "Registry", parent=4), pc.SYSTEM)
         self.assertEqual(self.category("chrome.exe", r"C:\Program Files\Google\chrome.exe"), pc.APPLICATION)
 
+    def test_vendor_driver_is_not_a_windows_component(self):
+        exe = r"C:\Windows\System32\DriverStore\FileRepository\hp.inf_amd64_x\AppHelperCap.exe"
+        self.assertEqual(self.category("AppHelperCap.exe", exe), pc.APPLICATION)
+
     def test_account_name_is_removed_from_paths(self):
         result = pc.mask_user_folder(r"C:\Users\ana\AppData\app.exe")
         self.assertEqual(result, r"%USERPROFILE%\AppData\app.exe")

@@ -78,6 +78,10 @@ def _classify_windows(name, exe, parent_pid):
         )
         return SYSTEM if any(_is_within(directory, folder) for folder in defender_folders) else SUSPICIOUS
 
+    # Third-party drivers (NVIDIA, HP...) are installed here, inside System32.
+    if _is_within(directory, _folder(root, "System32", "DriverStore")):
+        return APPLICATION
+
     trusted_folders = (*system_folders, _folder(root, "SystemApps"))
     return SYSTEM if any(_is_within(directory, folder) for folder in trusted_folders) else APPLICATION
 
