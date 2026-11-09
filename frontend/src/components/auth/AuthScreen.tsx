@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useI18n } from '../../context/I18nContext'
+import { validateEmail, validateOnServer, validatePassword, type AuthFieldErrors } from '../../services/authValidation'
 import type { AuthErrorCode } from '../../types/auth'
 import type { TranslationKey } from '../../types/i18n'
 import { LanguageSwitcher } from '../layout/LanguageSwitcher'
@@ -11,10 +12,6 @@ import { Spinner } from '../ui/Spinner'
 import { TextField } from './TextField'
 
 type Mode = 'signIn' | 'signUp' | 'reset'
-type FieldErrors = Partial<Record<'fullName' | 'email' | 'password', TranslationKey>>
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const MIN_PASSWORD = 8
 
 const COPY: Readonly<Record<Mode, { title: TranslationKey; subtitle: TranslationKey; submit: TranslationKey }>> = {
   signIn: { title: 'auth.signInTitle', subtitle: 'auth.signInSubtitle', submit: 'auth.signIn' },
@@ -29,7 +26,7 @@ export function AuthScreen() {
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({})
   const [formError, setFormError] = useState<AuthErrorCode | null>(isConfigured ? null : 'notConfigured')
   const [notice, setNotice] = useState<TranslationKey | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -41,11 +38,13 @@ export function AuthScreen() {
     setFormError(isConfigured ? null : 'notConfigured')
   }
 
-  const validate = (): FieldErrors => {
-    const errors: FieldErrors = {}
+  const validate = (): AuthFieldErrors => {
+    const errors: AuthFieldErrors = {}
     if (mode === 'signUp' && !fullName.trim()) errors.fullName = 'auth.validation.nameRequired'
-    if (!EMAIL_PATTERN.test(email.trim())) errors.email = 'auth.validation.emailInvalid'
-    if (mode !== 'reset' && password.length < MIN_PASSWORD) errors.password = 'auth.validation.passwordShort'
+    const emailError = validateEmail(email)
+    if (emailError) errors.email = emailError
+    const passwordError = mode === 'reset' ? null : validatePassword(password)
+    if (passwordError) errors.password = passwordError
     return errors
   }
 
@@ -60,11 +59,17 @@ export function AuthScreen() {
     setSubmitting(true)
     setFormError(null)
     try {
+      const checked = await validateOnServer({ mode, email, password, fullName })
+      if (!checked.ok) {
+        setFieldErrors(checked.errors)
+        return
+      }
+
       if (mode === 'signIn') {
-        const result = await signIn({ email, password })
+        const result = await signIn({ email: checked.email, password })
         if (!result.ok) setFormError(result.error)
       } else if (mode === 'signUp') {
-        const result = await signUp({ email, password, fullName })
+        const result = await signUp({ email: checked.email, password, fullName: checked.fullName })
         if (!result.ok) setFormError(result.error)
         else if (result.data.requiresEmailConfirmation) {
           setMode('signIn')
@@ -72,7 +77,7 @@ export function AuthScreen() {
           setNotice('auth.checkEmail')
         }
       } else {
-        const result = await resetPassword(email)
+        const result = await resetPassword(checked.email)
         if (!result.ok) setFormError(result.error)
         else setNotice('auth.resetSent')
       }
