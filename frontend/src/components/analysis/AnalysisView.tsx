@@ -27,7 +27,7 @@ export function AnalysisView() {
           {deepScanAt && <p className="text-xs text-muted">{formatDate(deepScanAt.toISOString(), { dateStyle: 'medium', timeStyle: 'short' })}</p>}
         </header>
 
-        <ScanHero deep />
+        <ScanHero type="advanced" />
         <ServiceStatusBanner />
         <ScanErrorAlert />
 
