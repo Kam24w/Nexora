@@ -250,15 +250,19 @@ class AIDiagnosticService:
             self._client = groq.Groq(timeout=REQUEST_TIMEOUT_S, max_retries=SDK_MAX_RETRIES)
         return self._client
 
-    def _complete(self, client: groq.Groq, messages: list) -> str:
-        """One chat completion in JSON mode. Maps provider errors to domain errors."""
+    def complete(self, messages: list, json_mode: bool = True) -> str:
+        """One chat completion (JSON mode by default), shared by every AI feature."""
+        return self._complete(self._get_client(), messages, json_mode)
+
+    def _complete(self, client: groq.Groq, messages: list, json_mode: bool = True) -> str:
+        """One chat completion. Maps provider errors to domain errors."""
         try:
             completion = client.chat.completions.create(
                 model=self._model,
                 messages=messages,
-                response_format={"type": "json_object"},
                 temperature=TEMPERATURE,
                 max_completion_tokens=MAX_COMPLETION_TOKENS,
+                **({"response_format": {"type": "json_object"}} if json_mode else {}),
             )
         except groq.AuthenticationError as error:
             logger.error("Groq authentication failed: %s", error)
