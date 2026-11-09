@@ -1,34 +1,32 @@
 import { useAuth } from '../../context/AuthContext'
 import { useI18n } from '../../context/I18nContext'
 import type { TranslationKey } from '../../types/i18n'
+import type { AppView } from '../../types/navigation'
+import { Avatar } from '../ui/Avatar'
 import { Icon, type IconName } from '../ui/Icon'
 import { Logo } from '../ui/LogoMark'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { ThemeToggle } from './ThemeToggle'
 
 interface NavEntry {
-  id: string
+  view: AppView
   icon: IconName
   label: TranslationKey
-  available: boolean
 }
 
 const NAV: readonly NavEntry[] = [
-  { id: 'dashboard', icon: 'dashboard', label: 'nav.dashboard', available: true },
-  { id: 'analysis', icon: 'analysis', label: 'nav.analysis', available: false },
-  { id: 'reports', icon: 'reports', label: 'nav.reports', available: false },
-  { id: 'profile', icon: 'profile', label: 'nav.profile', available: false },
+  { view: 'dashboard', icon: 'dashboard', label: 'nav.dashboard' },
+  { view: 'analysis', icon: 'analysis', label: 'nav.analysis' },
+  { view: 'reports', icon: 'reports', label: 'nav.reports' },
+  { view: 'profile', icon: 'profile', label: 'nav.profile' },
 ]
 
-const initials = (name: string) =>
-  name
-    .split(/[\s@._-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
+interface SidebarProps {
+  activeView: AppView
+  onNavigate: (view: AppView) => void
+}
 
-export function Sidebar() {
+export function Sidebar({ activeView, onNavigate }: SidebarProps) {
   const { user, status, signOut } = useAuth()
   const { t } = useI18n()
   const displayName = user?.fullName ?? user?.email ?? t('nav.localUser')
@@ -41,9 +39,7 @@ export function Sidebar() {
       </div>
 
       <div className="flex items-center gap-3 rounded-2xl bg-surface-muted p-3">
-        <div className="grid size-11 shrink-0 place-items-center rounded-full bg-linear-to-br from-[#16c4b4] to-[#0a7fa3] font-display text-sm font-bold text-white ring-4 ring-brand-soft">
-          {initials(displayName) || '·'}
-        </div>
+        <Avatar name={displayName} />
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-ink">{displayName}</p>
           {caption && caption !== displayName && <p className="truncate text-xs text-muted">{caption}</p>}
@@ -52,26 +48,21 @@ export function Sidebar() {
 
       <nav aria-label={t('nav.primary')} className="flex flex-col gap-1">
         {NAV.map((item) => {
-          const active = item.id === 'dashboard'
+          const active = item.view === activeView
           return (
             <button
-              key={item.id}
+              key={item.view}
               type="button"
-              disabled={!item.available}
+              onClick={() => onNavigate(item.view)}
               aria-current={active ? 'page' : undefined}
               className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${
                 active
                   ? 'bg-brand-soft font-semibold text-brand-strong'
-                  : 'text-ink-soft enabled:hover:bg-surface-muted enabled:hover:text-ink disabled:cursor-not-allowed disabled:opacity-60'
+                  : 'text-ink-soft hover:bg-surface-muted hover:text-ink'
               }`}
             >
               <Icon name={item.icon} />
               <span className="flex-1">{t(item.label)}</span>
-              {!item.available && (
-                <span className="rounded-md bg-surface-sunken px-1.5 py-0.5 text-[0.6rem] font-bold tracking-wider text-muted uppercase">
-                  {t('nav.soon')}
-                </span>
-              )}
             </button>
           )
         })}
