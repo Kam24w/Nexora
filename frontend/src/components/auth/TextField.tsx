@@ -6,9 +6,11 @@ interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'id
   label: string
   icon: IconName
   error?: string
+  /** Id de un texto de ayuda asociado (p. ej. los requisitos de la contraseña). */
+  hintId?: string
 }
 
-export function TextField({ label, icon, error, type = 'text', ...inputProps }: TextFieldProps) {
+export function TextField({ label, icon, error, hintId, type = 'text', ...inputProps }: TextFieldProps) {
   const { t } = useI18n()
   const id = useId()
   const errorId = `${id}-error`
@@ -30,7 +32,7 @@ export function TextField({ label, icon, error, type = 'text', ...inputProps }: 
           id={id}
           type={isPassword && reveal ? 'text' : type}
           aria-invalid={Boolean(error)}
-          aria-describedby={error ? errorId : undefined}
+          aria-describedby={[error ? errorId : null, hintId].filter(Boolean).join(' ') || undefined}
           className="min-w-0 flex-1 bg-transparent py-3 text-sm text-ink outline-none placeholder:text-muted"
           {...inputProps}
         />
@@ -47,7 +49,8 @@ export function TextField({ label, icon, error, type = 'text', ...inputProps }: 
         )}
       </div>
       {error && (
-        <p id={errorId} className="text-xs text-crit">
+        <p id={errorId} className="flex animate-fade-in items-start gap-1.5 text-xs text-crit">
+          <Icon name="alert" className="mt-px size-3.5" />
           {error}
         </p>
       )}
