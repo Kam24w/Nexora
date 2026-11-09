@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useDiagnosis } from '../../context/DiagnosisContext'
 import { useI18n } from '../../context/I18nContext'
-import { Icon } from '../ui/Icon'
 import { MetricGaugeCard } from './MetricGaugeCard'
 import { ProcessList } from './ProcessList'
+import { ScanErrorAlert } from './ScanErrorAlert'
 import { ScanHero } from './ScanHero'
 import { ServiceStatusBanner } from './ServiceStatusBanner'
 import { TemperatureReading } from './TemperatureReading'
@@ -20,7 +20,7 @@ function useNow(intervalMs = 30_000) {
 
 /** Columna central: telemetría y botón de análisis. */
 export function TelemetryPanel() {
-  const { telemetry, error, lastScanAt, dismissError } = useDiagnosis()
+  const { telemetry, lastScanAt } = useDiagnosis()
   const { t, formatNumber, formatRelativeTime } = useI18n()
   useNow()
 
@@ -46,15 +46,7 @@ export function TelemetryPanel() {
 
       <ServiceStatusBanner />
 
-      {error && error !== 'offline' && (
-        <div role="alert" className="flex items-start gap-3 rounded-xl border border-crit/30 bg-crit-soft p-4 text-sm text-crit">
-          <Icon name="alert" className="mt-0.5 size-4" />
-          <p className="flex-1">{t(`dashboard.errors.${error}`)}</p>
-          <button type="button" onClick={dismissError} aria-label={t('dashboard.errors.dismiss')} className="rounded-md p-0.5 hover:bg-crit/10">
-            <Icon name="close" className="size-4" />
-          </button>
-        </div>
-      )}
+      <ScanErrorAlert />
 
       <section aria-labelledby="telemetry-title" className="@container">
         <h2 id="telemetry-title" className="eyebrow mb-3 px-1">
