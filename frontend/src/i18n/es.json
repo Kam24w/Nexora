@@ -369,6 +369,67 @@
         "system": "Sistema",
         "application": "Aplicaciones"
       }
+    },
+    "hardware": {
+      "title": "Hardware analizado",
+      "subtitle": "La IA tuvo en cuenta estos componentes"
+    }
+  },
+  "scan": {
+    "types": {
+      "basic": "Análisis básico",
+      "advanced": "Análisis avanzado"
+    },
+    "durations": {
+      "basic": "≈ 20 segundos",
+      "advanced": "≈ 1 minuto"
+    },
+    "descriptions": {
+      "basic": "Una revisión rápida de los procesos que más consumen y del estado general de tu PC.",
+      "advanced": "Una revisión a fondo: todos los procesos y su ubicación, observación prolongada de la CPU y el hardware de tu equipo."
+    },
+    "includes": "Incluye",
+    "features": {
+      "basic": {
+        "metrics": "CPU, memoria, disco y temperatura",
+        "processes": "Procesos con mayor consumo",
+        "ai": "Diagnóstico con IA"
+      },
+      "advanced": {
+        "inventory": "Todos los procesos y su ubicación",
+        "monitor": "Observación prolongada de la CPU",
+        "hardware": "Hardware del equipo",
+        "ai": "Diagnóstico con IA adaptado a tu hardware"
+      }
+    },
+    "start": {
+      "basic": "Iniciar análisis básico",
+      "advanced": "Iniciar análisis avanzado"
+    },
+    "again": {
+      "basic": "Repetir análisis básico",
+      "advanced": "Repetir análisis avanzado"
+    },
+    "running": "{{type}} en curso",
+    "otherRunning": "Hay un {{type}} en curso. Espera a que termine para iniciar otro.",
+    "needMore": "¿Necesitas más detalle?",
+    "goAdvanced": "Abrir el análisis avanzado",
+    "progress": {
+      "label": "Progreso del análisis",
+      "step": "Paso {{current}} de {{total}}",
+      "elapsed": "Tiempo transcurrido",
+      "log": "Registro del análisis",
+      "pending": "Pendiente",
+      "inProgress": "En curso"
+    },
+    "steps": {
+      "metrics": "Midiendo CPU, memoria, disco y temperatura",
+      "processes": "Identificando los procesos activos",
+      "monitor": "Observando el rendimiento de los procesos",
+      "hardware": "Detectando el hardware del equipo",
+      "rules": "Evaluando las reglas de diagnóstico",
+      "ai": "Generando el diagnóstico con IA",
+      "saving": "Guardando el informe"
     }
   }
 }

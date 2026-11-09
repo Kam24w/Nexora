@@ -369,6 +369,67 @@
         "system": "System",
         "application": "Applications"
       }
+    },
+    "hardware": {
+      "title": "Analyzed hardware",
+      "subtitle": "The AI took these components into account"
+    }
+  },
+  "scan": {
+    "types": {
+      "basic": "Basic analysis",
+      "advanced": "Advanced analysis"
+    },
+    "durations": {
+      "basic": "≈ 20 seconds",
+      "advanced": "≈ 1 minute"
+    },
+    "descriptions": {
+      "basic": "A quick check of the most demanding processes and the overall state of your PC.",
+      "advanced": "An in-depth check: every process and its location, a longer CPU observation and your computer's hardware."
+    },
+    "includes": "Includes",
+    "features": {
+      "basic": {
+        "metrics": "CPU, memory, disk and temperature",
+        "processes": "Most demanding processes",
+        "ai": "AI diagnosis"
+      },
+      "advanced": {
+        "inventory": "Every process and its location",
+        "monitor": "Longer CPU observation",
+        "hardware": "Computer hardware",
+        "ai": "AI diagnosis tailored to your hardware"
+      }
+    },
+    "start": {
+      "basic": "Start basic analysis",
+      "advanced": "Start advanced analysis"
+    },
+    "again": {
+      "basic": "Run basic analysis again",
+      "advanced": "Run advanced analysis again"
+    },
+    "running": "{{type}} in progress",
+    "otherRunning": "A {{type}} is in progress. Wait for it to finish before starting another.",
+    "needMore": "Need more detail?",
+    "goAdvanced": "Open the advanced analysis",
+    "progress": {
+      "label": "Analysis progress",
+      "step": "Step {{current}} of {{total}}",
+      "elapsed": "Elapsed time",
+      "log": "Analysis log",
+      "pending": "Pending",
+      "inProgress": "In progress"
+    },
+    "steps": {
+      "metrics": "Measuring CPU, memory, disk and temperature",
+      "processes": "Identifying active processes",
+      "monitor": "Observing process performance",
+      "hardware": "Detecting the computer's hardware",
+      "rules": "Evaluating diagnosis rules",
+      "ai": "Generating the AI diagnosis",
+      "saving": "Saving the report"
     }
   }
 }
