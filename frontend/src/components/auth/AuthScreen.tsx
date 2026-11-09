@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useId, useRef, useState, type FormEvent } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useI18n } from '../../context/I18nContext'
 import {
@@ -17,6 +17,7 @@ import { ThemeToggle } from '../layout/ThemeToggle'
 import { Icon } from '../ui/Icon'
 import { Logo, LogoMark } from '../ui/LogoMark'
 import { Spinner } from '../ui/Spinner'
+import { PasswordRequirements } from './PasswordRequirements'
 import { TextField } from './TextField'
 
 type Mode = 'signIn' | 'signUp' | 'reset'
@@ -26,6 +27,10 @@ const COPY: Readonly<Record<Mode, { title: TranslationKey; subtitle: Translation
   signUp: { title: 'auth.signUpTitle', subtitle: 'auth.signUpSubtitle', submit: 'auth.signUp' },
   reset: { title: 'auth.resetTitle', subtitle: 'auth.resetSubtitle', submit: 'auth.sendResetLink' },
 }
+
+/** Lleva el foco al primer campo con error para que el usuario sepa qué corregir. */
+const focusFirstInvalid = (form: HTMLFormElement | null) =>
+  requestAnimationFrame(() => form?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus())
 
 export function AuthScreen() {
   const { signIn, signUp, resetPassword, isConfigured, enterLocalMode } = useAuth()
@@ -38,6 +43,8 @@ export function AuthScreen() {
   const [formError, setFormError] = useState<AuthErrorCode | null>(isConfigured ? null : 'notConfigured')
   const [notice, setNotice] = useState<TranslationKey | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const formRef = useRef<HTMLFormElement>(null)
+  const requirementsId = useId()
 
   const switchMode = (next: Mode) => {
     setMode(next)
@@ -62,7 +69,10 @@ export function AuthScreen() {
     const errors = validate()
     setFieldErrors(errors)
     setNotice(null)
-    if (Object.keys(errors).length) return
+    if (Object.keys(errors).length) {
+      focusFirstInvalid(formRef.current)
+      return
+    }
 
     setSubmitting(true)
     setFormError(null)
@@ -70,6 +80,7 @@ export function AuthScreen() {
       const checked = await validateOnServer({ mode, email, password, fullName })
       if (!checked.ok) {
         setFieldErrors(checked.errors)
+        focusFirstInvalid(formRef.current)
         return
       }
 
@@ -144,7 +155,7 @@ export function AuthScreen() {
             <p className="mt-1 text-sm text-muted">{t(copy.subtitle)}</p>
           </header>
 
-          <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form ref={formRef} noValidate onSubmit={handleSubmit} className="flex flex-col gap-4">
             {mode === 'signUp' && (
               <TextField
                 label={t('auth.fullName')}
@@ -180,8 +191,10 @@ export function AuthScreen() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 error={fieldErrors.password && t(fieldErrors.password)}
+                hintId={mode === 'signUp' ? requirementsId : undefined}
               />
             )}
+            {mode === 'signUp' && <PasswordRequirements id={requirementsId} password={password} />}
 
             {mode === 'signIn' && (
               <button
