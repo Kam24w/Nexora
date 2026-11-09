@@ -9,7 +9,8 @@ import type {
   Telemetry,
 } from '../types/diagnosis'
 import type { Language } from '../types/preferences'
-import { ApiError, apiRequest } from './apiClient'
+import { toAIFailure, type AIFailureReason } from './aiErrors'
+import { apiRequest } from './apiClient'
 import { toHardwarePayload } from './hardwareService'
 
 /** El servidor puede reintentar una vez si la salida del modelo no valida el esquema. */
@@ -23,7 +24,7 @@ const AI_TIMEOUT_MS = 90_000
  * entregarla a la UI.
  */
 
-export type AIFailureReason = 'ai_not_configured' | 'ai_unavailable' | 'ai_refused' | 'network'
+export type { AIFailureReason }
 
 export type AIResult = { ok: true; diagnosis: AIDiagnosis } | { ok: false; reason: AIFailureReason }
 
@@ -31,7 +32,6 @@ const STATUSES: readonly SystemStatus[] = ['NORMAL', 'WARNING', 'CRITICAL']
 const LEVELS: readonly HealthLevel[] = ['ok', 'warn', 'crit']
 const METRICS: readonly DiagnosisMetric[] = ['cpu', 'ram', 'disk', 'temperature', 'process', 'none']
 const IMPACTS: readonly SolutionImpact[] = ['low', 'medium', 'high']
-const SERVER_REASONS: readonly AIFailureReason[] = ['ai_not_configured', 'ai_unavailable', 'ai_refused']
 
 class InvalidAIResponse extends Error {}
 
@@ -94,10 +94,7 @@ export const aiDiagnosticService = {
         timeoutMs: AI_TIMEOUT_MS,
       })
     } catch (error) {
-      if (!(error instanceof ApiError)) throw error // AbortError del llamador
-      if (error.kind !== 'http') return { ok: false, reason: error.kind === 'timeout' ? 'ai_unavailable' : 'network' }
-      const code = isRecord(error.body) ? error.body.error : null
-      return { ok: false, reason: SERVER_REASONS.find((reason) => reason === code) ?? 'ai_unavailable' }
+      return { ok: false, reason: toAIFailure(error) }
     }
 
     try {
