@@ -17,7 +17,7 @@ export function ProcessBadge({ category }: { category: ProcessCategory }) {
   return (
     <span
       title={t(`processes.explain.${category}`)}
-      className={`inline-flex max-w-full items-center gap-1 rounded-md px-1.5 py-0.5 text-[0.65rem] font-semibold whitespace-nowrap ${className}`}
+      className={`inline-flex max-w-full items-center gap-1 rounded-md px-1.5 py-0.5 text-[0.7rem] font-semibold whitespace-nowrap ${className}`}
     >
       <Icon name={icon} className="size-3" />
       {t(`processes.category.${category}`)}

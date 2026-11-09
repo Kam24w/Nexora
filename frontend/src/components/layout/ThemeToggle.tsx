@@ -20,7 +20,7 @@ export function ThemeToggle() {
       <span className="flex-1 text-left">{t(isDark ? 'nav.themeDark' : 'nav.themeLight')}</span>
       <span
         aria-hidden="true"
-        className={`relative h-5 w-9 rounded-full transition-colors ${isDark ? 'bg-brand' : 'bg-line'}`}
+        className={`relative h-5 w-9 rounded-full transition-colors ${isDark ? 'bg-brand' : 'bg-control'}`}
       >
         <span
           className={`absolute top-0.5 left-0.5 size-4 rounded-full bg-white shadow transition-transform ${

@@ -38,7 +38,7 @@ export function MetricGaugeCard({ kind, value, footer, className = '' }: MetricG
             {t(meta.title)}
           </h3>
           {value !== null && (
-            <span className={`mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[0.62rem] font-bold ${styles.soft}`}>
+            <span className={`mt-1 inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[0.7rem] font-bold ${styles.soft}`}>
               <span className={`size-1.5 rounded-full ${styles.dot}`} />
               {t(`dashboard.levels.${level}`)}
             </span>

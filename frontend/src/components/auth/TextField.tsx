@@ -22,7 +22,7 @@ export function TextField({ label, icon, error, type = 'text', ...inputProps }: 
       </label>
       <div
         className={`flex items-center gap-2.5 rounded-xl border bg-surface px-3.5 transition focus-within:ring-4 ${
-          error ? 'border-crit/60 focus-within:ring-crit-soft' : 'border-line focus-within:border-brand focus-within:ring-brand-soft'
+          error ? 'border-crit/60 focus-within:ring-crit-soft' : 'border-control hover:border-brand focus-within:border-brand focus-within:ring-brand-soft'
         }`}
       >
         <Icon name={icon} className="size-4 text-muted" />
@@ -31,7 +31,7 @@ export function TextField({ label, icon, error, type = 'text', ...inputProps }: 
           type={isPassword && reveal ? 'text' : type}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className="min-w-0 flex-1 bg-transparent py-3 text-sm text-ink outline-none placeholder:text-muted/70"
+          className="min-w-0 flex-1 bg-transparent py-3 text-sm text-ink outline-none placeholder:text-muted"
           {...inputProps}
         />
         {isPassword && (

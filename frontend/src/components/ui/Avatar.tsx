@@ -16,7 +16,7 @@ export function Avatar({ name, size = 'md' }: { name: string; size?: keyof typeo
   return (
     <div
       aria-hidden="true"
-      className={`grid shrink-0 place-items-center rounded-full bg-linear-to-br from-[#16c4b4] to-[#0a7fa3] font-display font-bold text-white ring-brand-soft ${SIZES[size]}`}
+      className={`grid shrink-0 place-items-center rounded-full bg-linear-to-br from-[#0a7c83] to-[#0a7fa3] font-display font-bold text-white ring-brand-soft ${SIZES[size]}`}
     >
       {initials(name) || '·'}
     </div>

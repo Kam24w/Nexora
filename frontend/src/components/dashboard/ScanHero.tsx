@@ -42,7 +42,7 @@ export function ScanHero({ deep = false }: { deep?: boolean }) {
                     aria-current={active ? 'step' : undefined}
                     className={`flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition ${
                       active
-                        ? 'bg-brand text-white'
+                        ? 'bg-brand text-on-accent'
                         : done
                           ? 'bg-brand-soft text-brand-strong'
                           : 'bg-surface-sunken text-muted'

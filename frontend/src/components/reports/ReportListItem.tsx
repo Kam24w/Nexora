@@ -29,14 +29,14 @@ export function ReportListItem({ report, selected, onSelect }: ReportListItemPro
             <span className={`size-2 rounded-full ${styles.dot}`} />
             {formatDate(report.createdAt)}
           </span>
-          <span className={`rounded-full px-2 py-0.5 text-[0.65rem] font-bold tabular-nums ${styles.soft}`}>
+          <span className={`rounded-full px-2 py-0.5 text-[0.7rem] font-bold tabular-nums ${styles.soft}`}>
             {t('reports.score', { score: payload.health_score })}
           </span>
         </div>
         <p className="line-clamp-2 text-sm leading-snug font-semibold text-ink">
           {payload.probable_cause.title || t(`diagnosis.status.${payload.status}.label`)}
         </p>
-        <span className="flex items-center gap-1.5 text-[0.65rem] font-semibold text-muted uppercase">
+        <span className="flex items-center gap-1.5 text-[0.7rem] font-semibold text-muted uppercase">
           <Icon name={payload.source === 'ai' ? 'sparkles' : 'dashboard'} className="size-3" />
           {payload.source === 'ai'
             ? t('diagnosis.source.ai', { model: payload.model ?? 'LLM' })
