@@ -5,7 +5,11 @@
     "percent": "{{value}} %",
     "mbps": "{{value}} MB/s",
     "celsius": "{{value}} °C",
-    "gb": "{{value}} GB"
+    "gb": "{{value}} GB",
+    "skipToContent": "Saltar al contenido",
+    "errorTitle": "Algo salió mal en esta vista",
+    "errorDescription": "Tus datos no se han perdido. Recarga la página para continuar.",
+    "reload": "Recargar"
   },
   "nav": {
     "primary": "Navegación principal",
@@ -60,7 +64,8 @@
       "autoRetry": "Nexora vuelve a intentarlo automáticamente cada 5 segundos.",
       "retry": "Reintentar",
       "timeout": "El servicio de diagnóstico tardó demasiado en responder. Inténtalo de nuevo.",
-      "serverError": "El servicio de diagnóstico devolvió un error. Revisa la consola donde corre server.py."
+      "serverError": "El servicio de diagnóstico tuvo un problema. Inténtalo de nuevo.",
+      "busy": "Ya hay un análisis en curso en este equipo. Espera a que termine."
     },
     "metrics": {
       "title": "Telemetría del sistema",
@@ -146,8 +151,8 @@
     "languageMismatch": "Este diagnóstico se generó en {{language}}. Vuelve a analizar para obtenerlo en {{current}}.",
     "save": {
       "saved": "Informe guardado en tu historial",
-      "error": "No se pudo guardar el informe en Supabase.",
-      "unauthorized": "Supabase rechazó el guardado. Revisa la política RLS de diagnostic_reports.",
+      "error": "No se pudo guardar el informe.",
+      "unauthorized": "Tu sesión no permite guardar el informe. Vuelve a iniciar sesión.",
       "skipped": "Modo local: el informe no se guarda."
     },
     "rules": {
@@ -187,12 +192,12 @@
   "auth": {
     "tagline": "Diagnóstico inteligente para tu PC",
     "heroTitle": "Entiende por qué tu equipo va lento",
-    "heroDescription": "Telemetría en tiempo real, causas probables y soluciones claras en un solo lugar.",
+    "heroDescription": "Mediciones reales de tu PC, causas probables y soluciones claras en un solo lugar.",
     "signInTitle": "Inicia sesión",
     "signUpTitle": "Crea tu cuenta",
     "resetTitle": "Recupera tu contraseña",
     "signInSubtitle": "Accede a tu panel de diagnóstico.",
-    "signUpSubtitle": "Guarda tus diagnósticos y sincroniza tus equipos.",
+    "signUpSubtitle": "Guarda tus diagnósticos y consúltalos cuando quieras.",
     "resetSubtitle": "Te enviaremos un enlace para restablecerla.",
     "fullName": "Nombre completo",
     "fullNamePlaceholder": "Tu nombre",
@@ -233,8 +238,8 @@
   "reports": {
     "eyebrow": "Historial",
     "title": "Informes de diagnóstico",
-    "subtitle": "Cada análisis automático se guarda en tu cuenta de Supabase.",
-    "count": "{{count}} informes",
+    "subtitle": "Cada análisis se guarda en tu cuenta.",
+    "count": "Informes: {{count}}",
     "refresh": "Actualizar",
     "loading": "Cargando informes…",
     "localMode": "Inicia sesión para guardar y consultar tus informes de diagnóstico.",
@@ -244,9 +249,9 @@
       "cta": "Ir al panel"
     },
     "errors": {
-      "notConfigured": "Supabase no está configurado en este equipo.",
-      "unauthorized": "Supabase rechazó la consulta. Revisa la política RLS de diagnostic_reports.",
-      "network": "No hay conexión con Supabase.",
+      "notConfigured": "El guardado de informes no está configurado en este equipo.",
+      "unauthorized": "Tu sesión no permite consultar los informes. Vuelve a iniciar sesión.",
+      "network": "Sin conexión con el servidor de informes.",
       "unknown": "No se pudieron cargar los informes."
     },
     "listLabel": "Lista de informes",
@@ -265,6 +270,10 @@
       "yes": "Eliminar definitivamente",
       "no": "Cancelar",
       "error": "No se pudo eliminar el informe."
+    },
+    "export": {
+      "pdf": "Exportar PDF",
+      "json": "Descargar JSON"
     }
   },
   "profile": {
@@ -335,7 +344,8 @@
       "technicalName": "Nombre técnico",
       "path": "Ubicación",
       "pathUnavailable": "No disponible",
-      "classification": "Clasificación"
+      "classification": "Clasificación",
+      "column": "Detalles"
     }
   },
   "analysis": {

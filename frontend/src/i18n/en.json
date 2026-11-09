@@ -5,7 +5,11 @@
     "percent": "{{value}}%",
     "mbps": "{{value}} MB/s",
     "celsius": "{{value}} °C",
-    "gb": "{{value}} GB"
+    "gb": "{{value}} GB",
+    "skipToContent": "Skip to content",
+    "errorTitle": "Something went wrong in this view",
+    "errorDescription": "Your data has not been lost. Reload the page to continue.",
+    "reload": "Reload"
   },
   "nav": {
     "primary": "Main navigation",
@@ -60,7 +64,8 @@
       "autoRetry": "Nexora retries automatically every 5 seconds.",
       "retry": "Retry",
       "timeout": "The diagnosis service took too long to respond. Please try again.",
-      "serverError": "The diagnosis service returned an error. Check the console running server.py."
+      "serverError": "The diagnosis service had a problem. Please try again.",
+      "busy": "An analysis is already running on this computer. Wait for it to finish."
     },
     "metrics": {
       "title": "System telemetry",
@@ -146,8 +151,8 @@
     "languageMismatch": "This diagnosis was generated in {{language}}. Analyze again to get it in {{current}}.",
     "save": {
       "saved": "Report saved to your history",
-      "error": "The report couldn't be saved to Supabase.",
-      "unauthorized": "Supabase rejected the save. Check the RLS policy on diagnostic_reports.",
+      "error": "The report could not be saved.",
+      "unauthorized": "Your session cannot save the report. Please sign in again.",
       "skipped": "Local mode: the report isn't saved."
     },
     "rules": {
@@ -187,12 +192,12 @@
   "auth": {
     "tagline": "Smart diagnostics for your PC",
     "heroTitle": "Understand why your computer is slow",
-    "heroDescription": "Real-time telemetry, probable causes and clear fixes in one place.",
+    "heroDescription": "Real measurements from your PC, probable causes and clear fixes in one place.",
     "signInTitle": "Sign in",
     "signUpTitle": "Create your account",
     "resetTitle": "Reset your password",
     "signInSubtitle": "Access your diagnosis dashboard.",
-    "signUpSubtitle": "Save your diagnoses and sync your devices.",
+    "signUpSubtitle": "Save your diagnoses and review them anytime.",
     "resetSubtitle": "We'll email you a link to reset it.",
     "fullName": "Full name",
     "fullNamePlaceholder": "Your name",
@@ -233,8 +238,8 @@
   "reports": {
     "eyebrow": "History",
     "title": "Diagnosis reports",
-    "subtitle": "Every automatic analysis is saved to your Supabase account.",
-    "count": "{{count}} reports",
+    "subtitle": "Every analysis is saved to your account.",
+    "count": "Reports: {{count}}",
     "refresh": "Refresh",
     "loading": "Loading reports…",
     "localMode": "Sign in to save and browse your diagnosis reports.",
@@ -244,9 +249,9 @@
       "cta": "Go to dashboard"
     },
     "errors": {
-      "notConfigured": "Supabase isn't configured on this computer.",
-      "unauthorized": "Supabase rejected the query. Check the RLS policy on diagnostic_reports.",
-      "network": "Can't reach Supabase.",
+      "notConfigured": "Report saving is not configured on this computer.",
+      "unauthorized": "Your session cannot read the reports. Please sign in again.",
+      "network": "No connection to the reports server.",
       "unknown": "The reports couldn't be loaded."
     },
     "listLabel": "Report list",
@@ -265,6 +270,10 @@
       "yes": "Delete permanently",
       "no": "Cancel",
       "error": "The report couldn't be deleted."
+    },
+    "export": {
+      "pdf": "Export PDF",
+      "json": "Download JSON"
     }
   },
   "profile": {
@@ -335,7 +344,8 @@
       "technicalName": "Technical name",
       "path": "Location",
       "pathUnavailable": "Not available",
-      "classification": "Classification"
+      "classification": "Classification",
+      "column": "Details"
     }
   },
   "analysis": {
