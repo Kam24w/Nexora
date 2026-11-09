@@ -18,6 +18,8 @@ export interface AuthContextValue {
   signIn: (credentials: SignInCredentials) => Promise<AuthResult<AuthSession>>
   signUp: (credentials: SignUpCredentials) => Promise<AuthResult<SignUpOutcome>>
   resetPassword: (email: string) => Promise<AuthResult<null>>
+  updateProfile: (fullName: string) => Promise<AuthResult<null>>
+  updatePassword: (password: string) => Promise<AuthResult<null>>
   signOut: () => Promise<void>
   /** Solo en desarrollo y sin Supabase configurado: permite usar el panel sin cuenta. */
   enterLocalMode: (() => void) | null

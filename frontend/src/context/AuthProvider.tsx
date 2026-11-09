@@ -36,6 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = useCallback((credentials: SignInCredentials) => authService.signIn(credentials), [])
   const signUp = useCallback((credentials: SignUpCredentials) => authService.signUp(credentials), [])
   const resetPassword = useCallback((email: string) => authService.resetPassword(email), [])
+  const updateProfile = useCallback((fullName: string) => authService.updateProfile(fullName), [])
+  const updatePassword = useCallback((password: string) => authService.updatePassword(password), [])
 
   const signOut = useCallback(async () => {
     if (status === 'local') {
@@ -58,10 +60,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signUp,
       resetPassword,
+      updateProfile,
+      updatePassword,
       signOut,
       enterLocalMode: allowLocalMode ? enterLocalMode : null,
     }),
-    [status, session, signIn, signUp, resetPassword, signOut, enterLocalMode],
+    [status, session, signIn, signUp, resetPassword, updateProfile, updatePassword, signOut, enterLocalMode],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

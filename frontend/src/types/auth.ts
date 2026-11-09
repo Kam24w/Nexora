@@ -2,6 +2,8 @@ export interface AuthUser {
   id: string
   email: string
   fullName: string | null
+  /** ISO 8601; fecha de registro de la cuenta. */
+  createdAt: string | null
 }
 
 export interface AuthSession {

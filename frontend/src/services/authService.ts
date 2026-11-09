@@ -26,6 +26,7 @@ const toAuthSession = (session: Session): AuthSession => {
       id: session.user.id,
       email: session.user.email ?? '',
       fullName: typeof metadata?.full_name === 'string' && metadata.full_name ? metadata.full_name : null,
+      createdAt: session.user.created_at ?? null,
     },
   }
 }
@@ -84,6 +85,28 @@ export const authService = {
           requiresEmailConfirmation: !data.session,
         },
       }
+    } catch (error) {
+      return fail(error)
+    }
+  },
+
+  /** Actualiza el nombre visible (user_metadata.full_name). Dispara USER_UPDATED en onSessionChange. */
+  async updateProfile(fullName: string): Promise<AuthResult<null>> {
+    if (!supabase) return NOT_CONFIGURED
+    try {
+      const { error } = await supabase.auth.updateUser({ data: { full_name: fullName.trim() } })
+      return error ? fail(error) : { ok: true, data: null }
+    } catch (error) {
+      return fail(error)
+    }
+  },
+
+  /** Cambia la contraseña del usuario con sesión iniciada. */
+  async updatePassword(password: string): Promise<AuthResult<null>> {
+    if (!supabase) return NOT_CONFIGURED
+    try {
+      const { error } = await supabase.auth.updateUser({ password })
+      return error ? fail(error) : { ok: true, data: null }
     } catch (error) {
       return fail(error)
     }
