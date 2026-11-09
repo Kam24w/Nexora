@@ -72,15 +72,7 @@ def diagnose_system(cpu_usage, ram_usage, disk_space, disk_read, disk_write, pro
 
     # Check persistent high CPU processes
     if process_monitor:
-        print("\nPersistent CPU candidates:")
-
         for process in process_monitor:
-            print(
-                process["name"],
-                "| Average:", process["average_cpu"],
-                "| Persistence:", process["persistence"]
-            )
-
             if (
                 process["average_cpu"] >= 30
                 and process["persistence"] >= 60
