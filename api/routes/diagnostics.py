@@ -1,39 +1,12 @@
 import platform
-import threading
 
 from flask import Blueprint, current_app, jsonify
 
-from api.errors import ScanInProgressError
 from api.requests import json_object_body
-from main import run_diagnosis
 
 diagnostics_routes = Blueprint("diagnostics", __name__)
 
 OPERATING_SYSTEMS = {"Windows": "Windows", "Linux": "Linux", "Darwin": "macOS"}
-
-# Two scans at once would skew each other's CPU samples.
-_scan_lock = threading.Lock()
-
-
-def _exclusive_scan(deep):
-    if not _scan_lock.acquire(blocking=False):
-        raise ScanInProgressError
-    try:
-        return run_diagnosis(deep=deep)
-    finally:
-        _scan_lock.release()
-
-
-@diagnostics_routes.post("/diagnose")
-def diagnose():
-    """Captures CPU, RAM, storage, temperature and processes, plus the rule-based pre-check."""
-    return jsonify(_exclusive_scan(deep=False))
-
-
-@diagnostics_routes.post("/deep-scan")
-def deep_scan():
-    """On-demand scan: every running process, classified, with a longer CPU observation (about a minute)."""
-    return jsonify(_exclusive_scan(deep=True))
 
 
 @diagnostics_routes.post("/ai-diagnosis")
