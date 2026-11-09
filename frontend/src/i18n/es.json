@@ -4,7 +4,8 @@
     "loading": "Cargando…",
     "percent": "{{value}} %",
     "mbps": "{{value}} MB/s",
-    "celsius": "{{value}} °C"
+    "celsius": "{{value}} °C",
+    "gb": "{{value}} GB"
   },
   "nav": {
     "primary": "Navegación principal",
@@ -166,7 +167,8 @@
       "highDiskActivity": "Actividad de disco elevada",
       "persistentCpu": "Uso de CPU alto y persistente en {{name}}",
       "highTemperature": "Temperatura del sistema muy alta",
-      "elevatedTemperature": "Temperatura del sistema elevada"
+      "elevatedTemperature": "Temperatura del sistema elevada",
+      "unexpectedLocation": "{{name}} se ejecuta desde una ubicación inesperada"
     },
     "recommendations": {
       "closeUnnecessary": "Cierra las aplicaciones o procesos innecesarios.",
@@ -176,7 +178,8 @@
       "freeDisk": "Libera espacio eliminando archivos innecesarios.",
       "considerFreeDisk": "Considera liberar algo de espacio en disco.",
       "closeProcess": "Considera cerrar {{name}} si no lo necesitas.",
-      "checkCooling": "Comprueba que las rejillas estén limpias y que los ventiladores funcionen."
+      "checkCooling": "Comprueba que las rejillas estén limpias y que los ventiladores funcionen.",
+      "verifyProcess": "Analiza {{name}} con tu antivirus: no está en la carpeta habitual de Windows."
     },
     "causes": {
       "processCpu": "{{name}} podría estar provocando el alto uso de CPU."
@@ -197,7 +200,7 @@
     "email": "Correo electrónico",
     "emailPlaceholder": "nombre@correo.com",
     "password": "Contraseña",
-    "passwordPlaceholder": "Mínimo 8 caracteres",
+    "passwordPlaceholder": "De 8 a 20 caracteres, con letra y número",
     "showPassword": "Mostrar contraseña",
     "hidePassword": "Ocultar contraseña",
     "signIn": "Iniciar sesión",
@@ -213,7 +216,10 @@
     "validation": {
       "emailInvalid": "Introduce un correo electrónico válido.",
       "passwordShort": "La contraseña debe tener al menos 8 caracteres.",
-      "nameRequired": "Introduce tu nombre."
+      "nameRequired": "Introduce tu nombre.",
+      "emailTooLong": "El correo no puede superar los 100 caracteres.",
+      "passwordLength": "La contraseña debe tener entre 8 y 20 caracteres.",
+      "passwordComposition": "La contraseña debe incluir al menos una letra y un número."
     },
     "errors": {
       "invalidCredentials": "Correo o contraseña incorrectos.",
@@ -224,6 +230,139 @@
       "network": "Sin conexión con el servidor de autenticación.",
       "notConfigured": "La autenticación no está configurada. Define VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY en .env.local.",
       "unknown": "Ocurrió un error inesperado. Inténtalo de nuevo."
+    }
+  },
+  "reports": {
+    "eyebrow": "Historial",
+    "title": "Informes de diagnóstico",
+    "subtitle": "Cada análisis automático se guarda en tu cuenta de Supabase.",
+    "count": "{{count}} informes",
+    "refresh": "Actualizar",
+    "loading": "Cargando informes…",
+    "localMode": "Inicia sesión para guardar y consultar tus informes de diagnóstico.",
+    "empty": {
+      "title": "Aún no hay informes",
+      "description": "Ejecuta un análisis desde el panel y el resultado aparecerá aquí.",
+      "cta": "Ir al panel"
+    },
+    "errors": {
+      "notConfigured": "Supabase no está configurado en este equipo.",
+      "unauthorized": "Supabase rechazó la consulta. Revisa la política RLS de diagnostic_reports.",
+      "network": "No hay conexión con Supabase.",
+      "unknown": "No se pudieron cargar los informes."
+    },
+    "listLabel": "Lista de informes",
+    "score": "Salud {{score}}/100",
+    "detail": {
+      "select": "Selecciona un informe para ver el detalle.",
+      "generatedWith": "Generado con {{source}} · {{language}}",
+      "telemetry": "Telemetría capturada",
+      "processes": "Procesos con mayor consumo",
+      "back": "Volver a la lista",
+      "deepScan": "Escaneo profundo"
+    },
+    "delete": {
+      "action": "Eliminar",
+      "confirm": "¿Eliminar este informe? Esta acción no se puede deshacer.",
+      "yes": "Eliminar definitivamente",
+      "no": "Cancelar",
+      "error": "No se pudo eliminar el informe."
+    }
+  },
+  "profile": {
+    "eyebrow": "Cuenta",
+    "title": "Perfil",
+    "memberSince": "Miembro desde {{date}}",
+    "localMode": "Estás en modo local: inicia sesión para editar tu perfil y guardar informes.",
+    "stats": {
+      "reports": "Informes guardados",
+      "avgScore": "Salud media",
+      "lastReport": "Último informe",
+      "none": "—"
+    },
+    "account": {
+      "title": "Datos de la cuenta",
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "emailHint": "El correo identifica tu cuenta y no se puede cambiar desde aquí.",
+      "save": "Guardar cambios",
+      "saved": "Nombre actualizado."
+    },
+    "password": {
+      "title": "Cambiar contraseña",
+      "new": "Nueva contraseña",
+      "confirm": "Confirmar contraseña",
+      "mismatch": "Las contraseñas no coinciden.",
+      "save": "Actualizar contraseña",
+      "saved": "Contraseña actualizada."
+    },
+    "preferences": {
+      "title": "Preferencias",
+      "description": "Se guardan en este equipo y se aplican al instante."
+    },
+    "session": {
+      "title": "Sesión",
+      "description": "Cierra la sesión en este equipo. Tus informes seguirán guardados en tu cuenta."
+    },
+    "hardware": {
+      "title": "Hardware de este equipo",
+      "description": "Componentes detectados en el PC donde corre Nexora.",
+      "loading": "Detectando componentes…",
+      "unavailable": "No se pudo leer el hardware. Comprueba que el servicio local (server.py) esté en marcha.",
+      "unknown": "No detectado",
+      "cpu": "Procesador",
+      "cores": "{{physical}} núcleos · {{logical}} hilos",
+      "ram": "Memoria RAM total",
+      "storage": "Almacenamiento",
+      "systemDrive": "Unidad del sistema",
+      "gpu": "Tarjeta gráfica"
+    }
+  },
+  "processes": {
+    "category": {
+      "system": "Sistema Windows - Seguro",
+      "system_unverified": "Sistema Windows - Sin verificar",
+      "suspicious": "Revisar ubicación",
+      "application": "Aplicación"
+    },
+    "explain": {
+      "system": "Componente de Windows: se ejecuta desde su carpeta original, así que es normal verlo aquí.",
+      "system_unverified": "Tiene nombre de componente de Windows, pero el sistema no permite leer su ubicación para confirmarlo.",
+      "suspicious": "Usa el nombre de un componente de Windows, pero no está en su carpeta habitual. Conviene analizarlo con tu antivirus.",
+      "application": "Programa instalado o abierto por el usuario."
+    },
+    "details": {
+      "show": "Ver detalles de {{name}}",
+      "hide": "Ocultar detalles de {{name}}",
+      "technicalName": "Nombre técnico",
+      "path": "Ubicación",
+      "pathUnavailable": "No disponible",
+      "classification": "Clasificación"
+    }
+  },
+  "analysis": {
+    "eyebrow": "Nexora · Escaneo profundo",
+    "title": "Análisis bajo demanda",
+    "scan": {
+      "readyTitle": "Escaneo profundo",
+      "readyDescription": "Revisa todos los procesos en ejecución, comprueba su ubicación y observa la CPU durante más tiempo. Tarda alrededor de un minuto.",
+      "start": "Iniciar escaneo profundo",
+      "again": "Repetir escaneo profundo"
+    },
+    "inventory": {
+      "title": "Inventario de procesos",
+      "subtitle": "Todos los procesos en ejecución",
+      "empty": "Inicia un escaneo profundo para ver y clasificar todos los procesos de tu equipo.",
+      "emptyFilter": "No hay procesos en esta categoría.",
+      "noneSuspicious": "Ningún proceso del sistema se ejecuta desde una ubicación inesperada.",
+      "reviewNeeded": "Procesos que conviene revisar: {{count}}. Aparecen primero en la lista.",
+      "filterLabel": "Filtrar procesos",
+      "filters": {
+        "all": "Todos",
+        "suspicious": "A revisar",
+        "system": "Sistema",
+        "application": "Aplicaciones"
+      }
     }
   }
 }

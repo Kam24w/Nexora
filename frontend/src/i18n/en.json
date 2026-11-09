@@ -4,7 +4,8 @@
     "loading": "Loading…",
     "percent": "{{value}}%",
     "mbps": "{{value}} MB/s",
-    "celsius": "{{value}} °C"
+    "celsius": "{{value}} °C",
+    "gb": "{{value}} GB"
   },
   "nav": {
     "primary": "Main navigation",
@@ -166,7 +167,8 @@
       "highDiskActivity": "High disk activity",
       "persistentCpu": "Persistent high CPU usage in {{name}}",
       "highTemperature": "High system temperature",
-      "elevatedTemperature": "Elevated system temperature"
+      "elevatedTemperature": "Elevated system temperature",
+      "unexpectedLocation": "{{name}} is running from an unexpected location"
     },
     "recommendations": {
       "closeUnnecessary": "Close unnecessary applications or processes.",
@@ -176,7 +178,8 @@
       "freeDisk": "Free up disk space by removing unnecessary files.",
       "considerFreeDisk": "Consider freeing up some disk space.",
       "closeProcess": "Consider closing {{name}} if it is not needed.",
-      "checkCooling": "Check that the vents are clean and the fans are working."
+      "checkCooling": "Check that the vents are clean and the fans are working.",
+      "verifyProcess": "Scan {{name}} with your antivirus: it is not in the usual Windows folder."
     },
     "causes": {
       "processCpu": "{{name}} may be contributing to high CPU usage."
@@ -197,7 +200,7 @@
     "email": "Email",
     "emailPlaceholder": "name@email.com",
     "password": "Password",
-    "passwordPlaceholder": "At least 8 characters",
+    "passwordPlaceholder": "8 to 20 characters, with a letter and a number",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "signIn": "Sign in",
@@ -213,7 +216,10 @@
     "validation": {
       "emailInvalid": "Enter a valid email address.",
       "passwordShort": "Password must be at least 8 characters.",
-      "nameRequired": "Enter your name."
+      "nameRequired": "Enter your name.",
+      "emailTooLong": "Email cannot exceed 100 characters.",
+      "passwordLength": "Password must be between 8 and 20 characters.",
+      "passwordComposition": "Password must include at least one letter and one number."
     },
     "errors": {
       "invalidCredentials": "Incorrect email or password.",
@@ -224,6 +230,139 @@
       "network": "Can't reach the authentication server.",
       "notConfigured": "Authentication isn't configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local.",
       "unknown": "Something went wrong. Please try again."
+    }
+  },
+  "reports": {
+    "eyebrow": "History",
+    "title": "Diagnosis reports",
+    "subtitle": "Every automatic analysis is saved to your Supabase account.",
+    "count": "{{count}} reports",
+    "refresh": "Refresh",
+    "loading": "Loading reports…",
+    "localMode": "Sign in to save and browse your diagnosis reports.",
+    "empty": {
+      "title": "No reports yet",
+      "description": "Run an analysis from the dashboard and the result will show up here.",
+      "cta": "Go to dashboard"
+    },
+    "errors": {
+      "notConfigured": "Supabase isn't configured on this computer.",
+      "unauthorized": "Supabase rejected the query. Check the RLS policy on diagnostic_reports.",
+      "network": "Can't reach Supabase.",
+      "unknown": "The reports couldn't be loaded."
+    },
+    "listLabel": "Report list",
+    "score": "Health {{score}}/100",
+    "detail": {
+      "select": "Select a report to see its details.",
+      "generatedWith": "Generated with {{source}} · {{language}}",
+      "telemetry": "Captured telemetry",
+      "processes": "Highest resource usage",
+      "back": "Back to the list",
+      "deepScan": "Deep scan"
+    },
+    "delete": {
+      "action": "Delete",
+      "confirm": "Delete this report? This can't be undone.",
+      "yes": "Delete permanently",
+      "no": "Cancel",
+      "error": "The report couldn't be deleted."
+    }
+  },
+  "profile": {
+    "eyebrow": "Account",
+    "title": "Profile",
+    "memberSince": "Member since {{date}}",
+    "localMode": "You're in local mode: sign in to edit your profile and save reports.",
+    "stats": {
+      "reports": "Saved reports",
+      "avgScore": "Average health",
+      "lastReport": "Latest report",
+      "none": "—"
+    },
+    "account": {
+      "title": "Account details",
+      "name": "Full name",
+      "email": "Email",
+      "emailHint": "Your email identifies your account and can't be changed here.",
+      "save": "Save changes",
+      "saved": "Name updated."
+    },
+    "password": {
+      "title": "Change password",
+      "new": "New password",
+      "confirm": "Confirm password",
+      "mismatch": "Passwords don't match.",
+      "save": "Update password",
+      "saved": "Password updated."
+    },
+    "preferences": {
+      "title": "Preferences",
+      "description": "Stored on this computer and applied instantly."
+    },
+    "session": {
+      "title": "Session",
+      "description": "Sign out on this computer. Your reports stay saved in your account."
+    },
+    "hardware": {
+      "title": "This computer's hardware",
+      "description": "Components detected on the PC running Nexora.",
+      "loading": "Detecting components…",
+      "unavailable": "Could not read the hardware. Check that the local service (server.py) is running.",
+      "unknown": "Not detected",
+      "cpu": "Processor",
+      "cores": "{{physical}} cores · {{logical}} threads",
+      "ram": "Total RAM",
+      "storage": "Storage",
+      "systemDrive": "System drive",
+      "gpu": "Graphics card"
+    }
+  },
+  "processes": {
+    "category": {
+      "system": "Windows system - Safe",
+      "system_unverified": "Windows system - Unverified",
+      "suspicious": "Check location",
+      "application": "Application"
+    },
+    "explain": {
+      "system": "Windows component running from its original folder, so it is normal to see it here.",
+      "system_unverified": "It has the name of a Windows component, but the system does not allow reading its location to confirm it.",
+      "suspicious": "It uses the name of a Windows component but is not in its usual folder. Scan it with your antivirus.",
+      "application": "Program installed or opened by the user."
+    },
+    "details": {
+      "show": "Show details for {{name}}",
+      "hide": "Hide details for {{name}}",
+      "technicalName": "Technical name",
+      "path": "Location",
+      "pathUnavailable": "Not available",
+      "classification": "Classification"
+    }
+  },
+  "analysis": {
+    "eyebrow": "Nexora · Deep scan",
+    "title": "On-demand analysis",
+    "scan": {
+      "readyTitle": "Deep scan",
+      "readyDescription": "Reviews every running process, checks where it runs from and observes the CPU for longer. Takes about a minute.",
+      "start": "Start deep scan",
+      "again": "Run deep scan again"
+    },
+    "inventory": {
+      "title": "Process inventory",
+      "subtitle": "All running processes",
+      "empty": "Start a deep scan to see and classify every process on your computer.",
+      "emptyFilter": "No processes in this category.",
+      "noneSuspicious": "No system process is running from an unexpected location.",
+      "reviewNeeded": "Processes worth checking: {{count}}. They appear first in the list.",
+      "filterLabel": "Filter processes",
+      "filters": {
+        "all": "All",
+        "suspicious": "To check",
+        "system": "System",
+        "application": "Applications"
+      }
     }
   }
 }
