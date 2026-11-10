@@ -19,6 +19,7 @@ const STATUS_LEVEL = { NORMAL: 'ok', WARNING: 'warn', CRITICAL: 'crit' } as cons
 const STYLES = `
 @page { size: A4; margin: 16mm 15mm; }
 * { box-sizing: border-box; }
+html { background: #fff; color-scheme: light; }
 body { margin: 0; font: 10.5pt/1.5 "Segoe UI", system-ui, -apple-system, sans-serif; color: #142a37; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 h1, h2, h3 { margin: 0; line-height: 1.25; }
 h2 { font-size: 9pt; letter-spacing: .12em; text-transform: uppercase; color: #3f5863; margin: 0 0 6pt; }
