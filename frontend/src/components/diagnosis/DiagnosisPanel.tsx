@@ -4,6 +4,7 @@ import { getHealthScore } from '../../services/healthService'
 import type { AIDiagnosis, SystemStatus } from '../../types/diagnosis'
 import { Icon } from '../ui/Icon'
 import { LogoMark } from '../ui/LogoMark'
+import { Spinner } from '../ui/Spinner'
 import { LEVEL_STYLES, STATUS_LEVEL } from '../ui/levelStyles'
 import { METRIC_ICON } from '../ui/metricIcons'
 import { FindingCard } from './FindingCard'
@@ -31,6 +32,13 @@ export function DiagnosisPanel() {
           <p className="text-sm font-medium text-brand-strong">{t('diagnosis.subtitle')}</p>
           {diagnosis && <SourceBadge diagnosis={diagnosis} />}
         </div>
+        {/* Indicador en lugar de atenuar el diagnóstico anterior: atenuado no cumplía el contraste mínimo. */}
+        {isAnalyzing && diagnosis && (
+          <p role="status" className="mt-3 flex items-center gap-2 rounded-lg bg-brand-soft px-3 py-2 text-xs font-medium text-brand-strong">
+            <Spinner className="size-3.5" />
+            {t('diagnosis.updating')}
+          </p>
+        )}
       </header>
 
       {!diagnosis || !telemetry ? (
@@ -44,7 +52,7 @@ export function DiagnosisPanel() {
           </div>
         </div>
       ) : (
-        <div className={`flex flex-col gap-5 transition-opacity ${isAnalyzing ? 'opacity-50' : ''}`}>
+        <div className="flex flex-col gap-5">
           <StatusPill status={diagnosis.status} />
 
           {aiFailure && (
