@@ -10,3 +10,7 @@ frontend/dist/
 # Secrets
 .env
 !.env.example
+
+# PyInstaller (python build.py)
+/build/
+/dist/
