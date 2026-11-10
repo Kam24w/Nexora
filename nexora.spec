@@ -32,6 +32,8 @@ exe = EXE(
     a.datas,
     [],
     name="Nexora",
+    # Generated from the logo by tools/make_icon.py.
+    icon=str(ROOT / "assets" / "nexora.ico"),
     # Console kept: it shows the address and closing it stops the local server.
     console=True,
     upx=False,
