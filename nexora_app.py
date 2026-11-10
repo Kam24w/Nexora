@@ -7,6 +7,7 @@ browser. Closing the console window stops Nexora.
 
 import logging
 import os
+import socket
 import threading
 import webbrowser
 
@@ -20,11 +21,25 @@ load_dotenv(app_home() / ".env")
 from api import create_app  # noqa: E402
 
 DEFAULT_PORT = 5000
+PORT_ATTEMPTS = 10
+
+
+def find_free_port(preferred):
+    """The preferred port or the next free one (e.g. while `server.py` uses 5000 for development).
+
+    The port is part of the browser origin, where the session is stored: a stable
+    port keeps the user signed in between runs.
+    """
+    for port in range(preferred, preferred + PORT_ATTEMPTS):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+            if probe.connect_ex(("127.0.0.1", port)) != 0:
+                return port
+    raise RuntimeError(f"No free port between {preferred} and {preferred + PORT_ATTEMPTS - 1}; set NEXORA_PORT")
 
 
 def main():
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
-    port = int(os.environ.get("NEXORA_PORT", DEFAULT_PORT))
+    port = find_free_port(int(os.environ.get("NEXORA_PORT", DEFAULT_PORT)))
     app = create_app(web_root=web_root())
     url = f"http://127.0.0.1:{port}/"
 
