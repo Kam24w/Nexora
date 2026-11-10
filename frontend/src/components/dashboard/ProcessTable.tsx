@@ -40,6 +40,7 @@ const ProcessRow = memo(function ProcessRow({ process, maxCpu, expanded, onToggl
             type="button"
             aria-expanded={expanded}
             aria-label={t(expanded ? 'processes.details.hide' : 'processes.details.show', { name: process.name })}
+            title={t(expanded ? 'processes.details.hide' : 'processes.details.show', { name: process.name })}
             onClick={() => onToggle(process.pid)}
             className="rounded-md p-1.5 text-muted transition hover:bg-surface-sunken hover:text-ink"
           >

@@ -44,7 +44,7 @@ export function ChatComposer({ onSend, sending }: { onSend: (text: string) => vo
           aria-describedby={hintId}
           className="max-h-40 min-h-11 flex-1 resize-y bg-transparent px-2 py-1.5 text-sm text-ink outline-none placeholder:text-muted"
         />
-        <button type="submit" disabled={empty || sending} aria-label={t('chat.send')} className="btn-primary size-10 shrink-0 rounded-xl p-0">
+        <button type="submit" disabled={empty || sending} aria-label={t('chat.send')} title={t('chat.send')} className="btn-primary size-10 shrink-0 rounded-xl p-0">
           {sending ? <Spinner /> : <Icon name="arrowRight" className="size-4 -rotate-90" />}
         </button>
       </div>

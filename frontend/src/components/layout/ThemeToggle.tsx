@@ -13,6 +13,7 @@ export function ThemeToggle() {
       role="switch"
       aria-checked={isDark}
       aria-label={t(isDark ? 'nav.switchToLight' : 'nav.switchToDark')}
+      title={t(isDark ? 'nav.switchToLight' : 'nav.switchToDark')}
       onClick={toggleTheme}
       className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink-soft transition hover:bg-surface-muted hover:text-ink"
     >

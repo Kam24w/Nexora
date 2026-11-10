@@ -35,6 +35,7 @@ export function Toaster() {
               type="button"
               onClick={() => dismiss(toast.id)}
               aria-label={t('common.closeNotification')}
+              title={t('common.closeNotification')}
               className="rounded-md p-1 text-muted transition hover:bg-surface-muted hover:text-ink"
             >
               <Icon name="close" className="size-4" />
