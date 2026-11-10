@@ -15,7 +15,7 @@ export function ServiceStatusBanner() {
       <Icon name="alert" className="size-5 text-crit max-sm:hidden" />
       <div className="min-w-0 flex-1">
         <p className="font-semibold text-crit">
-          {t('dashboard.errors.offline', { url: API_BASE_URL })}
+          {t('dashboard.errors.offline', { url: API_BASE_URL || window.location.origin })}
         </p>
         <p className="mt-1 text-xs text-ink-soft">
           {t('dashboard.errors.offlineHint')}{' '}
