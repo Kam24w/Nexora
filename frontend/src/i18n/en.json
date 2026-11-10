@@ -38,25 +38,6 @@
     "title": "AI Diagnosis Dashboard",
     "lastScan": "Last scan: {{time}}",
     "noScanYet": "No scans yet",
-    "scan": {
-      "readyTitle": "Automatic scan ready",
-      "readyDescription": "Nexora measures CPU, memory, disk and processes to explain what is slowing your computer down.",
-      "start": "Start automatic analysis",
-      "again": "Analyze again",
-      "running": "Analyzing your computer…",
-      "runningHint": "This takes a few seconds. You can keep using your PC.",
-      "stages": {
-        "telemetry": "Capturing telemetry…",
-        "ai": "Generating AI diagnosis…",
-        "saving": "Saving report…"
-      },
-      "stepsLabel": "Analysis progress",
-      "steps": {
-        "telemetry": "Telemetry",
-        "ai": "AI diagnosis",
-        "saving": "Saved"
-      }
-    },
     "errors": {
       "dismiss": "Dismiss notice",
       "offline": "Can't connect to the local service at {{url}}.",
@@ -241,8 +222,7 @@
       "number": "At least one number",
       "met": "(met)",
       "unmet": "(pending)"
-    },
-    "fixErrors": "Check the highlighted fields to continue."
+    }
   },
   "reports": {
     "eyebrow": "History",
@@ -271,7 +251,7 @@
       "telemetry": "Captured telemetry",
       "processes": "Highest resource usage",
       "back": "Back to the list",
-      "deepScan": "Deep scan"
+      "deepScan": "Advanced analysis"
     },
     "delete": {
       "action": "Delete",
@@ -308,7 +288,6 @@
       "email": "Email",
       "emailHint": "Your email identifies your account and can't be changed here.",
       "save": "Save changes",
-      "saved": "Name updated.",
       "savedToast": "Name updated",
       "savedToastDescription": "This is how you will appear in Nexora from now on."
     },
@@ -318,7 +297,6 @@
       "confirm": "Confirm password",
       "mismatch": "Passwords don't match.",
       "save": "Update password",
-      "saved": "Password updated.",
       "savedToast": "Password updated successfully!",
       "savedToastDescription": "Use it the next time you sign in.",
       "matches": "Passwords match"
@@ -369,18 +347,12 @@
     }
   },
   "analysis": {
-    "eyebrow": "Nexora · Deep scan",
-    "title": "On-demand analysis",
-    "scan": {
-      "readyTitle": "Deep scan",
-      "readyDescription": "Reviews every running process, checks where it runs from and observes the CPU for longer. Takes about a minute.",
-      "start": "Start deep scan",
-      "again": "Run deep scan again"
-    },
+    "eyebrow": "Nexora · Advanced analysis",
+    "title": "In-depth analysis of your computer",
     "inventory": {
       "title": "Process inventory",
       "subtitle": "All running processes",
-      "empty": "Start a deep scan to see and classify every process on your computer.",
+      "empty": "Start an advanced analysis to see and classify every process on your computer.",
       "emptyFilter": "No processes in this category.",
       "noneSuspicious": "No system process is running from an unexpected location.",
       "reviewNeeded": "Processes worth checking: {{count}}. They appear first in the list.",

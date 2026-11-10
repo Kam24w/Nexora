@@ -38,25 +38,6 @@
     "title": "Panel de diagnóstico IA",
     "lastScan": "Último análisis: {{time}}",
     "noScanYet": "Sin análisis todavía",
-    "scan": {
-      "readyTitle": "Escaneo automático listo",
-      "readyDescription": "Nexora mide CPU, memoria, disco y procesos para explicarte qué frena tu equipo.",
-      "start": "Iniciar análisis automático",
-      "again": "Volver a analizar",
-      "running": "Analizando tu equipo…",
-      "runningHint": "Esto toma unos segundos. Puedes seguir usando el PC.",
-      "stages": {
-        "telemetry": "Capturando telemetría…",
-        "ai": "Generando diagnóstico con IA…",
-        "saving": "Guardando informe…"
-      },
-      "stepsLabel": "Progreso del análisis",
-      "steps": {
-        "telemetry": "Telemetría",
-        "ai": "Diagnóstico IA",
-        "saving": "Guardado"
-      }
-    },
     "errors": {
       "dismiss": "Cerrar aviso",
       "offline": "No se puede conectar con el servicio local en {{url}}.",
@@ -241,8 +222,7 @@
       "number": "Al menos un número",
       "met": "(cumplido)",
       "unmet": "(pendiente)"
-    },
-    "fixErrors": "Revisa los campos marcados para continuar."
+    }
   },
   "reports": {
     "eyebrow": "Historial",
@@ -271,7 +251,7 @@
       "telemetry": "Telemetría capturada",
       "processes": "Procesos con mayor consumo",
       "back": "Volver a la lista",
-      "deepScan": "Escaneo profundo"
+      "deepScan": "Análisis avanzado"
     },
     "delete": {
       "action": "Eliminar",
@@ -308,7 +288,6 @@
       "email": "Correo electrónico",
       "emailHint": "El correo identifica tu cuenta y no se puede cambiar desde aquí.",
       "save": "Guardar cambios",
-      "saved": "Nombre actualizado.",
       "savedToast": "Nombre actualizado",
       "savedToastDescription": "Así aparecerás en Nexora a partir de ahora."
     },
@@ -318,7 +297,6 @@
       "confirm": "Confirmar contraseña",
       "mismatch": "Las contraseñas no coinciden.",
       "save": "Actualizar contraseña",
-      "saved": "Contraseña actualizada.",
       "savedToast": "¡Contraseña actualizada con éxito!",
       "savedToastDescription": "Úsala la próxima vez que inicies sesión.",
       "matches": "Las contraseñas coinciden"
@@ -369,18 +347,12 @@
     }
   },
   "analysis": {
-    "eyebrow": "Nexora · Escaneo profundo",
-    "title": "Análisis bajo demanda",
-    "scan": {
-      "readyTitle": "Escaneo profundo",
-      "readyDescription": "Revisa todos los procesos en ejecución, comprueba su ubicación y observa la CPU durante más tiempo. Tarda alrededor de un minuto.",
-      "start": "Iniciar escaneo profundo",
-      "again": "Repetir escaneo profundo"
-    },
+    "eyebrow": "Nexora · Análisis avanzado",
+    "title": "Análisis a fondo de tu equipo",
     "inventory": {
       "title": "Inventario de procesos",
       "subtitle": "Todos los procesos en ejecución",
-      "empty": "Inicia un escaneo profundo para ver y clasificar todos los procesos de tu equipo.",
+      "empty": "Inicia un análisis avanzado para ver y clasificar todos los procesos de tu equipo.",
       "emptyFilter": "No hay procesos en esta categoría.",
       "noneSuspicious": "Ningún proceso del sistema se ejecuta desde una ubicación inesperada.",
       "reviewNeeded": "Procesos que conviene revisar: {{count}}. Aparecen primero en la lista.",
