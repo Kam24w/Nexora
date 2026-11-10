@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { useI18n } from '../../context/I18nContext'
 import type { StoredReport } from '../../services/reportsService'
 import { Icon } from '../ui/Icon'
@@ -9,7 +10,7 @@ interface ReportListItemProps {
   onSelect: (id: string) => void
 }
 
-export function ReportListItem({ report, selected, onSelect }: ReportListItemProps) {
+export const ReportListItem = memo(function ReportListItem({ report, selected, onSelect }: ReportListItemProps) {
   const { t, formatDate } = useI18n()
   const { payload } = report
   const styles = LEVEL_STYLES[STATUS_LEVEL[payload.status]]
@@ -46,4 +47,4 @@ export function ReportListItem({ report, selected, onSelect }: ReportListItemPro
       </button>
     </li>
   )
-}
+})

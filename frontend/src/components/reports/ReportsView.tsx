@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useI18n } from '../../context/I18nContext'
 import { useToast } from '../../context/ToastContext'
@@ -22,10 +22,11 @@ export function ReportsView({ onNavigate }: { onNavigate: (view: AppView, report
   const reports = state.status === 'ready' ? state.reports : []
   const selected = reports.find((report) => report.id === selectedId) ?? reports[0] ?? null
 
-  const select = (id: string) => {
+  // Estable entre renders: los elementos de la lista están memoizados.
+  const select = useCallback((id: string) => {
     setSelectedId(id)
     setShowDetailOnMobile(true)
-  }
+  }, [])
 
   return (
     <main className="flex min-w-0 flex-col gap-5">
