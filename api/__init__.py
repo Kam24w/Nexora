@@ -10,6 +10,7 @@ from api.routes.reports import report_routes
 from api.routes.scans import scan_routes
 from api.routes.system import system_routes
 from api.scan_jobs import ScanJobs
+from api.static_site import register_static_site
 from diagnosis.ai_diagnostic_service import AIDiagnosticService
 from diagnosis.report_assistant import ReportAssistant
 from main import SCAN_STEPS, run_diagnosis
@@ -22,7 +23,8 @@ LOCAL_ORIGINS = r"^http://(localhost|127\.0\.0\.1)(:\d{1,5})?$"
 MAX_BODY_BYTES = 2 * 1024 * 1024
 
 
-def create_app(ai_service=None, scan_runner=None):
+def create_app(ai_service=None, scan_runner=None, web_root=None):
+    """`web_root`: React build to serve as well (desktop app); `None` serves only the API."""
     app = Flask(__name__)
     app.config["MAX_CONTENT_LENGTH"] = MAX_BODY_BYTES
     app.extensions["ai_service"] = ai_service or AIDiagnosticService()
@@ -34,5 +36,8 @@ def create_app(ai_service=None, scan_runner=None):
 
     for blueprint in (scan_routes, diagnostics_routes, report_routes, system_routes, auth_routes):
         app.register_blueprint(blueprint)
+
+    if web_root is not None:
+        register_static_site(app, web_root)
 
     return app
