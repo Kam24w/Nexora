@@ -157,7 +157,8 @@
     "rules": {
       "healthyTitle": "No bottleneck detected",
       "healthyExplanation": "CPU, memory and storage are within normal ranges."
-    }
+    },
+    "updating": "Updating the diagnosis with the new analysis…"
   },
   "backend": {
     "issues": {

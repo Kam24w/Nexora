@@ -157,7 +157,8 @@
     "rules": {
       "healthyTitle": "No se detectó ningún cuello de botella",
       "healthyExplanation": "CPU, memoria y almacenamiento están dentro de rangos normales."
-    }
+    },
+    "updating": "Actualizando el diagnóstico con el nuevo análisis…"
   },
   "backend": {
     "issues": {
