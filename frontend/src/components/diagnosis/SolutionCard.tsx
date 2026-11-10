@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { useI18n } from '../../context/I18nContext'
 import type { DiagnosisSolution, SolutionImpact } from '../../types/diagnosis'
 
@@ -7,7 +8,7 @@ const IMPACT_STYLE: Readonly<Record<SolutionImpact, string>> = {
   low: 'bg-surface-sunken text-ink-soft',
 }
 
-export function SolutionCard({ solution, position }: { solution: DiagnosisSolution; position: number }) {
+export const SolutionCard = memo(function SolutionCard({ solution, position }: { solution: DiagnosisSolution; position: number }) {
   const { t } = useI18n()
 
   return (
@@ -33,4 +34,4 @@ export function SolutionCard({ solution, position }: { solution: DiagnosisSoluti
       </div>
     </li>
   )
-}
+})

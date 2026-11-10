@@ -1,9 +1,10 @@
+import { memo } from 'react'
 import type { DiagnosisFinding } from '../../types/diagnosis'
 import { Icon } from '../ui/Icon'
 import { LEVEL_STYLES } from '../ui/levelStyles'
 import { METRIC_ICON } from '../ui/metricIcons'
 
-export function FindingCard({ finding }: { finding: DiagnosisFinding }) {
+export const FindingCard = memo(function FindingCard({ finding }: { finding: DiagnosisFinding }) {
   const styles = LEVEL_STYLES[finding.severity]
 
   return (
@@ -17,4 +18,4 @@ export function FindingCard({ finding }: { finding: DiagnosisFinding }) {
       </div>
     </li>
   )
-}
+})
