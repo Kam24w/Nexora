@@ -8,9 +8,13 @@
 
 export const DEFAULT_API_BASE_URL = 'http://127.0.0.1:5000'
 
+/** Valor de VITE_DIAGNOSIS_API_URL en la app de escritorio: la API está en el mismo servidor que la interfaz. */
+export const SAME_ORIGIN = 'same-origin'
+
 const resolveBaseUrl = (configured: string | undefined): string => {
   const value = configured?.trim()
   if (!value) return DEFAULT_API_BASE_URL
+  if (value === SAME_ORIGIN) return ''
 
   try {
     const url = new URL(value)
