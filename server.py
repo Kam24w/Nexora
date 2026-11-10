@@ -29,4 +29,6 @@ if not os.environ.get("GROQ_API_KEY"):
 if __name__ == "__main__":
     # IPv4 loopback explicitly: the frontend calls http://127.0.0.1:5000.
     # The interactive debugger stays off unless FLASK_DEBUG=1 is set.
-    app.run(host="127.0.0.1", port=5000, debug=os.environ.get("FLASK_DEBUG") == "1", threaded=True)
+    # load_dotenv=False: the repository .env is already loaded above; Flask would also
+    # pick up any other .env in the working directory.
+    app.run(host="127.0.0.1", port=5000, debug=os.environ.get("FLASK_DEBUG") == "1", threaded=True, load_dotenv=False)
