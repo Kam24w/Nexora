@@ -4,14 +4,6 @@ def diagnose_system(cpu_usage, ram_usage, disk_space, disk_read, disk_write, pro
     security_issues = []
     recommendations = []
     causes = []
-    persistent_processes = [
-        process
-        for process in process_monitor
-        if (
-            process["average_cpu"] >= 30
-            and process["persistence"] >= 60
-        )
-    ]
 
     # Check global CPU usage
     if cpu_usage >= 80:
