@@ -8,6 +8,7 @@ from frontend/.env.local at build time (the anon key is public by design); the
 GROQ_API_KEY is NOT bundled: put a .env next to the generated executable.
 """
 
+import importlib.util
 import os
 import shutil
 import subprocess
@@ -51,9 +52,7 @@ def build_executable():
 
 
 def main():
-    try:
-        import PyInstaller  # noqa: F401
-    except ImportError:
+    if importlib.util.find_spec("PyInstaller") is None:
         sys.exit("PyInstaller is not installed: pip install -r requirements-build.txt")
 
     build_frontend()
