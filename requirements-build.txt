@@ -1,2 +1,4 @@
 -r requirements.txt
 pyinstaller>=6.10,<7
+# tools/make_icon.py
+pillow>=11,<13
