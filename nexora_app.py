@@ -49,7 +49,9 @@ def main():
         threading.Timer(1.0, webbrowser.open, args=[url]).start()
 
     print(f"\n  Nexora está en marcha: {url}\n  Cierra esta ventana para detenerlo.\n")
-    app.run(host="127.0.0.1", port=port, threaded=True)
+    # load_dotenv=False: Flask would also read any .env in the working directory
+    # (and its parents); only the one next to the executable must count.
+    app.run(host="127.0.0.1", port=port, threaded=True, load_dotenv=False)
 
 
 if __name__ == "__main__":
