@@ -9,6 +9,7 @@ frontend/dist/
 
 # Secrets
 .env
+nexora.env
 !.env.example
 
 # PyInstaller (python build.py)
