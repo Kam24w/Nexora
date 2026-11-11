@@ -34,6 +34,8 @@ SYSTEM32_PROCESSES = {
 DEFENDER_PROCESSES = {"msmpeng.exe", "nissrv.exe"}
 
 _USER_FOLDER = re.compile(r"^[a-z]:\\users\\[^\\]+", re.IGNORECASE)
+# Linux (/home/<user>) and macOS (/Users/<user>).
+_POSIX_USER_FOLDER = re.compile(r"^/(?:home|Users)/[^/]+")
 
 
 def _folder(*parts):
@@ -46,7 +48,9 @@ def _is_within(directory, parent):
 
 def mask_user_folder(path):
     """Removes the account name: paths end up in saved reports and in diagnosis.json."""
-    return _USER_FOLDER.sub("%USERPROFILE%", path) if path else None
+    if not path:
+        return None
+    return _POSIX_USER_FOLDER.sub("~", _USER_FOLDER.sub("%USERPROFILE%", path))
 
 
 def _classify_windows(name, exe, parent_pid):
