@@ -94,7 +94,9 @@ jobs:
       - name: Package
         run: |
           mkdir -p package/Nexora
-          cp "dist/${{ matrix.binary }}" .env.example package/Nexora/
+          cp "dist/${{ matrix.binary }}" package/Nexora/
+          # Visible name: Finder and Linux file managers hide ".env.example".
+          cp .env.example package/Nexora/nexora.env.example
           cd package
           if [ "$RUNNER_OS" = "Windows" ]; then
             7z a "../Nexora-${{ matrix.name }}.zip" Nexora > /dev/null

@@ -43,13 +43,13 @@ Funciona en **Windows, Linux y macOS**, pero cada ejecutable debe compilarse en 
 pip install -r requirements-build.txt && python build.py
 ```
 
-Genera `dist/Nexora.exe` (Windows) o `dist/Nexora` (Linux/macOS): un único archivo con la API y la interfaz. Copia tu `.env` junto al ejecutable y ábrelo; se abrirá el navegador en `http://127.0.0.1:5000` (o el siguiente puerto libre).
+Genera `dist/Nexora.exe` (Windows) o `dist/Nexora` (Linux/macOS): un único archivo con la API y la interfaz. Copia tu `.env` junto al ejecutable (también vale con el nombre visible `nexora.env`, más cómodo en macOS y Linux, que ocultan los archivos que empiezan por punto) y ábrelo; se abrirá el navegador en `http://127.0.0.1:5000` (o el siguiente puerto libre).
 
 | Sistema | Cómo abrirlo |
 |---|---|
 | Windows | Doble clic en `Nexora.exe`. SmartScreen puede avisar al no estar firmado: *Más información → Ejecutar de todas formas*. |
 | Linux | Desde una terminal: `./Nexora`. Requiere glibc 2.35+ (Ubuntu 22.04, Debian 12, Fedora 36 o posteriores). La temperatura se lee de los sensores del kernel (`lm-sensors`); las GPU, con `lspci` (`pciutils`). |
-| macOS | Doble clic (se abre en Terminal). La primera vez Gatekeeper lo bloquea por no estar firmado: clic derecho → *Abrir*, o `xattr -d com.apple.quarantine Nexora`. Usa el puerto **5001**, porque el 5000 lo ocupa el Receptor AirPlay. macOS no expone la temperatura sin permisos de administrador: se muestra como no disponible. |
+| macOS | Doble clic (se abre en Terminal). La primera vez Gatekeeper lo bloquea por no estar firmado: *Ajustes del Sistema → Privacidad y seguridad → Abrir igualmente* (en macOS 14 o anterior también vale clic derecho → *Abrir*), o en Terminal `xattr -d com.apple.quarantine Nexora`. Usa el puerto **5001**, porque el 5000 lo ocupa el Receptor AirPlay. macOS no expone la temperatura sin permisos de administrador: se muestra como no disponible. |
 
 - La configuración de Supabase de `frontend/.env.local` se incluye al compilar (la clave *anon* es pública); la clave de Groq **no** se incluye.
 - Añade `http://127.0.0.1:5000` y `http://127.0.0.1:5001` a las *Redirect URLs* de Supabase para que funcionen los enlaces de confirmación y recuperación.
