@@ -1,0 +1,126 @@
+# Builds the desktop executable on Windows, Linux and macOS (Apple Silicon and Intel).
+# PyInstaller cannot cross-compile: each executable must be built on its own OS.
+#
+# - Every push / pull request: tests + build + smoke test; the executables are
+#   downloadable from the run's "Artifacts" section.
+# - Pushing a tag such as v1.0.0 also publishes them as a GitHub Release.
+#
+# Optional repository secrets (Settings > Secrets and variables > Actions):
+# VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY. Without them the executables run
+# without accounts or reports. GROQ_API_KEY is never bundled: users put a .env
+# next to the executable.
+
+name: Build desktop app
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: windows-x64, os: windows-latest, binary: Nexora.exe }
+          # Oldest supported Ubuntu: the binary needs a glibc at least this old.
+          - { name: linux-x64, os: ubuntu-22.04, binary: Nexora }
+          - { name: macos-arm64, os: macos-15, binary: Nexora }
+          - { name: macos-x64, os: macos-15-intel, binary: Nexora }
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements*.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Python dependencies
+        run: pip install -r requirements-build.txt
+
+      - name: Backend tests
+        run: python -m unittest discover tests
+
+      - name: Supabase settings for the interface
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          if [ -n "$VITE_SUPABASE_URL" ]; then
+            printf 'VITE_SUPABASE_URL=%s\nVITE_SUPABASE_ANON_KEY=%s\n' "$VITE_SUPABASE_URL" "$VITE_SUPABASE_ANON_KEY" > frontend/.env.local
+          fi
+
+      - name: Build executable
+        run: python build.py
+
+      - name: Smoke test (start the executable and query it)
+        env:
+          NEXORA_NO_BROWSER: "1"
+          # Fixed port: on macOS 5000 belongs to the AirPlay Receiver.
+          NEXORA_PORT: "8765"
+        run: |
+          mkdir smoke && cp "dist/${{ matrix.binary }}" smoke/ && cd smoke
+          "./${{ matrix.binary }}" > ../smoke.log 2>&1 &
+          for _ in $(seq 1 60); do
+            if curl -sf http://127.0.0.1:8765/health; then ok=1; break; fi
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:8765/ | grep -q "<title>" || ok=
+          kill %1 2>/dev/null || true
+          # A one-file executable runs as two processes; on Windows kill both.
+          if [ "$RUNNER_OS" = "Windows" ]; then taskkill //F //IM Nexora.exe > /dev/null 2>&1 || true; fi
+          cat ../smoke.log
+          [ -n "$ok" ] || { echo "The executable did not answer"; exit 1; }
+
+      - name: Package
+        run: |
+          mkdir -p package/Nexora
+          cp "dist/${{ matrix.binary }}" .env.example package/Nexora/
+          cd package
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            7z a "../Nexora-${{ matrix.name }}.zip" Nexora > /dev/null
+          else
+            # tar keeps the executable permission (a zip made elsewhere may lose it).
+            tar -czf "../Nexora-${{ matrix.name }}.tar.gz" Nexora
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Nexora-${{ matrix.name }}
+          path: Nexora-${{ matrix.name }}.*
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" artifacts/* --repo "$GITHUB_REPOSITORY" --generate-notes
