@@ -60,5 +60,34 @@ class PathsTests(unittest.TestCase):
             self.assertEqual(paths.app_home(), Path(sys.executable).resolve().parent)
 
 
+class SettingsFileTests(unittest.TestCase):
+    """macOS Finder hides ".env": a visible "nexora.env" must work too."""
+
+    def setUp(self):
+        import nexora_app
+
+        self.folder = tempfile.TemporaryDirectory()
+        self.home = Path(self.folder.name)
+        self.patch = mock.patch.object(nexora_app, "app_home", return_value=self.home)
+        self.patch.start()
+        self.settings_file = nexora_app.settings_file
+
+    def tearDown(self):
+        self.patch.stop()
+        self.folder.cleanup()
+
+    def test_visible_name_is_used(self):
+        (self.home / "nexora.env").write_text("GROQ_API_KEY=x", encoding="utf-8")
+        self.assertEqual(self.settings_file(), self.home / "nexora.env")
+
+    def test_dotenv_wins_when_both_exist(self):
+        (self.home / "nexora.env").touch()
+        (self.home / ".env").touch()
+        self.assertEqual(self.settings_file(), self.home / ".env")
+
+    def test_missing_file_suggests_the_visible_name(self):
+        self.assertEqual(self.settings_file(), self.home / "nexora.env")
+
+
 if __name__ == "__main__":
     unittest.main()

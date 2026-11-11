@@ -1,7 +1,7 @@
 """Nexora desktop entry point: the local API and the interface on one port.
 
-This is what the PyInstaller executable runs. It reads `.env` from the folder of
-the executable (GROQ_API_KEY), serves the bundled React build and opens the
+This is what the PyInstaller executable runs. It reads `.env` or `nexora.env` from the
+folder of the executable (GROQ_API_KEY), serves the bundled React build and opens the
 browser. Closing the console window stops Nexora.
 """
 
@@ -15,8 +15,21 @@ from dotenv import load_dotenv
 
 from api.paths import app_home, web_root
 
+# Settings file next to the executable. "nexora.env" is the visible alternative:
+# macOS Finder and Linux file managers hide files whose name starts with a dot.
+SETTINGS_FILES = (".env", "nexora.env")
+
+
+def settings_file():
+    """The settings file in use (the first that exists), or the default name for messages."""
+    for name in SETTINGS_FILES:
+        if (app_home() / name).is_file():
+            return app_home() / name
+    return app_home() / SETTINGS_FILES[-1]
+
+
 # Before importing the app: the AI client reads GROQ_* when it is created.
-load_dotenv(app_home() / ".env")
+load_dotenv(settings_file())
 
 from api import create_app  # noqa: E402
 
@@ -44,7 +57,7 @@ def main():
     url = f"http://127.0.0.1:{port}/"
 
     if not os.environ.get("GROQ_API_KEY"):
-        logging.warning("GROQ_API_KEY is not set in %s: diagnoses will use the rule engine.", app_home() / ".env")
+        logging.warning("GROQ_API_KEY is not set in %s: diagnoses will use the rule engine.", settings_file())
     if os.environ.get("NEXORA_NO_BROWSER") != "1":
         threading.Timer(1.0, webbrowser.open, args=[url]).start()
 
