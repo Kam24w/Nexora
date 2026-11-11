@@ -1,6 +1,8 @@
 import os
-import psutil
+import sys
 import time
+
+import psutil
 
 from collector.process_classifier import CATEGORIES, classify_process
 
@@ -11,10 +13,19 @@ IDLE_PROCESS = "System Idle Process"
 PROCESS_ATTRS = ["pid", "name"]
 
 
+# macOS 10.15+ mounts "/" as a sealed, read-only system volume of a few GB; the
+# user's files live on this volume of the same APFS container. Measuring "/"
+# would report the disk as almost empty however full it really is.
+MACOS_DATA_VOLUME = "/System/Volumes/Data"
+
+
 def get_system_root():
-    """Root of the system drive: C:\\ on Windows (or wherever Windows is installed), / elsewhere."""
+    """Volume holding the user's data: C:\\ on Windows (or wherever Windows is installed),
+    the Data volume on macOS, / on Linux."""
     if os.name == "nt":
         return os.environ.get("SystemDrive", "C:") + "\\"
+    if sys.platform == "darwin" and os.path.isdir(MACOS_DATA_VOLUME):
+        return MACOS_DATA_VOLUME
     return os.path.abspath(os.sep)
 
 
@@ -35,6 +46,10 @@ def get_disk_activity():
     time.sleep(1)
 
     disk_after = psutil.disk_io_counters()
+
+    # None when the OS exposes no disk counters (some Linux VMs and containers).
+    if disk_before is None or disk_after is None:
+        return {"read": 0.0, "write": 0.0}
 
     disk_read = (
         disk_after.read_bytes - disk_before.read_bytes
