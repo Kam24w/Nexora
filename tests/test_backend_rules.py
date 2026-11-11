@@ -53,6 +53,35 @@ class ClassifierTests(unittest.TestCase):
         self.assertEqual(result, r"%USERPROFILE%\AppData\app.exe")
 
 
+class CrossPlatformTests(unittest.TestCase):
+    """Runs on every OS: the desktop app is built for Windows, Linux and macOS."""
+
+    def test_account_name_is_removed_from_posix_paths(self):
+        self.assertEqual(pc.mask_user_folder("/home/ana/.local/bin/tool"), "~/.local/bin/tool")
+        self.assertEqual(pc.mask_user_folder("/Users/ana/Applications/App"), "~/Applications/App")
+        self.assertEqual(pc.mask_user_folder("/usr/bin/python3"), "/usr/bin/python3")
+        self.assertIsNone(pc.mask_user_folder(None))
+
+    def test_non_windows_processes_are_applications(self):
+        with mock.patch.object(pc.os, "name", "posix"):
+            result = pc.classify_process("svchost.exe", "/home/ana/svchost.exe", 1)
+        self.assertEqual(result, {"category": pc.APPLICATION, "path": "~/svchost.exe"})
+
+    def test_macos_measures_the_data_volume(self):
+        from collector import collector
+
+        with mock.patch.object(collector.os, "name", "posix"), mock.patch.object(collector.sys, "platform", "darwin"), \
+                mock.patch.object(collector.os.path, "isdir", return_value=True):
+            self.assertEqual(collector.get_system_root(), collector.MACOS_DATA_VOLUME)
+
+    def test_missing_disk_counters_do_not_fail_the_scan(self):
+        from collector import collector
+
+        with mock.patch.object(collector.psutil, "disk_io_counters", return_value=None), \
+                mock.patch.object(collector.time, "sleep"):
+            self.assertEqual(collector.get_disk_activity(), {"read": 0.0, "write": 0.0})
+
+
 class ValidationTests(unittest.TestCase):
     def test_email_limits(self):
         self.assertEqual(iv.validate_email(" a.b@c.co "), ("a.b@c.co", None))
